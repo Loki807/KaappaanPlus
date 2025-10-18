@@ -33,14 +33,14 @@ namespace KaappaanPlus.Domain.Entities
             SetCreated("system"); // temporary, later replace with logged-in user
         }
 
-        // ✅ Secure password setter
+        //  Secure password setter
         public void SetPasswordHash(string passwordHash)
         {
             PasswordHash = passwordHash;
             SetUpdated("system");
         }
 
-        // ✅ Update profile
+        //  Update profile
         public void UpdateProfile(string name, string phone)
         {
             Name = name;
@@ -52,3 +52,4 @@ namespace KaappaanPlus.Domain.Entities
         public void Activate() => IsActive = true;
     }
 }
+//im nitha
