@@ -9,7 +9,7 @@ namespace KaappaanPlus.Domain.Entities
 {
     public sealed class AppUser : AuditableEntity
     {
-        public Guid TenantId { get; private set; }   // Multi-tenant system
+        public Guid? TenantId { get; private set; }   // Multi-tenant system
         public string Name { get; private set; } = default!;
         public string Email { get; private set; } = default!;
         public string Phone { get; private set; } = default!;
@@ -21,8 +21,8 @@ namespace KaappaanPlus.Domain.Entities
         public Tenant Tenant { get; private set; } = default!;
         public ICollection<UserRole> UserRoles { get; private set; } = new List<UserRole>();
 
-        private AppUser() { }  // EF Core needs empty constructor
-
+        private AppUser(object tenantId) { }  // EF Core needs empty constructor
+        private AppUser() { }
         public AppUser(Guid tenantId, string name, string email, string phone)
         {
             TenantId = tenantId;
