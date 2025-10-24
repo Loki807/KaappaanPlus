@@ -38,6 +38,13 @@ namespace KaappaanPlus.WebApi
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt["Key"]!))
                     };
                 });
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAngular", policy =>
+                    policy.WithOrigins("http://localhost:4200") // Angular
+                          .AllowAnyHeader()
+                          .AllowAnyMethod());
+            });
 
             builder.Services.AddAuthorization();
 
@@ -62,6 +69,7 @@ namespace KaappaanPlus.WebApi
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.UseCors("AllowAngular");
 
             app.MapControllers();
 
