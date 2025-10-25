@@ -1,5 +1,6 @@
 ﻿
 using KaappaanPlus.Application;
+using KaappaanPlus.Application.Common.Exceptions;
 using KaappaanPlus.Infrastructure;
 using KaappanPlus.Persistence;
 using KaappanPlus.Persistence.Data;
@@ -64,7 +65,7 @@ namespace KaappaanPlus.WebApi
             {
                 app.MapOpenApi();
             }
-
+            app.UseMiddleware<ErrorHandlingMiddleware>();
             app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseAuthorization();

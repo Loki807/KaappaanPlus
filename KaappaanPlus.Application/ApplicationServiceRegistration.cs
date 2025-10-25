@@ -1,4 +1,6 @@
-﻿using MediatR;
+﻿using FluentValidation;
+using KaappaanPlus.Application.Common.Behaviors;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -17,7 +19,12 @@ namespace KaappaanPlus.Application
 
             services.AddAutoMapper(Assembly.GetExecutingAssembly()); // ✅ VERY IMPORTANT
 
-            //services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+
+            services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+
+            // ✅ Register Validation Pipeline
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+
 
             return services;
         }
