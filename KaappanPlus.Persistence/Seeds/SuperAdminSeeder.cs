@@ -2,11 +2,6 @@
 using KaappanPlus.Persistence.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace KaappanPlus.Persistence.Seeds
 {
@@ -21,19 +16,21 @@ namespace KaappanPlus.Persistence.Seeds
             // ✅ Ensure SYSTEM Tenant exists first
             var systemTenantId = await SystemTenantSeeder.SeedSystemTenantAsync(context);
 
-            // Create SuperAdmin user
+            // ✅ Hash password safely
             var hasher = new PasswordHasher<AppUser>();
+            var passwordHash = hasher.HashPassword(null, "2025Lk@");
 
+            // ✅ Create SuperAdmin user with Role
             var superAdmin = new AppUser(
-                tenantId: systemTenantId,  // ✅ Assigned to SYSTEM Tenant
+                tenantId: systemTenantId,
                 name: "Super Admin",
                 email: "Kaappaan@gmail.com",
-                phone: "0000000000"
+                phone: "0000000000",
+                passwordHash: passwordHash,
+                role: "SuperAdmin"
             );
 
-            superAdmin.SetPasswordHash(hasher.HashPassword(superAdmin, "2025Lk@")); // ✅ secure hash
-
-            // Assign SuperAdmin role
+            // ✅ Assign role relationship
             var superAdminRole = await context.Roles.FirstAsync(r => r.Name == "SuperAdmin");
             superAdmin.UserRoles.Add(new UserRole(superAdmin.Id, superAdminRole.Id));
 
@@ -42,4 +39,3 @@ namespace KaappanPlus.Persistence.Seeds
         }
     }
 }
-

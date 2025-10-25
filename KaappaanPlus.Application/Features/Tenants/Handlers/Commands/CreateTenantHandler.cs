@@ -34,7 +34,7 @@ namespace KaappaanPlus.Application.Features.Tenants.Handlers.Commands
             tenant.GetType().GetProperty("Code")?.SetValue(tenant, $"{shortPrefix}_TENANT");
 
             // Add to DB using clean method (no EF here)
-            await _dbContext.AddAsync(tenant, cancellationToken);
+            await _dbContext.AddEntityAsync(tenant, cancellationToken);
             await _dbContext.SaveChangesAsync(cancellationToken);
 
             // Return new Tenant ID

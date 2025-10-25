@@ -36,10 +36,12 @@ namespace KaappanPlus.Persistence.Data
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
             => base.SaveChangesAsync(cancellationToken);
 
-        public async Task AddAsync<T>(T entity, CancellationToken cancellationToken = default) where T : class
+        public async Task AddEntityAsync<T>(T entity, CancellationToken cancellationToken = default)
+     where T : class
         {
             await Set<T>().AddAsync(entity, cancellationToken);
         }
+
     }
 
 
