@@ -15,8 +15,9 @@ namespace KaappaanPlus.Application.Contracts
             IQueryable<UserRole> UserRoles { get; }
 
 
-            Task AddAsync<T>(T entity, CancellationToken cancellationToken = default) where T : class;
-            Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+        Task AddEntityAsync<T>(T entity, CancellationToken cancellationToken = default) where T : class;
+
+        Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
         }
        
     
