@@ -76,6 +76,14 @@ namespace KaappaanPlus.Domain.Entities
             ClearPasswordChangeRequirement(); // optional: clear flag automatically
             SetUpdated("system"); // optional audit trail
         }
+        public void UpdateInfo(string name, string phone, string role, bool isActive)
+        {
+            Name = name;
+            Phone = phone;
+            Role = role;
+            IsActive = isActive;
+            SetUpdated("system");
+        }
 
 
     }

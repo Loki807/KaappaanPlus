@@ -31,6 +31,21 @@ namespace KaappanPlus.Persistence.Repository
             await _context.AppUsers.AddAsync(user, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
         }
+
+        public Task<AppUser?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task UpdateAsync(AppUser user, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DeleteAsync(Guid userId, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 

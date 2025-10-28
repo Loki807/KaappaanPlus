@@ -18,9 +18,20 @@ namespace KaappanPlus.Persistence.Repository
             _context = context;
         }
 
+        // ✅ Check if tenant exists by ID
         public async Task<bool> ExistsAsync(Guid tenantId, CancellationToken cancellationToken = default)
         {
-            return await _context.Tenants.AnyAsync(t => t.Id == tenantId, cancellationToken);
+            // Handle invalid Guid safely
+            if (tenantId == Guid.Empty)
+                return false;
+
+            return await _context.Tenants
+                .AnyAsync(t => t.Id == tenantId, cancellationToken);
+        }
+
+        public Task<bool> ExistsAsync(Guid? tenantId, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
         }
     }
 }
