@@ -47,5 +47,7 @@ namespace KaappanPlus.Persistence.Repository
             throw new NotImplementedException();
         }
     }
+
+    //lk
 }
 
