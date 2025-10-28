@@ -1,4 +1,5 @@
 ﻿using KaappaanPlus.Application.Features.Users;
+using KaappaanPlus.Application.Features.Users.DTOs;
 using KaappaanPlus.Application.Features.Users.Requests.Commands;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -44,6 +45,15 @@ namespace KaappaanPlus.WebApi.Controllers
                 UserId = userId
             });
         }
+
+
+        [HttpPut("user/update")]
+        public async Task<IActionResult> UpdateUser([FromBody] UpdateUserDto dto)
+        {
+            await _mediator.Send(new UpdateUserCommand { UpdateUserDto = dto });
+            return Ok(new { Message = "User updated successfully" });
+        }
+
 
         //// ✅ GET: /api/tenantadmin/users
         //[HttpGet("users")]
