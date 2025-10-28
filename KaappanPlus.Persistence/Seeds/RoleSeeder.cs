@@ -11,24 +11,26 @@ namespace KaappanPlus.Persistence.Seeds
 {
     public static class RoleSeeder
     {
-        public static async Task SeedAsync(AppDbContext context)
+        public static async Task SeedRolesAsync(AppDbContext context)
         {
-            if (!await context.Roles.AnyAsync())
-            {
-                var roles = new List<Role>
-                {
-                    new Role("SuperAdmin"),
-                    new Role("TenantAdmin"),
-                    new Role("Citizen"),
-                    new Role("Police"),
-                    new Role("Fire"),
-                    new Role("Traffic"),
-                    new Role("Ambulance")
-                };
+            // ✅ Check if roles already exist
+            if (await context.Roles.AnyAsync())
+                return; // Roles already seeded
 
-                await context.Roles.AddRangeAsync(roles);
-                await context.SaveChangesAsync();
-            }
+            // ✅ Define all roles
+            var roles = new List<Role>
+            {
+                new Role("SuperAdmin"),
+                new Role("TenantAdmin"),
+                new Role("Citizen"),
+                new Role("Police"),
+                new Role("Fire"),
+                new Role("Traffic"),
+                new Role("Ambulance")
+            };
+
+            await context.Roles.AddRangeAsync(roles);
+            await context.SaveChangesAsync();
         }
     }
 }

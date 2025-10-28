@@ -12,18 +12,15 @@ namespace KaappaanPlus.Application.Features.Users.Mappings
     {
         public UserMappingProfile()
         {
-            // Explicitly choose the correct constructor
             CreateMap<CreateUserDto, AppUser>()
-                .ConstructUsing(dto =>
-                    new AppUser(
-                        dto.TenantId,
-                        dto.Name,
-                        dto.Email,
-                        dto.Phone,
-                        BCrypt.Net.BCrypt.HashPassword(dto.Password),
-                        dto.Role
-                    )
-                );
+                .ConstructUsing(dto => new AppUser(
+                    dto.TenantId,
+                    dto.Name,
+                    dto.Email,
+                    dto.Phone,
+                    BCrypt.Net.BCrypt.HashPassword(dto.Password), // secure
+                    dto.Role
+                ));
         }
     }
 }

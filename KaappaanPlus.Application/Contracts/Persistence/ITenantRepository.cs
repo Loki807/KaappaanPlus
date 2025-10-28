@@ -8,6 +8,7 @@ namespace KaappaanPlus.Application.Contracts.Persistence
 {
     public interface ITenantRepository
     {
-        Task<bool> ExistsAsync(Guid tenantId, CancellationToken ct);
+        Task<bool> ExistsAsync(Guid tenantId, CancellationToken cancellationToken = default);
+        Task<bool> ExistsAsync(Guid? tenantId, CancellationToken cancellationToken);
     }
 }

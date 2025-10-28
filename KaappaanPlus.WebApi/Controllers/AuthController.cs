@@ -15,12 +15,14 @@ namespace KaappaanPlus.WebApi.Controllers
         private readonly IMediator _mediator;
         public AuthController(IMediator mediator) => _mediator = mediator;
 
+        // https://localhost:7055/api/auth/login
         [HttpPost("login")]
         public async Task<ActionResult<LoginResponseDto>> Login([FromBody] LoginDto dto)
         {
             var result = await _mediator.Send(new LoginCommand { LoginDto = dto });
             return Ok(result);
         }
+      
 
         [Authorize]  // ✅ must be logged in
         [HttpGet("me")]
@@ -36,6 +38,19 @@ namespace KaappaanPlus.WebApi.Controllers
                 Email = email,
                 Role = role
             });
+        }
+        [Authorize]
+        [HttpPost("change-password")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
+        {
+            if (dto == null)
+                return BadRequest("Invalid request");
+
+            var success = await _mediator.Send(new ChangePasswordCommand { ChangePasswordDto = dto });
+            if (success)
+                return Ok(new { Message = "Password changed successfully" });
+
+            return BadRequest(new { Message = "Password change failed" });
         }
     }
 

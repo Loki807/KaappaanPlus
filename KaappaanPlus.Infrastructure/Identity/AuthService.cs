@@ -4,11 +4,6 @@ using KaappaanPlus.Application.Features.Auth.DTOs;
 using KaappaanPlus.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace KaappaanPlus.Infrastructure.Identity
 {
@@ -22,6 +17,8 @@ namespace KaappaanPlus.Infrastructure.Identity
             _db = db;
             _jwt = jwt;
         }
+
+       
 
         public async Task<LoginResponseDto> LoginAsync(string email, string password)
         {
@@ -39,6 +36,10 @@ namespace KaappaanPlus.Infrastructure.Identity
             if (verification == PasswordVerificationResult.Failed)
                 throw new UnauthorizedAccessException("Invalid email or password");
 
+            if (user.MustChangePassword)
+                throw new UnauthorizedAccessException("Password change required before login");
+
+
             // 3) GET ROLE
             var role = user.UserRoles.First().Role.Name;
 
@@ -53,5 +54,23 @@ namespace KaappaanPlus.Infrastructure.Identity
                 Role = role
             };
         }
+        public async Task ChangePasswordAsync(string email, string oldPassword, string newPassword)
+        {
+            var user = await _db.AppUsers.FirstOrDefaultAsync(u => u.Email == email);
+            if (user == null)
+                throw new UnauthorizedAccessException("User not found");
+
+            var hasher = new PasswordHasher<AppUser>();
+            var verification = hasher.VerifyHashedPassword(user, user.PasswordHash!, oldPassword);
+            if (verification == PasswordVerificationResult.Failed)
+                throw new UnauthorizedAccessException("Old password is incorrect");
+
+            var newHash = hasher.HashPassword(user, newPassword);
+            user.UpdatePassword(newHash);  // ✅ Domain-safe method
+
+            await _db.SaveChangesAsync();
+        }
+
     }
+
 }
