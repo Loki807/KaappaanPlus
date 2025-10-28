@@ -21,7 +21,9 @@ namespace KaappanPlus.Persistence.Repository
 
         public async Task<AppUser?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
         {
-            return await _context.AppUsers.FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
+            return await _context.AppUsers
+                .Include(u => u.UserRoles)
+                .FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower(), cancellationToken);
         }
 
         public async Task CreateUserAsync(AppUser user, CancellationToken cancellationToken = default)
@@ -31,3 +33,4 @@ namespace KaappanPlus.Persistence.Repository
         }
     }
 }
+

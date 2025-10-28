@@ -11,5 +11,13 @@ namespace KaappaanPlus.Application.Contracts.Identity
     {
         Task<LoginResponseDto> LoginAsync(string email, string password);
         // (optional later: Task RegisterAsync(...);  — for user registration)
+
+
+
+
+        Task ChangePasswordAsync(string email, string oldPassword, string newPassword); // ✅ Add this
     }
+
+
+
 }

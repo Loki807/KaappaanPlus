@@ -57,9 +57,22 @@ namespace KaappaanPlus.WebApi
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
+            builder.Logging.ClearProviders();
+            builder.Logging.AddConsole();
+            builder.Logging.AddFile("Logs/app-log-{Date}.txt", fileSizeLimitBytes: 5_000_000, retainedFileCountLimit: 7);
+
 
             var app = builder.Build();
 
+            // ✅ Run all seeders ONCE at startup
+            using (var scope = app.Services.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+                await SeedDataRunner.RunAllAsync(db, logger);
+            }
+
+            app.UseMiddleware<ErrorHandlingMiddleware>();
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
@@ -74,20 +87,8 @@ namespace KaappaanPlus.WebApi
 
             app.MapControllers();
 
-            // ✅ Run Role Seeding once at startup
-            using (var scope = app.Services.CreateScope())
-            {
-                var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-                await RoleSeeder.SeedAsync(dbContext);
-            }
+            
 
-            using (var scope = app.Services.CreateScope())
-            {
-                var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-                await RoleSeeder.SeedAsync(dbContext);
-                await SystemTenantSeeder.SeedSystemTenantAsync(dbContext);  // ✅ FIRST
-                await SuperAdminSeeder.SeedSuperAdminAsync(dbContext);      // ✅ THEN
-            }
 
             app.Run();
         }

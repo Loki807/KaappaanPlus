@@ -23,7 +23,7 @@ namespace KaappaanPlus.WebApi.Controllers
         //https://localhost:7055/api/admin/tenant/create =====================================================================
         // ✅ 1️⃣ SuperAdmin → Create new tenant
         // =====================================================================
-        //[Authorize(Roles = "SuperAdmin")]
+        [Authorize(Roles = "SuperAdmin")]
         [HttpPost("create")]
         public async Task<IActionResult> CreateTenant([FromBody] CreateTenantDto tenantDto)
         {
@@ -40,25 +40,7 @@ namespace KaappaanPlus.WebApi.Controllers
             });
         }
 
-        //https://localhost:7055/api/admin/tenant/user/create =====================================================================
-        // ✅ 2️⃣ TenantAdmin → Create user under their own tenant
-        // =====================================================================
-        [Authorize(Roles = "TenantAdmin,SuperAdmin")] // optional multi-role access
-        [HttpPost("user/create")]
-        public async Task<IActionResult> CreateUser([FromBody] CreateUserDto userDto)
-        {
-            if (userDto == null)
-                return BadRequest("Invalid user data.");
 
-            var command = new CreateUserCommand { UserDto = userDto };
-            var userId = await _mediator.Send(command);
-
-            return Ok(new
-            {
-                Message = "User created successfully",
-                UserId = userId
-            });
-        }
     }
 }
 

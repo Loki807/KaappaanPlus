@@ -62,5 +62,21 @@ namespace KaappaanPlus.Domain.Entities
         // ✅ Activation control
         public void Deactivate() => IsActive = false;
         public void Activate() => IsActive = true;
+
+        public bool MustChangePassword { get; private set; } = false;
+
+        public void RequirePasswordChange() => MustChangePassword = true;
+        public void ClearPasswordChangeRequirement() => MustChangePassword = false;
+
+
+
+        public void UpdatePassword(string newPasswordHash)
+        {
+            PasswordHash = newPasswordHash;
+            ClearPasswordChangeRequirement(); // optional: clear flag automatically
+            SetUpdated("system"); // optional audit trail
+        }
+
+
     }
 }

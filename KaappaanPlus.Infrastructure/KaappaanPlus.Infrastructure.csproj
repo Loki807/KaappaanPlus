@@ -10,7 +10,7 @@
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.10.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.10" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.10">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -23,6 +23,7 @@
   <ItemGroup>
     <ProjectReference Include="..\KaappaanPlus.Application\KaappaanPlus.Application.csproj" />
     <ProjectReference Include="..\KaappaanPlus.Domain\KaappaanPlus.Domain.csproj" />
+    <ProjectReference Include="..\KaappanPlus.Persistence\KaappanPlus.Persistence.csproj" />
   </ItemGroup>
 
 </Project>

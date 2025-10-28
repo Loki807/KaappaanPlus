@@ -1,5 +1,7 @@
 ﻿using KaappaanPlus.Application.Contracts;
+using KaappaanPlus.Application.Contracts.Persistence;
 using KaappanPlus.Persistence.Data;
+using KaappanPlus.Persistence.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,6 +26,8 @@ namespace KaappanPlus.Persistence
             services.AddScoped<IAppDbContext>(provider =>
                 provider.GetRequiredService<AppDbContext>());
 
+            services.AddScoped<KaappaanPlus.Application.Contracts.IUserRepository, UserRepository>();
+            services.AddScoped<ITenantRepository, TenantRepository>();
             return services;
         }
     }
