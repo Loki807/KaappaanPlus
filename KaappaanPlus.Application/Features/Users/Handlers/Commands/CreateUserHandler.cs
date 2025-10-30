@@ -16,13 +16,13 @@ namespace KaappaanPlus.Application.Features.Users.Handlers.Commands
 
     public class CreateUserHandler : IRequestHandler<CreateUserCommand, Guid>
     {
-        private readonly Contracts.IUserRepository _userRepo;
+        private readonly IUserRepository _userRepo;
         private readonly ITenantRepository _tenantRepo;
         private readonly IMapper _mapper;
         private readonly ILogger<CreateUserHandler> _logger;
 
         public CreateUserHandler(
-            Contracts.IUserRepository userRepo,
+            IUserRepository userRepo,
             ITenantRepository tenantRepo,
             IMapper mapper,
             ILogger<CreateUserHandler> logger)

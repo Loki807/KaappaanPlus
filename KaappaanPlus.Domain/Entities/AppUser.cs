@@ -18,7 +18,7 @@ namespace KaappaanPlus.Domain.Entities
         public Tenant Tenant { get; private set; } = default!;
         public ICollection<UserRole> UserRoles { get; private set; } = new List<UserRole>();
 
-        // EF Core needs an empty constructor → keep it protected (not public)
+        // EF Core needs an empty constructor → keep it protected
         private AppUser() { }
 
         // ✅ Basic constructor (without password)
@@ -31,7 +31,7 @@ namespace KaappaanPlus.Domain.Entities
             SetCreated("system");
         }
 
-        // ✅ Full constructor (used by CreateUser flow)
+        // ✅ Full constructor (used for registration or seeding)
         public AppUser(Guid tenantId, string name, string email, string phone, string passwordHash, string role)
         {
             TenantId = tenantId;
@@ -41,6 +41,7 @@ namespace KaappaanPlus.Domain.Entities
             PasswordHash = passwordHash;
             Role = role;
             IsActive = true;
+            MustChangePassword = false; // normal users don't need to change immediately
             SetCreated("system");
         }
 
@@ -63,19 +64,20 @@ namespace KaappaanPlus.Domain.Entities
         public void Deactivate() => IsActive = false;
         public void Activate() => IsActive = true;
 
+        // ✅ Password change rules
         public bool MustChangePassword { get; private set; } = false;
 
         public void RequirePasswordChange() => MustChangePassword = true;
         public void ClearPasswordChangeRequirement() => MustChangePassword = false;
 
-
-
         public void UpdatePassword(string newPasswordHash)
         {
             PasswordHash = newPasswordHash;
-            ClearPasswordChangeRequirement(); // optional: clear flag automatically
-            SetUpdated("system"); // optional audit trail
+            ClearPasswordChangeRequirement(); // remove flag after change
+            SetUpdated("system");
         }
+
+        // ✅ Generic user info update
         public void UpdateInfo(string name, string phone, string role, bool isActive)
         {
             Name = name;
@@ -84,7 +86,5 @@ namespace KaappaanPlus.Domain.Entities
             IsActive = isActive;
             SetUpdated("system");
         }
-
-
     }
 }

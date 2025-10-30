@@ -26,7 +26,7 @@ namespace KaappanPlus.Persistence
             services.AddScoped<IAppDbContext>(provider =>
                 provider.GetRequiredService<AppDbContext>());
 
-            services.AddScoped<KaappaanPlus.Application.Contracts.IUserRepository, UserRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ITenantRepository, TenantRepository>();
             return services;
         }

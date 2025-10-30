@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace KaappanPlus.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class AddMustChangePasswordToAppUser : Migration
+    public partial class month2 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

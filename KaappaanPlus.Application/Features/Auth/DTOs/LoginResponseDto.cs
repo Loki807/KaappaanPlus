@@ -10,5 +10,7 @@ namespace KaappaanPlus.Application.Features.Auth.DTOs
         public string Token { get; set; } = default!;
         public string Name { get; set; } = default!; 
         public string Role { get; set; } = default!;
+
+        public string? Message { get; set; }
     }
 }

@@ -18,59 +18,65 @@ namespace KaappaanPlus.Infrastructure.Identity
             _jwt = jwt;
         }
 
-       
-
+        // ✅ LOGIN FLOW
         public async Task<LoginResponseDto> LoginAsync(string email, string password)
         {
-            // 1) FIND USER by email
             var user = await _db.AppUsers
-                .Include(u => u.UserRoles).ThenInclude(ur => ur.Role)
-                .FirstOrDefaultAsync(u => u.Email == email);
+                .Include(u => u.UserRoles)
+                .ThenInclude(ur => ur.Role)
+                .FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower());
 
             if (user == null)
                 throw new UnauthorizedAccessException("Invalid email or password");
 
-            // 2) VERIFY PASSWORD SECURELY
             var hasher = new PasswordHasher<AppUser>();
-            var verification = hasher.VerifyHashedPassword(user, user.PasswordHash!, password);
-            if (verification == PasswordVerificationResult.Failed)
+            var result = hasher.VerifyHashedPassword(user, user.PasswordHash!, password);
+            if (result == PasswordVerificationResult.Failed)
                 throw new UnauthorizedAccessException("Invalid email or password");
 
             if (user.MustChangePassword)
-                throw new UnauthorizedAccessException("Password change required before login");
+            {
+                return new LoginResponseDto
+                {
+                    Token = string.Empty,
+                    Name = user.Name,
+                    Role = user.Role,
+                    Message = "Password change required before login"
+                };
+            }
 
-
-            // 3) GET ROLE
-            var role = user.UserRoles.First().Role.Name;
-
-            // 4) GENERATE JWT TOKEN
+            var role = user.UserRoles.FirstOrDefault()?.Role?.Name ?? user.Role;
             var token = _jwt.GenerateToken(user, role);
 
-            // 5) RETURN CLEAN RESPONSE
             return new LoginResponseDto
             {
                 Token = token,
                 Name = user.Name,
-                Role = role
+                Role = role,
+                Message = "Login successful"
             };
         }
+
+        // ✅ CHANGE PASSWORD FLOW
         public async Task ChangePasswordAsync(string email, string oldPassword, string newPassword)
         {
-            var user = await _db.AppUsers.FirstOrDefaultAsync(u => u.Email == email);
+            var user = await _db.AppUsers.FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower());
             if (user == null)
                 throw new UnauthorizedAccessException("User not found");
 
             var hasher = new PasswordHasher<AppUser>();
-            var verification = hasher.VerifyHashedPassword(user, user.PasswordHash!, oldPassword);
-            if (verification == PasswordVerificationResult.Failed)
+            var verify = hasher.VerifyHashedPassword(user, user.PasswordHash!, oldPassword);
+            if (verify == PasswordVerificationResult.Failed)
                 throw new UnauthorizedAccessException("Old password is incorrect");
 
             var newHash = hasher.HashPassword(user, newPassword);
-            user.UpdatePassword(newHash);  // ✅ Domain-safe method
+            user.UpdatePassword(newHash);
 
+            // 👇 Mark password change complete
+            user.ClearPasswordChangeRequirement();
+
+            _db.UpdateEntity(user);
             await _db.SaveChangesAsync();
         }
-
     }
-
 }

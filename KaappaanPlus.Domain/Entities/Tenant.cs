@@ -10,7 +10,7 @@ namespace KaappaanPlus.Domain.Entities
     public sealed class Tenant : AuditableEntity
     {
         public string Name { get; private set; } = default!;
-        public string Code { get; private set; } = default!;
+        public string Code { get;  set; } = default!;
 
         public string? AddressLine1 { get; private set; }
         public string? AddressLine2 { get; private set; }

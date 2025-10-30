@@ -1,11 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Net.Http;
-using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -47,6 +43,12 @@ namespace KaappaanPlus.Application.Common.Exceptions
             {
                 _logger.LogWarning("Unauthorized: {Message}", ex.Message);
                 await HandleExceptionAsync(context, HttpStatusCode.Unauthorized, ex.Message);
+            }
+            // ✅ NEW: handle duplicates / already exists cases
+            catch (ConflictException ex)
+            {
+                _logger.LogWarning("Conflict: {Message}", ex.Message);
+                await HandleExceptionAsync(context, HttpStatusCode.Conflict, ex.Message);
             }
             catch (Exception ex)
             {
