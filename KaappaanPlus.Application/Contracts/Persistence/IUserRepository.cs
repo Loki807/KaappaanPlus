@@ -9,7 +9,19 @@ namespace KaappaanPlus.Application.Contracts.Persistence
 {
     public interface IUserRepository
     {
-        Task<bool> EmailExistsAsync(string email, CancellationToken ct);
-        Task<Guid> AddAsync(AppUser user, CancellationToken ct);
+
+        // ✅ Create
+        Task CreateUserAsync(AppUser user, CancellationToken cancellationToken = default);
+
+        // ✅ Read
+        Task<AppUser?> GetByEmailAsync(string email, CancellationToken cancellationToken = default);
+        Task<AppUser?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+        Task<IEnumerable<AppUser>> GetByTenantIdAsync(Guid tenantId, CancellationToken cancellationToken = default);
+
+        // ✅ Update
+        Task UpdateAsync(AppUser user, CancellationToken cancellationToken = default);
+
+        // ✅ Delete
+        Task DeleteAsync(Guid userId, CancellationToken cancellationToken = default);
     }
 }

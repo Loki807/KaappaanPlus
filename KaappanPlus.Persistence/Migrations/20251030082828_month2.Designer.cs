@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KaappanPlus.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251027085145_AddMustChangePasswordToAppUser")]
-    partial class AddMustChangePasswordToAppUser
+    [Migration("20251030082828_month2")]
+    partial class month2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

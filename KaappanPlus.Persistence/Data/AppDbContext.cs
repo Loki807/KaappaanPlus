@@ -26,7 +26,7 @@ namespace KaappanPlus.Persistence.Data
         IQueryable<AppUser> IAppDbContext.AppUsers => AppUsers;
         IQueryable<Role> IAppDbContext.Roles => Roles;
         IQueryable<UserRole> IAppDbContext.UserRoles => UserRoles;
-
+      
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
@@ -36,6 +36,11 @@ namespace KaappanPlus.Persistence.Data
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
             => base.SaveChangesAsync(cancellationToken);
 
+
+        public void UpdateEntity<T>(T entity) where T : class
+        {
+            Set<T>().Update(entity);
+        }
         public async Task AddEntityAsync<T>(T entity, CancellationToken cancellationToken = default)
      where T : class
         {

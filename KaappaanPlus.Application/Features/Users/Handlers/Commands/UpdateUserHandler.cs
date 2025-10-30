@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using KaappaanPlus.Application.Contracts;
+using KaappaanPlus.Application.Contracts.Persistence;
 using KaappaanPlus.Application.Features.Users.Requests.Commands;
 using MediatR;
 using System;

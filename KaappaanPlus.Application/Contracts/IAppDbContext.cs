@@ -8,17 +8,20 @@ using System.Threading.Tasks;
 namespace KaappaanPlus.Application.Contracts
 {
     public interface IAppDbContext
-        {
+    {
             IQueryable<Tenant> Tenants { get; }
             IQueryable<AppUser> AppUsers { get; }
             IQueryable<Role> Roles { get; }
             IQueryable<UserRole> UserRoles { get; }
 
 
-        Task AddEntityAsync<T>(T entity, CancellationToken cancellationToken = default) where T : class;
+            Task AddEntityAsync<T>(T entity, CancellationToken cancellationToken = default) where T : class;
 
-        Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
-        }
+            Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+
+
+        void UpdateEntity<T>(T entity) where T : class;
+    }
        
     
 }

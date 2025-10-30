@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KaappaanPlus.Domain.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,9 @@ namespace KaappaanPlus.Application.Contracts.Persistence
 {
     public interface ITenantRepository
     {
-        Task<bool> ExistsAsync(Guid tenantId, CancellationToken cancellationToken = default);
-        Task<bool> ExistsAsync(Guid? tenantId, CancellationToken cancellationToken);
+        Task<Tenant?> GetByNameOrCityAsync(string name, string city, CancellationToken ct = default);
+        Task<bool> TenantAdminExistsAsync(Guid tenantId, CancellationToken ct = default);
+        Task<Guid> AddAsync(Tenant tenant, CancellationToken ct = default);
+        Task<bool> ExistsAsync(Guid? tenantId, CancellationToken ct = default);
     }
 }

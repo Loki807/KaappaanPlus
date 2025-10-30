@@ -9,33 +9,32 @@ namespace KaappanPlus.Persistence.Seeds
     {
         public static async Task SeedSuperAdminAsync(AppDbContext context)
         {
-            // If SuperAdmin already exists, skip
             if (await context.AppUsers.AnyAsync(u => u.Email == "Kaappaan@gmail.com"))
                 return;
 
-            // ✅ Ensure SYSTEM Tenant exists first
             var systemTenantId = await SystemTenantSeeder.SeedSystemTenantAsync(context);
 
-            // ✅ Hash password safely
-            var hasher = new PasswordHasher<AppUser>();
-            var passwordHash = hasher.HashPassword(null, "2025Lk@");
-
-            // ✅ Create SuperAdmin user with Role
+            // Create user instance first
             var superAdmin = new AppUser(
                 tenantId: systemTenantId,
                 name: "Super Admin",
                 email: "Kaappaan@gmail.com",
                 phone: "0000000000",
-                passwordHash: passwordHash,
+                passwordHash: "", // temporarily empty
                 role: "SuperAdmin"
             );
 
-            // ✅ Assign role relationship
+            var hasher = new PasswordHasher<AppUser>();
+            // ✅ Use user instance instead of null
+            var passwordHash = hasher.HashPassword(superAdmin, "2025Lk@");
+            superAdmin.SetPasswordHash(passwordHash);
+
             var superAdminRole = await context.Roles.FirstAsync(r => r.Name == "SuperAdmin");
             superAdmin.UserRoles.Add(new UserRole(superAdmin.Id, superAdminRole.Id));
 
             await context.AddAsync(superAdmin);
             await context.SaveChangesAsync();
         }
+
     }
 }

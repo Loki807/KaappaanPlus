@@ -1,4 +1,5 @@
 ﻿using KaappaanPlus.Application.Contracts.Persistence;
+using KaappaanPlus.Domain.Entities;
 using KaappanPlus.Persistence.Data;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -18,20 +19,35 @@ namespace KaappanPlus.Persistence.Repository
             _context = context;
         }
 
-        // ✅ Check if tenant exists by ID
-        public async Task<bool> ExistsAsync(Guid tenantId, CancellationToken cancellationToken = default)
+        public async Task<Tenant?> GetByNameOrCityAsync(string name, string city, CancellationToken ct = default)
         {
-            // Handle invalid Guid safely
-            if (tenantId == Guid.Empty)
-                return false;
-
             return await _context.Tenants
-                .AnyAsync(t => t.Id == tenantId, cancellationToken);
+                .AsNoTracking()
+                .FirstOrDefaultAsync(t =>
+                    t.Name.ToLower() == name.ToLower() ||
+                    t.City!.ToLower() == city.ToLower(), ct);
         }
 
-        public Task<bool> ExistsAsync(Guid? tenantId, CancellationToken cancellationToken)
+        public async Task<bool> TenantAdminExistsAsync(Guid tenantId, CancellationToken ct = default)
         {
-            throw new NotImplementedException();
+            return await _context.AppUsers
+                .AnyAsync(u => u.TenantId == tenantId && u.Role == "TenantAdmin", ct);
+        }
+
+        public async Task<Guid> AddAsync(Tenant tenant, CancellationToken ct = default)
+        {
+            await _context.Tenants.AddAsync(tenant, ct);
+            await _context.SaveChangesAsync(ct);
+            return tenant.Id;
+        }
+
+        public async Task<bool> ExistsAsync(Guid? tenantId, CancellationToken ct = default)
+        {
+            if (tenantId == null)
+                return false;
+
+            return await _context.Tenants.AnyAsync(t => t.Id == tenantId, ct);
         }
     }
 }
+
