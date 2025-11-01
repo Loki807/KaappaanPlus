@@ -22,7 +22,7 @@ namespace KaappaanPlus.Domain.Entities
         public string? ContactNumber { get; private set; }
         public string? LogoUrl { get; private set; }
 
-        public bool IsActive { get; private set; } = true;
+        public bool IsActive { get; set; } = true;
 
         private Tenant() { } // EF Core needs this
 

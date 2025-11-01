@@ -1,5 +1,6 @@
 ﻿using KaappaanPlus.Application.Features.Tenants.DTOs;
 using KaappaanPlus.Application.Features.Tenants.Requests.Commands;
+using KaappaanPlus.Application.Features.Tenants.Requests.Queries;
 using KaappaanPlus.Application.Features.Users;
 using KaappaanPlus.Application.Features.Users.Requests.Commands;
 using MediatR;
@@ -40,7 +41,46 @@ namespace KaappaanPlus.WebApi.Controllers
             });
         }
 
+        // ✅ GET ALL
+        [Authorize(Roles = "SuperAdmin")]
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAllTenants()
+        {
+            var result = await _mediator.Send(new GetAllTenantsQuery());
+            return Ok(result);
+        }
+
+        // ✅ GET BY ID
+        [Authorize(Roles = "SuperAdmin")]
+        [HttpGet("{id:guid}")]
+        public async Task<IActionResult> GetTenantById(Guid id)
+        {
+            var tenant = await _mediator.Send(new GetTenantByIdQuery { Id = id });
+            if (tenant == null) return NotFound(new { message = "Tenant not found" });
+            return Ok(tenant);
+        }
+
+        // ✅ UPDATE
+        [Authorize(Roles = "SuperAdmin")]
+        [HttpPut("update/{id:guid}")]
+        public async Task<IActionResult> UpdateTenant(Guid id, [FromBody] UpdateTenantDto dto)
+        {
+            dto.Id = id;
+            await _mediator.Send(new UpdateTenantCommand { TenantDto = dto });
+            return Ok(new { message = "Tenant updated successfully" });
+        }
+
+        // ✅ DELETE
+        [Authorize(Roles = "SuperAdmin")]
+        [HttpDelete("delete/{id:guid}")]
+        public async Task<IActionResult> DeleteTenant(Guid id)
+        {
+            await _mediator.Send(new DeleteTenantCommand { Id = id });
+            return Ok(new { message = "Tenant deleted successfully  or isactive false" });
+        }
+
 
     }
 }
 
+ 

@@ -19,13 +19,33 @@ namespace KaappanPlus.Persistence.Repository
             _context = context;
         }
 
-        public async Task<Tenant?> GetByNameOrCityAsync(string name, string city, CancellationToken ct = default)
+        public async Task<Guid> AddAsync(Tenant tenant, CancellationToken ct = default)
+        {
+            await _context.Tenants.AddAsync(tenant, ct);
+            await _context.SaveChangesAsync(ct);
+            return tenant.Id;
+        }
+
+        public async Task<Tenant?> GetByIdAsync(Guid id, CancellationToken ct = default)
+        {
+            return await _context.Tenants.AsNoTracking()
+                .FirstOrDefaultAsync(t => t.Id == id, ct);
+        }
+
+        public async Task<IEnumerable<Tenant>> GetAllAsync(CancellationToken ct = default)
         {
             return await _context.Tenants
                 .AsNoTracking()
+                .OrderBy(t => t.Name)
+                .ToListAsync(ct);
+        }
+
+        public async Task<Tenant?> GetByNameOrCityAsync(string name, string city, CancellationToken ct = default)
+        {
+            return await _context.Tenants
                 .FirstOrDefaultAsync(t =>
                     t.Name.ToLower() == name.ToLower() ||
-                    t.City!.ToLower() == city.ToLower(), ct);
+                    t.City.ToLower() == city.ToLower(), ct);
         }
 
         public async Task<bool> TenantAdminExistsAsync(Guid tenantId, CancellationToken ct = default)
@@ -34,19 +54,28 @@ namespace KaappanPlus.Persistence.Repository
                 .AnyAsync(u => u.TenantId == tenantId && u.Role == "TenantAdmin", ct);
         }
 
-        public async Task<Guid> AddAsync(Tenant tenant, CancellationToken ct = default)
+        public async Task UpdateAsync(Tenant tenant, CancellationToken ct = default)
         {
-            await _context.Tenants.AddAsync(tenant, ct);
+            _context.Tenants.Update(tenant);
             await _context.SaveChangesAsync(ct);
-            return tenant.Id;
         }
+
+        public async Task DeleteAsync(Guid id, CancellationToken ct = default)
+        {
+            var tenant = await _context.Tenants.FindAsync(new object[] { id }, ct);
+            if (tenant != null)
+            {
+                tenant.IsActive = false;
+                _context.Tenants.Update(tenant);
+                await _context.SaveChangesAsync(ct);
+            }
+        }
+
 
         public async Task<bool> ExistsAsync(Guid? tenantId, CancellationToken ct = default)
         {
-            if (tenantId == null)
-                return false;
-
-            return await _context.Tenants.AnyAsync(t => t.Id == tenantId, ct);
+            if (tenantId == null) return false;
+            return await _context.Tenants.AnyAsync(t => t.Id == tenantId.Value, ct);
         }
     }
 }
