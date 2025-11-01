@@ -13,10 +13,17 @@ namespace KaappaanPlus.Application.Features.Tenants.Mappings
     {
         public TenantMappingProfile()
         {
-            // ✅ Map CreateTenantDto -> Tenant entity
+            // 🧱 Create
             CreateMap<CreateTenantDto, Tenant>()
-                .ForMember(dest => dest.Code, opt => opt.Ignore());
-            // Code is AUTO-GENERATED — do NOT map from DTO
+                .ForMember(dest => dest.Code, opt => opt.Ignore()); // generated automatically
+
+            // 🔁 Update
+            CreateMap<UpdateTenantDto, Tenant>()
+                .ForMember(dest => dest.Code, opt => opt.Ignore())
+                .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => src.IsActive));
+
+            // 📤 Read (Entity → DTO)
+            CreateMap<Tenant, TenantDto>();
         }
     }
 }

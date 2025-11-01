@@ -32,9 +32,4 @@
     <ProjectReference Include="..\KaappaanPlus.Domain\KaappaanPlus.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Features\Tenants\Handlers\Queries\" />
-    <Folder Include="Features\Tenants\Requests\Queries\" />
-  </ItemGroup>
-
 </Project>
