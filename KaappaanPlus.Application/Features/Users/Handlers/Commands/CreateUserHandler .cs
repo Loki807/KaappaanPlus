@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
-using KaappaanPlus.Application.Contracts;
 using KaappaanPlus.Application.Contracts.Persistence;
 using KaappaanPlus.Application.Features.Users.Requests.Commands;
 using KaappaanPlus.Domain.Entities;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -13,7 +13,6 @@ using System.Threading.Tasks;
 
 namespace KaappaanPlus.Application.Features.Users.Handlers.Commands
 {
-
     public class CreateUserHandler : IRequestHandler<CreateUserCommand, Guid>
     {
         private readonly IUserRepository _userRepo;
@@ -35,25 +34,23 @@ namespace KaappaanPlus.Application.Features.Users.Handlers.Commands
 
         public async Task<Guid> Handle(CreateUserCommand request, CancellationToken cancellationToken)
         {
-            // ✅ 1) Map DTO → Entity
             var user = _mapper.Map<AppUser>(request.UserDto);
 
-            // ✅ 2) Tenant validation (via Repository)
-            var tenantExists = await _tenantRepo.ExistsAsync(user.TenantId, cancellationToken);
-            if (!tenantExists)
+            if (!await _tenantRepo.ExistsAsync(user.TenantId, cancellationToken))
                 throw new KeyNotFoundException($"Tenant not found for ID: {user.TenantId}");
 
-            // ✅ 3) Email duplication check
             var existing = await _userRepo.GetByEmailAsync(user.Email, cancellationToken);
             if (existing != null)
                 throw new InvalidOperationException($"User with email {user.Email} already exists.");
 
-            // ✅ 4) Create
+            var hasher = new PasswordHasher<AppUser>();
+            var hashedPassword = hasher.HashPassword(user, request.UserDto.Password);
+            user.SetPasswordHash(hashedPassword);
+
             await _userRepo.CreateUserAsync(user, cancellationToken);
-            _logger.LogInformation("✅ User {Email} created under Tenant {TenantId}", user.Email, user.TenantId);
+            _logger.LogInformation("✅ User {Email} created for Tenant {TenantId}", user.Email, user.TenantId);
 
             return user.Id;
         }
     }
 }
-

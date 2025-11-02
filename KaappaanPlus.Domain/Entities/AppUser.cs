@@ -12,7 +12,7 @@ namespace KaappaanPlus.Domain.Entities
         public string Phone { get; private set; } = default!;
         public string? PasswordHash { get; private set; }    // never store plain password
         public string Role { get; private set; } = default!;
-        public bool IsActive { get; private set; } = true;
+        public bool IsActive { get;  set; } = true;
 
         // Navigation
         public Tenant Tenant { get; private set; } = default!;

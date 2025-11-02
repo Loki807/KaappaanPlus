@@ -6,10 +6,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KaappaanPlus.Application.Features.Users.Requests.Query
+namespace KaappaanPlus.Application.Features.Users.Requests.Commands
 {
-    public class GetUsersByTenantQuery : IRequest<List<UserResponseDto>>
+    public class CreateUserCommand : IRequest<Guid>
     {
-        public Guid TenantId { get; set; }
+        public CreateUserDto UserDto { get; set; } = default!;
     }
 }

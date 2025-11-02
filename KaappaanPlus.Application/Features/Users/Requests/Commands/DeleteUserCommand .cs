@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace KaappaanPlus.Application.Features.Users.Requests.Commands
 {
-    public class CreateUserCommand : IRequest<Guid>
+    public class DeleteUserCommand : IRequest
     {
-        public CreateUserDto UserDto { get; set; } = default!;
+        public Guid Id { get; set; }
     }
 }

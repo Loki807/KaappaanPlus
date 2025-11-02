@@ -10,8 +10,8 @@ namespace KaappaanPlus.Application.Features.Users.DTOs
     {
         public Guid Id { get; set; }
         public string Name { get; set; } = default!;
-        public string Phone { get; set; } = default!;
-        public string Role { get; set; } = default!;
+        public string? Phone { get; set; }
+        public string? Role { get; set; }
         public bool IsActive { get; set; } = true;
     }
 }
