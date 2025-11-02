@@ -6,10 +6,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KaappaanPlus.Application.Features.Users.Requests.Commands
+namespace KaappaanPlus.Application.Features.Users.Requests.Query
 {
-    public class UpdateUserCommand : IRequest<Unit>
+    public class GetUserByIdQuery : IRequest<UserDto?>
     {
-        public UpdateUserDto UpdateUserDto { get; set; } = default!;
+        public Guid Id { get; set; }
     }
 }

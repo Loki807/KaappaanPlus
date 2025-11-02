@@ -1,8 +1,8 @@
 ﻿using KaappaanPlus.Application.Features.Tenants.DTOs;
 using KaappaanPlus.Application.Features.Tenants.Requests.Commands;
 using KaappaanPlus.Application.Features.Tenants.Requests.Queries;
-using KaappaanPlus.Application.Features.Users;
-using KaappaanPlus.Application.Features.Users.Requests.Commands;
+
+
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;

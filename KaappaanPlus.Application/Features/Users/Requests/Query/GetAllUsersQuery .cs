@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 
 namespace KaappaanPlus.Application.Features.Users.Requests.Query
 {
-    public class GetUserByIdQuery : IRequest<UserResponseDto>
+    public class GetAllUsersQuery : IRequest<List<UserDto>>
     {
-        public Guid Id { get; set; }
+        public Guid TenantId { get; set; }
     }
 }

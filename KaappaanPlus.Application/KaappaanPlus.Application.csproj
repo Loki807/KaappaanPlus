@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Features\Users\.Validators\CreateUserDtoValidator.cs" />
-    <Compile Include="Features\Users\.Validators\UpdateUserDtoValidator .cs" />
+    <Compile Include="Features\Users\.Validators\CreateUserValidator .cs" />
+    <Compile Include="Features\Users\.Validators\UpdateUserValidator.cs" />
   </ItemGroup>
 
   <ItemGroup>
