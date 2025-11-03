@@ -86,5 +86,6 @@ namespace KaappaanPlus.Domain.Entities
             IsActive = isActive;
             SetUpdated("system");
         }
+        public bool IsFirstLogin { get; set; } = true;
     }
 }
