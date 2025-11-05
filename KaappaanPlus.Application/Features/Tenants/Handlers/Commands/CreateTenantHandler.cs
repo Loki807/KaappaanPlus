@@ -39,6 +39,7 @@ namespace KaappaanPlus.Application.Features.Tenants.Handlers.Commands
             var tenant = _mapper.Map<Tenant>(request.TenantDto);
 
             // ✅ Generate Code before saving
+            
             tenant.Code = $"{tenant.City?.Substring(0, 3).ToUpper() ?? "TEN"}_TENANT"; // 👈 Add this line
 
             // ✅ Check duplicate

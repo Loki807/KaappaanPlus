@@ -20,6 +20,13 @@ namespace KaappanPlus.Persistence.Data
         public DbSet<AppUser> AppUsers { get; set; } = default!;
         public DbSet<Role> Roles { get; set; } = default!;
         public DbSet<UserRole> UserRoles { get; set; } = default!;
+        public DbSet<Alert> Alerts { get; set; } = default!;
+        public DbSet<AlertResponder> AlertResponders { get; set; } = default!;
+        public DbSet<LocationLog> LocationLogs { get; set; } = default!;
+
+        IQueryable<Alert> IAppDbContext.Alerts => Alerts;
+        IQueryable<AlertResponder> IAppDbContext.AlertResponders => AlertResponders;
+        IQueryable<LocationLog> IAppDbContext.LocationLogs => LocationLogs;
 
         // ✅ Clean architecture returns as IQueryable automatically
         IQueryable<Tenant> IAppDbContext.Tenants => Tenants;
@@ -42,7 +49,7 @@ namespace KaappanPlus.Persistence.Data
             Set<T>().Update(entity);
         }
         public async Task AddEntityAsync<T>(T entity, CancellationToken cancellationToken = default)
-     where T : class
+        where T : class
         {
             await Set<T>().AddAsync(entity, cancellationToken);
         }
