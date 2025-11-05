@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace KaappanPlus.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class ee : Migration
+    public partial class oneonly : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -89,7 +89,7 @@ namespace KaappanPlus.Persistence.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Type = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Latitude = table.Column<double>(type: "float", nullable: false),
                     Longitude = table.Column<double>(type: "float", nullable: false),
@@ -108,6 +108,11 @@ namespace KaappanPlus.Persistence.Migrations
                         principalTable: "AppUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Alerts_AppUsers_CreatedByUserId",
+                        column: x => x.CreatedByUserId,
+                        principalTable: "AppUsers",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Alerts_Tenants_TenantId",
                         column: x => x.TenantId,
@@ -171,9 +176,8 @@ namespace KaappanPlus.Persistence.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     AlertId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ResponderUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ResponseStatus = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ResponderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ResponseStatus = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -192,8 +196,7 @@ namespace KaappanPlus.Persistence.Migrations
                         name: "FK_AlertResponders_AppUsers_ResponderId",
                         column: x => x.ResponderId,
                         principalTable: "AppUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -210,6 +213,11 @@ namespace KaappanPlus.Persistence.Migrations
                 name: "IX_Alerts_CreatedById",
                 table: "Alerts",
                 column: "CreatedById");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Alerts_CreatedByUserId",
+                table: "Alerts",
+                column: "CreatedByUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Alerts_TenantId",

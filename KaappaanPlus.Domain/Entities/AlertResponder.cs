@@ -9,25 +9,30 @@ namespace KaappaanPlus.Domain.Entities
 {
     public class AlertResponder : AuditableEntity
     {
-        public Guid AlertId { get; private set; }
-        public Guid ResponderUserId { get; private set; }
-        public string? ResponseStatus { get; private set; } = "NotResponded"; // NotResponded / Accepted / Completed
+        public Guid Id { get; private set; } = Guid.NewGuid();
 
-        // Navigation
+        // ✅ Proper FK columns
+        public Guid AlertId { get; private set; }
+        public Guid ResponderId { get; private set; }
+
+        public string? ResponseStatus { get; private set; }
+
+        // ✅ Navigation properties
         public Alert Alert { get; private set; } = default!;
         public AppUser Responder { get; private set; } = default!;
 
         private AlertResponder() { }
 
-        public AlertResponder(Guid alertId, Guid responderUserId)
+        public AlertResponder(Guid alertId, Guid responderId, string? status = null)
         {
             AlertId = alertId;
-            ResponderUserId = responderUserId;
+            ResponderId = responderId;
+            ResponseStatus = status ?? "Pending";
         }
 
-        public void UpdateResponse(string status)
+        public void UpdateStatus(string newStatus)
         {
-            ResponseStatus = status;
+            ResponseStatus = newStatus;
         }
     }
 }

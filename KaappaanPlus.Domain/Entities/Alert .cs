@@ -20,6 +20,7 @@ namespace KaappaanPlus.Domain.Entities
         // Navigation
         public Tenant Tenant { get; private set; } = default!;
         public AppUser CreatedBy { get; private set; } = default!;
+        
         public ICollection<AlertResponder> Responders { get; private set; } = new List<AlertResponder>();
 
         private Alert() { } // EF Core needs this

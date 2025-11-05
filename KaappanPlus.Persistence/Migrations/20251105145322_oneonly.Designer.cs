@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KaappanPlus.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251105070918_ee")]
-    partial class ee
+    [Migration("20251105145322_oneonly")]
+    partial class oneonly
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -58,7 +58,8 @@ namespace KaappanPlus.Persistence.Migrations
 
                     b.Property<string>("Type")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -69,6 +70,8 @@ namespace KaappanPlus.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedById");
+
+                    b.HasIndex("CreatedByUserId");
 
                     b.HasIndex("TenantId");
 
@@ -93,11 +96,9 @@ namespace KaappanPlus.Persistence.Migrations
                     b.Property<Guid>("ResponderId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ResponderUserId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("ResponseStatus")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -320,6 +321,12 @@ namespace KaappanPlus.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("KaappaanPlus.Domain.Entities.AppUser", null)
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.HasOne("KaappaanPlus.Domain.Entities.Tenant", "Tenant")
                         .WithMany()
                         .HasForeignKey("TenantId")
@@ -342,7 +349,7 @@ namespace KaappanPlus.Persistence.Migrations
                     b.HasOne("KaappaanPlus.Domain.Entities.AppUser", "Responder")
                         .WithMany()
                         .HasForeignKey("ResponderId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Alert");
