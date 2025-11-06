@@ -32,4 +32,9 @@
     <ProjectReference Include="..\KaappaanPlus.Domain\KaappaanPlus.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Features\Citizens\Mappings\" />
+    <Folder Include="Features\Citizens\Validators\" />
+  </ItemGroup>
+
 </Project>
