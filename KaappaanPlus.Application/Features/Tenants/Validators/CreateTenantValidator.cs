@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using KaappaanPlus.Application.Features.Tenants.DTOs;
+using KaappaanPlus.Application.Features.Tenants.Requests.Commands;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,29 +9,23 @@ using System.Threading.Tasks;
 
 namespace KaappaanPlus.Application.Features.Tenants.Validators
 {
-    public class CreateTenantValidator : AbstractValidator<CreateTenantDto>
+    public class CreateTenantValidator : AbstractValidator<CreateTenantCommand>
     {
         public CreateTenantValidator()
         {
-            RuleFor(x => x.Name)
-                .NotEmpty().WithMessage("Tenant name is required")
-                .MaximumLength(100).WithMessage("Name cannot exceed 100 characters");
+            RuleFor(x => x.TenantDto.Name)
+                .NotEmpty().WithMessage("Tenant name is required.");
 
-            RuleFor(x => x.City)
-                .NotEmpty().WithMessage("City is required")
-                .MaximumLength(100);
+            RuleFor(x => x.TenantDto.Code)
+                .NotEmpty().WithMessage("Tenant code is required.");
 
-            RuleFor(x => x.ContactNumber)
-                .NotEmpty().WithMessage("Contact number is required")
-                .Matches(@"^[0-9]{10}$").WithMessage("Contact number must be 10 digits");
+            RuleFor(x => x.TenantDto.City)
+                .NotEmpty().WithMessage("City is required.");
 
-            RuleFor(x => x.AddressLine1)
-                .NotEmpty().WithMessage("Address is required");
-
-            RuleFor(x => x.PostalCode)
-                .MaximumLength(10)
-                .When(x => !string.IsNullOrWhiteSpace(x.PostalCode))
-                .WithMessage("Postal code cannot exceed 10 characters");
+            RuleFor(x => x.TenantDto.ServiceType)
+                .NotEmpty().WithMessage("ServiceType is required.")
+                .Must(s => new[] { "Police", "Fire", "Ambulance" }.Contains(s))
+                .WithMessage("ServiceType must be one of: Police, Fire, or Ambulance.");
         }
     }
 }

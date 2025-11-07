@@ -7,10 +7,11 @@ using System.Threading.Tasks;
 
 namespace KaappaanPlus.Domain.Entities
 {
+
     public sealed class Tenant : AuditableEntity
     {
         public string Name { get; private set; } = default!;
-        public string Code { get;  set; } = default!;
+        public string Code { get; set; } = default!;
 
         public string? AddressLine1 { get; private set; }
         public string? AddressLine2 { get; private set; }
@@ -21,6 +22,9 @@ namespace KaappaanPlus.Domain.Entities
 
         public string? ContactNumber { get; private set; }
         public string? LogoUrl { get; private set; }
+
+        // 🆕 Add this line
+        public string ServiceType { get; set; } = default!;  // e.g. "Police", "Fire", "Ambulance"
 
         public bool IsActive { get; set; } = true;
 
@@ -35,6 +39,7 @@ namespace KaappaanPlus.Domain.Entities
             string? stateOrDistrict,
             string? postalCode,
             string? contactNumber,
+            string? serviceType,   // 🆕 added parameter
             string? logoUrl = null
         )
         {
@@ -47,11 +52,11 @@ namespace KaappaanPlus.Domain.Entities
             PostalCode = postalCode;
             ContactNumber = contactNumber;
             LogoUrl = logoUrl;
+            ServiceType = serviceType ?? "General"; // fallback if missing
 
-            SetCreated("system"); // temp → will use logged-in user later
+            SetCreated("system");
         }
 
-        // ✅ PROPER Address update method
         public void UpdateAddress(
             string? addressLine1,
             string? addressLine2,
@@ -65,11 +70,9 @@ namespace KaappaanPlus.Domain.Entities
             City = city;
             StateOrDistrict = stateOrDistrict;
             PostalCode = postalCode;
-
             SetUpdated("system");
         }
 
-        // ✅ PROPER Contact/Logo update method
         public void UpdateContact(string? phone, string? logoUrl)
         {
             ContactNumber = phone;
@@ -77,7 +80,13 @@ namespace KaappaanPlus.Domain.Entities
             SetUpdated("system");
         }
 
+        public void UpdateServiceType(string serviceType)
+        {
+            ServiceType = serviceType;
+            SetUpdated("system");
+        }
+
         public void Deactivate() => IsActive = false;
-        public void Activate() => IsActive = true;  // optional reverse action
+        public void Activate() => IsActive = true;
     }
 }

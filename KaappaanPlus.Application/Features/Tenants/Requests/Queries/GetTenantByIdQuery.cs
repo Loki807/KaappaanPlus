@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace KaappaanPlus.Application.Features.Tenants.Requests.Queries
 {
-    public class GetTenantByIdQuery : IRequest<TenantDto?>
+    public class GetTenantByIdQuery : IRequest<TenantDto>
     {
         public Guid Id { get; set; }
     }

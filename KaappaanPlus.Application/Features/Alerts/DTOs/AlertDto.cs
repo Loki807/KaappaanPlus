@@ -9,13 +9,12 @@ namespace KaappaanPlus.Application.Features.Alerts.DTOs
     public class AlertDto
     {
         public Guid Id { get; set; }
-        public string Type { get; set; } = default!;
-        public string? Description { get; set; }
-        public double Latitude { get; set; }
-        public double Longitude { get; set; }
+        public string AlertType { get; set; } = default!;
+        public string Description { get; set; } = default!;
+        public string Location { get; set; } = default!;
         public string Status { get; set; } = default!;
-        public DateTime CreatedAt { get; set; }
-        public Guid TenantId { get; set; }
-        public Guid CreatedByUserId { get; set; }
+        public string CitizenName { get; set; } = default!;
+        public string TenantName { get; set; } = default!;
+        public DateTime ReportedAt { get; set; }
     }
 }

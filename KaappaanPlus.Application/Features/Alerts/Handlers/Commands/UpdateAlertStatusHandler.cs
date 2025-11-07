@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace KaappaanPlus.Application.Features.Alerts.Handlers.Commands
 {
-    public class UpdateAlertStatusHandler : IRequestHandler<UpdateAlertStatusCommand>
+    public class UpdateAlertStatusHandler : IRequestHandler<UpdateAlertStatusCommand, Unit>
     {
         private readonly IAlertRepository _alertRepo;
         private readonly ILogger<UpdateAlertStatusHandler> _logger;
@@ -23,13 +23,19 @@ namespace KaappaanPlus.Application.Features.Alerts.Handlers.Commands
 
         public async Task<Unit> Handle(UpdateAlertStatusCommand request, CancellationToken cancellationToken)
         {
-            var alert = await _alertRepo.GetByIdAsync(request.Id, cancellationToken);
-            if (alert == null) throw new KeyNotFoundException($"Alert {request.Id} not found.");
+            var alert = await _alertRepo.GetByIdAsync(request.AlertId);
+            if (alert == null)
+                throw new Exception("Alert not found.");
+
+            // ✅ Allowed status values: Pending / InProgress / Resolved
+            var validStatuses = new[] { "Pending", "InProgress", "Resolved" };
+            if (!validStatuses.Contains(request.Status))
+                throw new Exception("Invalid status. Use: Pending, InProgress, or Resolved.");
 
             alert.UpdateStatus(request.Status);
-            await _alertRepo.UpdateAsync(alert, cancellationToken);
+            await _alertRepo.UpdateAsync(alert);
 
-            _logger.LogInformation("✅ Alert {Id} status updated to {Status}", request.Id, request.Status);
+            _logger.LogInformation($"Alert {request.AlertId} updated to status: {request.Status}");
             return Unit.Value;
         }
     }

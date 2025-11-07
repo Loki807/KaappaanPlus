@@ -13,6 +13,12 @@ namespace KaappaanPlus.Application.Contracts.Persistence
         Task<bool> ExistsByEmailAsync(string email);
         Task<IEnumerable<Citizen>> GetAllAsync();
         Task UpdateAsync(Citizen citizen);
+
+        Task<Citizen?> GetByIdAsync(Guid id);
+
+        Task DeleteAsync(Citizen citizen);
+
+        
     }
 
 }

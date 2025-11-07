@@ -10,41 +10,45 @@ using System.Threading.Tasks;
 
 namespace KaappanPlus.Persistence.Repository
 {
-    public class AlertRepository : IAlertRepository
+    public class AlertRepository : GenericRepository<Alert>, IAlertRepository
     {
-        private readonly AppDbContext _context;
-
-        public AlertRepository(AppDbContext context) => _context = context;
-
-        public async Task<Guid> AddAsync(Alert alert, CancellationToken ct = default)
+        private readonly AppDbContext _alertContext;
+        public AlertRepository(AppDbContext context) : base(context)
         {
-            await _context.Alerts.AddAsync(alert, ct);
-            await _context.SaveChangesAsync(ct);
-            return alert.Id;
+            _alertContext = context;
         }
 
-        public async Task<Alert?> GetByIdAsync(Guid id, CancellationToken ct = default)
-            => await _context.Alerts
-                .Include(a => a.Responders)
-                .FirstOrDefaultAsync(a => a.Id == id, ct);
-
-        public async Task<IEnumerable<Alert>> GetAllAsync(CancellationToken ct = default)
-            => await _context.Alerts.AsNoTracking().ToListAsync(ct);
-
-        public async Task UpdateAsync(Alert alert, CancellationToken ct = default)
+        public async Task<List<Alert>> GetAlertsByTenantAsync(Guid tenantId)
         {
-            _context.Alerts.Update(alert);
-            await _context.SaveChangesAsync(ct);
+            return await _context.Alerts
+                .Include(a => a.Citizen)
+                .ThenInclude(c => c.AppUser)
+                .Include(a => a.Tenant)
+                .Where(a => a.TenantId == tenantId)
+                .OrderByDescending(a => a.ReportedAt)
+                .ToListAsync();
         }
 
-        public async Task DeleteAsync(Guid id, CancellationToken ct = default)
+        public async Task<List<Alert>> GetAlertsByCitizenAsync(Guid citizenId)
         {
-            var alert = await _context.Alerts.FindAsync(new object[] { id }, ct);
-            if (alert != null)
-            {
-                _context.Alerts.Remove(alert);
-                await _context.SaveChangesAsync(ct);
-            }
+            return await _context.Alerts
+                .Include(a => a.Citizen)
+                .ThenInclude(c => c.AppUser)
+                .Include(a => a.Tenant)
+                .Where(a => a.CitizenId == citizenId)
+                .OrderByDescending(a => a.ReportedAt)
+                .ToListAsync();
+        }
+
+        public async Task<List<Alert>> GetAlertsByStatusAsync(Guid tenantId, string status)
+        {
+            return await _context.Alerts
+                .Include(a => a.Citizen)
+                .ThenInclude(c => c.AppUser)
+                .Include(a => a.Tenant)
+                .Where(a => a.TenantId == tenantId && a.Status == status)
+                .OrderByDescending(a => a.ReportedAt)
+                .ToListAsync();
         }
     }
 }

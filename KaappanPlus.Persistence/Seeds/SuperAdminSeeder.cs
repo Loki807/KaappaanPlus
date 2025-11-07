@@ -14,18 +14,17 @@ namespace KaappanPlus.Persistence.Seeds
 
             var systemTenantId = await SystemTenantSeeder.SeedSystemTenantAsync(context);
 
-            // Create user instance first
+            // Create SuperAdmin user
             var superAdmin = new AppUser(
                 tenantId: systemTenantId,
                 name: "Super Admin",
                 email: "Kaappaan@gmail.com",
                 phone: "0000000000",
-                passwordHash: "", // temporarily empty
+                passwordHash: "",
                 role: "SuperAdmin"
             );
 
             var hasher = new PasswordHasher<AppUser>();
-            // ✅ Use user instance instead of null
             var passwordHash = hasher.HashPassword(superAdmin, "2025Lk@");
             superAdmin.SetPasswordHash(passwordHash);
 
@@ -35,6 +34,5 @@ namespace KaappanPlus.Persistence.Seeds
             await context.AddAsync(superAdmin);
             await context.SaveChangesAsync();
         }
-
     }
 }

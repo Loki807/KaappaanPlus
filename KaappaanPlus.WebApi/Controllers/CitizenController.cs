@@ -1,6 +1,8 @@
 ﻿using KaappaanPlus.Application.Features.Citizens.DTOs;
 using KaappaanPlus.Application.Features.Citizens.Requests.Commands;
+using KaappaanPlus.Application.Features.Citizens.Requests.Quries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,6 +22,40 @@ namespace KaappaanPlus.WebApi.Controllers
             var id = await _mediator.Send(new RegisterCitizenCommand { Citizen = dto });
             return Ok(new { message = "Citizen registered successfully ✅", userId = id });
         }
+
+        [HttpPut("update/{id}")]
+        public async Task<IActionResult> Update(Guid id, [FromBody] UpdateCitizenDto dto)
+        {
+            if (id != dto.Id)
+                return BadRequest("ID mismatch.");
+
+            await _mediator.Send(new UpdateCitizenCommand { CitizenDto = dto });
+            return Ok(new { Message = "Citizen & AppUser updated successfully ✅" });
+        }
+
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(Guid id)
+        {
+            var citizen = await _mediator.Send(new GetCitizenByIdQuery { Id = id });
+            return Ok(citizen);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var citizens = await _mediator.Send(new GetAllCitizensQuery());
+            return Ok(citizens);
+        }
+
+        [HttpDelete("{id}")]
+       // [Authorize] // optional — require token
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            await _mediator.Send(new DeleteCitizenCommand { Id = id });
+            return Ok(new { Message = "Citizen and linked AppUser deleted successfully ✅" });
+        }
+
 
     }
 }

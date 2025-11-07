@@ -25,6 +25,7 @@ namespace KaappanPlus.Persistence.Repository
             await _context.SaveChangesAsync();
         }
 
+       
         public Task<bool> ExistsByEmailAsync(string email)
         {
             throw new NotImplementedException();
@@ -45,8 +46,8 @@ namespace KaappanPlus.Persistence.Repository
                 .FirstOrDefaultAsync(c => c.AppUserId == appUserId);
         }
 
-       
-
+        public async Task<Citizen?> GetByIdAsync(Guid id)
+              => await _context.Citizens.FirstOrDefaultAsync(c => c.Id == id);
 
         public async Task UpdateAsync(Citizen citizen)
         {
@@ -54,7 +55,16 @@ namespace KaappanPlus.Persistence.Repository
             await _context.SaveChangesAsync();
         }
 
+        public async Task DeleteAsync(Citizen citizen)
+        {
+            _context.Citizens.Remove(citizen);
+            await _context.SaveChangesAsync();
+     
         
+        }
+
+
     }
+
 
 }

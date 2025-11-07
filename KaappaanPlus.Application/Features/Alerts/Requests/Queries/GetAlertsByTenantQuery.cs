@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 
 namespace KaappaanPlus.Application.Features.Alerts.Requests.Queries
 {
-    public class GetAlertByIdQuery : IRequest<AlertDto>
+    public class GetAlertsByTenantQuery : IRequest<List<AlertDto>>
     {
-        public Guid Id { get; set; }
+        public Guid TenantId { get; set; }
     }
 }

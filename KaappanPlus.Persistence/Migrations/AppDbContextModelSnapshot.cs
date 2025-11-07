@@ -28,35 +28,40 @@ namespace KaappanPlus.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("AlertType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<Guid>("CitizenId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("CreatedById")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("CreatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Description")
+                    b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("Latitude")
-                        .HasColumnType("float");
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
 
-                    b.Property<double>("Longitude")
-                        .HasColumnType("float");
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<DateTime>("ReportedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -66,13 +71,11 @@ namespace KaappanPlus.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("CreatedByUserId");
+                    b.HasIndex("CitizenId");
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("Alerts");
+                    b.ToTable("Alerts", (string)null);
                 });
 
             modelBuilder.Entity("KaappaanPlus.Domain.Entities.AlertResponder", b =>
@@ -318,6 +321,10 @@ namespace KaappanPlus.Persistence.Migrations
                     b.Property<string>("PostalCode")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ServiceType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("StateOrDistrict")
                         .HasColumnType("nvarchar(max)");
 
@@ -349,25 +356,19 @@ namespace KaappanPlus.Persistence.Migrations
 
             modelBuilder.Entity("KaappaanPlus.Domain.Entities.Alert", b =>
                 {
-                    b.HasOne("KaappaanPlus.Domain.Entities.AppUser", "CreatedBy")
+                    b.HasOne("KaappaanPlus.Domain.Entities.Citizen", "Citizen")
                         .WithMany()
-                        .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("KaappaanPlus.Domain.Entities.AppUser", null)
-                        .WithMany()
-                        .HasForeignKey("CreatedByUserId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .HasForeignKey("CitizenId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("KaappaanPlus.Domain.Entities.Tenant", "Tenant")
                         .WithMany()
                         .HasForeignKey("TenantId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("CreatedBy");
+                    b.Navigation("Citizen");
 
                     b.Navigation("Tenant");
                 });
@@ -375,9 +376,9 @@ namespace KaappanPlus.Persistence.Migrations
             modelBuilder.Entity("KaappaanPlus.Domain.Entities.AlertResponder", b =>
                 {
                     b.HasOne("KaappaanPlus.Domain.Entities.Alert", "Alert")
-                        .WithMany("Responders")
+                        .WithMany()
                         .HasForeignKey("AlertId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("KaappaanPlus.Domain.Entities.AppUser", "Responder")
@@ -440,11 +441,6 @@ namespace KaappanPlus.Persistence.Migrations
                     b.Navigation("AppUser");
 
                     b.Navigation("Role");
-                });
-
-            modelBuilder.Entity("KaappaanPlus.Domain.Entities.Alert", b =>
-                {
-                    b.Navigation("Responders");
                 });
 
             modelBuilder.Entity("KaappaanPlus.Domain.Entities.AppUser", b =>

@@ -13,6 +13,9 @@ namespace KaappaanPlus.Application.Features.Tenants.Mappings
     {
         public TenantMappingProfile()
         {
+            CreateMap<CreateTenantDto, Tenant>()
+                     .ForMember(dest => dest.ServiceType, opt => opt.MapFrom(src => src.ServiceType));
+
             // 🧱 Create
             CreateMap<CreateTenantDto, Tenant>()
                 .ForMember(dest => dest.Code, opt => opt.Ignore()); // generated automatically
