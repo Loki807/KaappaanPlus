@@ -19,14 +19,8 @@ namespace KaappanPlus.Persistence.Seeds
                 await RoleSeeder.SeedRolesAsync(context);
                 logger.LogInformation("✅ Roles seeded successfully.");
 
-                await SystemTenantSeeder.SeedSystemTenantAsync(context);
-                logger.LogInformation("✅ System tenant seeded.");
-
                 await SuperAdminSeeder.SeedSuperAdminAsync(context);
                 logger.LogInformation("✅ SuperAdmin created.");
-
-                await TenantAdminSeeder.SeedTenantAdminsAsync(context);
-                logger.LogInformation("✅ TenantAdmins created.");
 
                 logger.LogInformation("🎉 Seeding completed successfully.");
             }
@@ -35,6 +29,7 @@ namespace KaappanPlus.Persistence.Seeds
                 logger.LogError(ex, "❌ Seeding failed: {Message}", ex.Message);
             }
         }
+
     }
 }
 

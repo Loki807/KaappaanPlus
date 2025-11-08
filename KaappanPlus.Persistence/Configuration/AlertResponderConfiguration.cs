@@ -16,10 +16,11 @@ namespace KaappanPlus.Persistence.Configuration
             builder.HasKey(ar => ar.Id);
 
             // ✅ Map Alert → AlertResponders
-            builder.HasOne(ar => ar.Alert)
-                   .WithMany(a => a.Responders)
-                   .HasForeignKey(ar => ar.AlertId)
-                   .OnDelete(DeleteBehavior.Cascade);
+            builder.HasOne(r => r.Alert)
+                        .WithMany()
+                        .HasForeignKey(r => r.AlertId)
+                        .OnDelete(DeleteBehavior.Restrict);
+                            ;
 
             // ✅ Map AppUser → AlertResponders
             builder.HasOne(ar => ar.Responder)

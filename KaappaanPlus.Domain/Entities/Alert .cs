@@ -9,35 +9,41 @@ namespace KaappaanPlus.Domain.Entities
 {
     public class Alert : AuditableEntity
     {
+       
+        public Guid CitizenId { get; private set; }
         public Guid TenantId { get; private set; }
-        public Guid CreatedByUserId { get; private set; }
-        public string Type { get; private set; } = default!;  // e.g., "Accident", "Fire", "Women Safety"
-        public string? Description { get; private set; }
-        public double Latitude { get; private set; }
-        public double Longitude { get; private set; }
-        public string Status { get; private set; } = "Pending"; // Pending / Active / Resolved
 
-        // Navigation
+        public string AlertType { get; private set; } = default!;  // Police / Fire / Ambulance
+        public string Description { get; private set; } = default!;
+        public string Location { get; private set; } = default!;
+        public string Status { get; private set; } = "Pending";   // Pending / InProgress / Resolved
+
+        // optional
+        public DateTime ReportedAt { get; private set; } = DateTime.UtcNow;
+
+        // navigation
+        public Citizen Citizen { get; private set; } = default!;
         public Tenant Tenant { get; private set; } = default!;
-        public AppUser CreatedBy { get; private set; } = default!;
-        
-        public ICollection<AlertResponder> Responders { get; private set; } = new List<AlertResponder>();
 
-        private Alert() { } // EF Core needs this
+        private Alert() { }
 
-        public Alert(Guid tenantId, Guid createdByUserId, string type, string? description, double lat, double lng)
+        public Alert(Guid citizenId, Guid tenantId, string alertType, string description, string location)
         {
+            Id = Guid.NewGuid();
+            CitizenId = citizenId;
             TenantId = tenantId;
-            CreatedByUserId = createdByUserId;
-            Type = type;
+            AlertType = alertType;
             Description = description;
-            Latitude = lat;
-            Longitude = lng;
+            Location = location;
+            Status = "Pending";
+            ReportedAt = DateTime.UtcNow;
+            SetCreated("system");
         }
 
         public void UpdateStatus(string status)
         {
             Status = status;
+            SetUpdated("system");
         }
     }
 }

@@ -29,6 +29,8 @@ namespace KaappanPlus.Persistence
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ITenantRepository, TenantRepository>();
             services.AddScoped<IAlertRepository, AlertRepository>();
+            services.AddScoped<ICitizenRepository, CitizenRepository>();
+            services.AddScoped<IAlertRepository, AlertRepository>();
 
             return services;
         }

@@ -38,9 +38,11 @@ namespace KaappaanPlus.Application.Features.Tenants.Handlers.Commands
             // ✅ Map DTO → Entity
             var tenant = _mapper.Map<Tenant>(request.TenantDto);
 
+            // ✅ NEW: Include ServiceType (if not mapped automatically)
+            tenant.ServiceType = request.TenantDto.ServiceType ?? "General";
+
             // ✅ Generate Code before saving
-            
-            tenant.Code = $"{tenant.City?.Substring(0, 3).ToUpper() ?? "TEN"}_TENANT"; // 👈 Add this line
+            tenant.Code = $"{tenant.City?.Substring(0, 3).ToUpper() ?? "TEN"}_TENANT";
 
             // ✅ Check duplicate
             var existingTenant = await _tenantRepo.GetByNameOrCityAsync(tenant.Name, tenant.City!, cancellationToken);
@@ -49,7 +51,7 @@ namespace KaappaanPlus.Application.Features.Tenants.Handlers.Commands
 
             // ✅ Save
             var tenantId = await _tenantRepo.AddAsync(tenant, cancellationToken);
-            _logger.LogInformation("✅ Tenant created: {TenantName}", tenant.Name);
+            _logger.LogInformation("✅ Tenant created: {TenantName} ({ServiceType})", tenant.Name, tenant.ServiceType);
 
             // ✅ Auto-create TenantAdmin only if not exists
             var alreadyHasAdmin = await _tenantRepo.TenantAdminExistsAsync(tenantId, cancellationToken);
@@ -61,8 +63,6 @@ namespace KaappaanPlus.Application.Features.Tenants.Handlers.Commands
             return tenantId;
         }
 
-
-
         private async Task CreateTenantAdminAsync(Tenant tenant, CancellationToken ct)
         {
             // 1️⃣ Get the TenantAdmin role
@@ -73,27 +73,26 @@ namespace KaappaanPlus.Application.Features.Tenants.Handlers.Commands
                 return;
             }
 
-            // ✅ Clean and simple email (no GUID)
+            // ✅ Clean email pattern
             var city = tenant.City?.ToLower().Replace(" ", "") ?? "tenant";
             var email = $"{city}_admin@kaappaan.com";
 
-
-            // 3️⃣ Create the admin instance first (empty password for now)
+            // 3️⃣ Create the admin instance first
             var admin = new AppUser(
                 tenant.Id,
                 $"{tenant.Name} Admin",
                 email,
                 "0000000000",
-                "", // temporarily empty password
+                "",
                 "TenantAdmin"
             );
 
-            // 4️⃣ Hash the password correctly with the user instance
+            // 4️⃣ Hash password correctly
             var hasher = new PasswordHasher<AppUser>();
             var hashedPassword = hasher.HashPassword(admin, "Admin@123");
             admin.SetPasswordHash(hashedPassword);
 
-            // 5️⃣ Set required flags and roles
+            // 5️⃣ Assign role + flags
             admin.RequirePasswordChange();
             admin.UserRoles.Add(new UserRole(admin.Id, role.Id));
 
@@ -105,7 +104,5 @@ namespace KaappaanPlus.Application.Features.Tenants.Handlers.Commands
             _logger.LogInformation("✅ TenantAdmin created for {TenantName}. Email: {Email}", tenant.Name, email);
             _logger.LogInformation("🔑 Default password: Admin@123");
         }
-
     }
-
-    }
+}

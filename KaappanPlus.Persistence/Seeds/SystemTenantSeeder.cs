@@ -13,29 +13,31 @@ namespace KaappanPlus.Persistence.Seeds
     {
         public static async Task<Guid> SeedSystemTenantAsync(AppDbContext context)
         {
-            // If System tenant already exists, return its ID
-            var existing =
-                await context.Tenants.FirstOrDefaultAsync(t => t.Code == "SYS_APP");
+            // Check if system tenant already exists
+            var systemTenant = await context.Tenants
+                .FirstOrDefaultAsync(t => t.Code == "SYSTEM_TENANT");
 
-            if (existing != null)
-                return existing.Id;
+            if (systemTenant != null)
+                return systemTenant.Id;
 
-            // Create new SYSTEM tenant
+            // Create a simple system tenant (not police/fire etc.)
             var tenant = new Tenant(
                 name: "System Tenant",
-                code: "SYS_APP",
-                addressLine1: "HQ",
+                code: "SYSTEM_TENANT",
+                addressLine1: "Kaappaan HQ",
                 addressLine2: null,
-                city: "SYSTEM",
-                stateOrDistrict: "SYSTEM",
-                postalCode: "00000",
-                contactNumber: "0000000000"
+                city: "Colombo",
+                stateOrDistrict: "Western",
+                postalCode: "00001",
+                contactNumber: "0110000000",
+                serviceType: "System",
+                logoUrl: null
             );
 
-            await context.AddAsync(tenant);
+            await context.Tenants.AddAsync(tenant);
             await context.SaveChangesAsync();
 
-            return tenant.Id; // return its ID for SuperAdmin
+            return tenant.Id;
         }
     }
 }

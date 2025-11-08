@@ -17,6 +17,7 @@ namespace KaappaanPlus.Application.Contracts
             IQueryable<Alert> Alerts { get; }
             IQueryable<AlertResponder> AlertResponders { get; }
             IQueryable<LocationLog> LocationLogs { get; }
+            IQueryable<Citizen> Citizens { get; }
 
 
         Task AddEntityAsync<T>(T entity, CancellationToken cancellationToken = default) where T : class;

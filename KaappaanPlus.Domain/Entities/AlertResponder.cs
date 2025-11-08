@@ -9,7 +9,7 @@ namespace KaappaanPlus.Domain.Entities
 {
     public class AlertResponder : AuditableEntity
     {
-        public Guid Id { get; private set; } = Guid.NewGuid();
+       
 
         // ✅ Proper FK columns
         public Guid AlertId { get; private set; }

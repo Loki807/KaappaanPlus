@@ -24,6 +24,8 @@ namespace KaappanPlus.Persistence.Data
         public DbSet<AlertResponder> AlertResponders { get; set; } = default!;
         public DbSet<LocationLog> LocationLogs { get; set; } = default!;
 
+        public DbSet<Citizen> Citizens { get; set; } = default!;
+        IQueryable<Citizen> IAppDbContext.Citizens => Citizens;
         IQueryable<Alert> IAppDbContext.Alerts => Alerts;
         IQueryable<AlertResponder> IAppDbContext.AlertResponders => AlertResponders;
         IQueryable<LocationLog> IAppDbContext.LocationLogs => LocationLogs;

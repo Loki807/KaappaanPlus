@@ -74,6 +74,12 @@ namespace KaappanPlus.Persistence.Repository
             _context.AppUsers.Remove(user);
             await _context.SaveChangesAsync(cancellationToken);
         }
+
+        public async Task DeleteAsync(AppUser user)
+        {
+            _context.AppUsers.Remove(user);
+            await _context.SaveChangesAsync();
+        }
     }
 }
 

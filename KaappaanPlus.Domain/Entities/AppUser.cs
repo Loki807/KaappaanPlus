@@ -6,12 +6,12 @@ namespace KaappaanPlus.Domain.Entities
 {
     public sealed class AppUser : AuditableEntity
     {
-        public Guid? TenantId { get; private set; }          // Multi-tenant system
-        public string Name { get; private set; } = default!;
-        public string Email { get; private set; } = default!;
-        public string Phone { get; private set; } = default!;
-        public string? PasswordHash { get; private set; }    // never store plain password
-        public string Role { get; private set; } = default!;
+        public Guid? TenantId { get;  set; }          // Multi-tenant system
+        public string Name { get; set; } = default!;
+        public string Email { get;  set; } = default!;
+        public string Phone { get;  set; } = default!;
+        public string? PasswordHash { get;  set; }    // never store plain password
+        public string Role { get;  set; } = default!;
         public bool IsActive { get;  set; } = true;
 
         // Navigation
@@ -22,6 +22,7 @@ namespace KaappaanPlus.Domain.Entities
         private AppUser() { }
 
         // ✅ Basic constructor (without password)
+
         public AppUser(Guid tenantId, string name, string email, string phone)
         {
             TenantId = tenantId;
@@ -29,7 +30,18 @@ namespace KaappaanPlus.Domain.Entities
             Email = email;
             Phone = phone;
             SetCreated("system");
+
         }
+        public AppUser(string name, string email, string phone, string passwordHash, string role, Guid? tenantId = null)
+        {
+            Name = name;
+            Email = email;
+            Phone = phone;
+            PasswordHash = passwordHash;
+            Role = role;
+            TenantId = tenantId;
+        }
+
 
         // ✅ Full constructor (used for registration or seeding)
         public AppUser(Guid tenantId, string name, string email, string phone, string passwordHash, string role)

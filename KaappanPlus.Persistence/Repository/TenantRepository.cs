@@ -77,6 +77,16 @@ namespace KaappanPlus.Persistence.Repository
             if (tenantId == null) return false;
             return await _context.Tenants.AnyAsync(t => t.Id == tenantId.Value, ct);
         }
+
+        public async Task<Tenant?> GetTenantByCityAndServiceAsync(string city, string serviceType, CancellationToken cancellationToken = default)
+        {
+            return await _context.Tenants
+                .FirstOrDefaultAsync(t =>
+                    t.City.ToLower() == city.ToLower() &&
+                    t.ServiceType.ToLower() == serviceType.ToLower(),
+                    cancellationToken);
+        }
+
     }
 }
 
