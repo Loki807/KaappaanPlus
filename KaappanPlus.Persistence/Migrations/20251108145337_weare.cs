@@ -6,11 +6,29 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace KaappanPlus.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class weeeeeee : Migration
+    public partial class weare : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "AlertTypes",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AlertTypes", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Roles",
                 columns: table => new
@@ -165,10 +183,12 @@ namespace KaappanPlus.Persistence.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CitizenId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    AlertType = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
-                    Location = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Location = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AlertTypeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Latitude = table.Column<double>(type: "float", nullable: false),
+                    Longitude = table.Column<double>(type: "float", nullable: false),
                     ReportedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -179,17 +199,23 @@ namespace KaappanPlus.Persistence.Migrations
                 {
                     table.PrimaryKey("PK_Alerts", x => x.Id);
                     table.ForeignKey(
+                        name: "FK_Alerts_AlertTypes_AlertTypeId",
+                        column: x => x.AlertTypeId,
+                        principalTable: "AlertTypes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
                         name: "FK_Alerts_Citizens_CitizenId",
                         column: x => x.CitizenId,
                         principalTable: "Citizens",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Alerts_Tenants_TenantId",
                         column: x => x.TenantId,
                         principalTable: "Tenants",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -198,8 +224,12 @@ namespace KaappanPlus.Persistence.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     AlertId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ResponderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ResponseStatus = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    AppUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    AssignedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    RespondedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ServiceType = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -213,12 +243,13 @@ namespace KaappanPlus.Persistence.Migrations
                         column: x => x.AlertId,
                         principalTable: "Alerts",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_AlertResponders_AppUsers_ResponderId",
-                        column: x => x.ResponderId,
+                        name: "FK_AlertResponders_AppUsers_AppUserId",
+                        column: x => x.AppUserId,
                         principalTable: "AppUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -227,9 +258,14 @@ namespace KaappanPlus.Persistence.Migrations
                 column: "AlertId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AlertResponders_ResponderId",
+                name: "IX_AlertResponders_AppUserId",
                 table: "AlertResponders",
-                column: "ResponderId");
+                column: "AppUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Alerts_AlertTypeId",
+                table: "Alerts",
+                column: "AlertTypeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Alerts_CitizenId",
@@ -240,6 +276,12 @@ namespace KaappanPlus.Persistence.Migrations
                 name: "IX_Alerts_TenantId",
                 table: "Alerts",
                 column: "TenantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AlertTypes_Name",
+                table: "AlertTypes",
+                column: "Name",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_AppUsers_TenantId",
@@ -279,6 +321,9 @@ namespace KaappanPlus.Persistence.Migrations
 
             migrationBuilder.DropTable(
                 name: "Roles");
+
+            migrationBuilder.DropTable(
+                name: "AlertTypes");
 
             migrationBuilder.DropTable(
                 name: "Citizens");

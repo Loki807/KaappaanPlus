@@ -9,30 +9,55 @@ namespace KaappaanPlus.Domain.Entities
 {
     public class AlertResponder : AuditableEntity
     {
-       
 
-        // ✅ Proper FK columns
+        // 🔹 Foreign Keys
         public Guid AlertId { get; private set; }
-        public Guid ResponderId { get; private set; }
+        public Guid AppUserId { get; private set; }   // Police / Fire / Ambulance user (Tenant-based)
 
-        public string? ResponseStatus { get; private set; }
-
-        // ✅ Navigation properties
+        // 🔹 Navigation Properties
         public Alert Alert { get; private set; } = default!;
-        public AppUser Responder { get; private set; } = default!;
+        public AppUser AppUser { get; private set; } = default!;
 
-        private AlertResponder() { }
+        // 🔹 Extra Info
+        public DateTime AssignedAt { get; private set; } = DateTime.UtcNow;
+        public DateTime? RespondedAt { get; private set; }
+        public string Status { get; private set; } = "Pending";  // Pending / Acknowledged / Resolved
+        public string? Notes { get; private set; }
+        public string ServiceType { get; private set; } = default!;
 
-        public AlertResponder(Guid alertId, Guid responderId, string? status = null)
+        private AlertResponder() { } // EF Core requirement
+
+        // ✅ Constructor
+        public AlertResponder(Guid alertId, Guid appUserId)
         {
             AlertId = alertId;
-            ResponderId = responderId;
-            ResponseStatus = status ?? "Pending";
+            AppUserId = appUserId;
+            AssignedAt = DateTime.UtcNow;
+            Status = "Pending";
         }
 
-        public void UpdateStatus(string newStatus)
+        // ✅ Methods
+        public void Acknowledge(string? notes = null)
         {
-            ResponseStatus = newStatus;
+            Status = "Acknowledged";
+            Notes = notes;
+            RespondedAt = DateTime.UtcNow;
         }
+
+        public void Resolve(string? notes = null)
+        {
+            Status = "Resolved";
+            Notes = notes;
+            RespondedAt = DateTime.UtcNow;
+        }
+        public AlertResponder(Guid alertId, Guid appUserId, string serviceType)
+        {
+            AlertId = alertId;
+            AppUserId = appUserId;
+            ServiceType = serviceType;
+            AssignedAt = DateTime.UtcNow;
+            Status = "Pending";
+        }
+
     }
 }

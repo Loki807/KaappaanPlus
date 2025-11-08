@@ -10,7 +10,7 @@ namespace KaappaanPlus.Application.Contracts.Persistence
 {
     public interface IAlertRepository : IGenericRepository<Alert>
     {
-
+        Task<AlertType?> GetByNameAsync(string name, CancellationToken ct = default);
         Task<List<Alert>> GetAlertsByTenantAsync(Guid tenantId);
         Task<List<Alert>> GetAlertsByCitizenAsync(Guid citizenId);
         //Task<Guid> AddAsync(Alert alert, CancellationToken ct = default);
@@ -19,6 +19,15 @@ namespace KaappaanPlus.Application.Contracts.Persistence
         //Task UpdateAsync(Alert alert, CancellationToken ct = default);
         //Task DeleteAsync(Guid id, CancellationToken ct = default);
         Task<List<Alert>> GetAlertsByStatusAsync(Guid tenantId, string status);
+
+
+  
+        Task<Alert?> GetByIdAsync(Guid id);
+
+
+        Task<IEnumerable<Alert>> GetByTenantAsync(Guid tenantId);
+        Task<IEnumerable<Alert>> GetByCitizenAsync(Guid citizenId);
+        Task<IEnumerable<Alert>> GetActiveAlertsAsync(Guid tenantId);
 
     }
 }

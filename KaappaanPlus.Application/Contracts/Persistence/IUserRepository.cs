@@ -23,6 +23,7 @@ namespace KaappaanPlus.Application.Contracts.Persistence
 
         // ✅ Delete
         Task DeleteAsync(Guid userId, CancellationToken cancellationToken = default);
+        Task<List<AppUser>> GetRespondersByCityAndRolesAsync(string city, IEnumerable<string> roles, CancellationToken ct = default);
 
         Task DeleteAsync(AppUser user);
     }

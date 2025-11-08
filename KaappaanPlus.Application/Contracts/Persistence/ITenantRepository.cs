@@ -33,6 +33,8 @@ namespace KaappaanPlus.Application.Contracts.Persistence
         // ✅ Exists for validation or foreign key
         Task<bool> ExistsAsync(Guid? tenantId, CancellationToken ct = default);
 
+        Task<Tenant?> GetByCityAsync(string city, CancellationToken ct = default);
+
         Task<Tenant?> GetTenantByCityAndServiceAsync(string city, string serviceType, CancellationToken cancellationToken = default);
     }
 }

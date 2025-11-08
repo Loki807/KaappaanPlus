@@ -80,6 +80,17 @@ namespace KaappanPlus.Persistence.Repository
             _context.AppUsers.Remove(user);
             await _context.SaveChangesAsync();
         }
+
+        public Task<List<AppUser>> GetRespondersByCityAndRolesAsync(string city, IEnumerable<string> roles, CancellationToken ct = default)
+        {
+            return _context.AppUsers
+                .Include(u => u.Tenant)
+                .Where(u => roles.Contains(u.Role!) &&
+                            u.Tenant.City == city &&
+                            u.Tenant.IsActive)
+                .ToListAsync(ct);
+        }
+
     }
 }
 

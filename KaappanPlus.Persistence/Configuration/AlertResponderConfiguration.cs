@@ -9,27 +9,21 @@ using System.Threading.Tasks;
 
 namespace KaappanPlus.Persistence.Configuration
 {
-   public class AlertResponderConfiguration : IEntityTypeConfiguration<AlertResponder>
+    public class AlertResponderConfiguration : IEntityTypeConfiguration<AlertResponder>
     {
         public void Configure(EntityTypeBuilder<AlertResponder> builder)
         {
-            builder.HasKey(ar => ar.Id);
+            builder.HasKey(a => a.Id);
 
-            // ✅ Map Alert → AlertResponders
-            builder.HasOne(r => r.Alert)
-                        .WithMany()
-                        .HasForeignKey(r => r.AlertId)
-                        .OnDelete(DeleteBehavior.Restrict);
-                            ;
+            builder.HasOne(a => a.Alert)
+                   .WithMany(a => a.Responders)
+                   .HasForeignKey(a => a.AlertId)
+                   .OnDelete(DeleteBehavior.Cascade);
 
-            // ✅ Map AppUser → AlertResponders
-            builder.HasOne(ar => ar.Responder)
+            builder.HasOne(a => a.AppUser)
                    .WithMany()
-                   .HasForeignKey(ar => ar.ResponderId)
-                   .OnDelete(DeleteBehavior.NoAction);
-
-            builder.Property(ar => ar.ResponseStatus)
-                   .HasMaxLength(50);
+                   .HasForeignKey(a => a.AppUserId)
+                   .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

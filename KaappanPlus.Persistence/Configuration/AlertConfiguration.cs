@@ -15,34 +15,20 @@ namespace KaappanPlus.Persistence.Configuration
         {
             builder.HasKey(a => a.Id);
 
-            builder.Property(a => a.AlertType)
-                .IsRequired()
-                .HasMaxLength(50);
+            builder.HasOne(a => a.AlertTypeRef)
+                .WithMany()
+                .HasForeignKey(a => a.AlertTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            builder.Property(a => a.Description)
-                .IsRequired()
-                .HasMaxLength(250);
-
-            builder.Property(a => a.Location)
-                .IsRequired()
-                .HasMaxLength(150);
-
-            builder.Property(a => a.Status)
-                .IsRequired()
-                .HasMaxLength(30);
-
-            // Relationships
             builder.HasOne(a => a.Citizen)
                 .WithMany()
                 .HasForeignKey(a => a.CitizenId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(a => a.Tenant)
                 .WithMany()
                 .HasForeignKey(a => a.TenantId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            builder.ToTable("Alerts");
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

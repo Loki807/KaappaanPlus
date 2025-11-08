@@ -13,21 +13,23 @@ namespace KaappaanPlus.Application.Features.Alerts.Validators
     {
         public CreateAlertValidator()
         {
-            RuleFor(x => x.AlertDto.CitizenId)
+             RuleFor(x => x.AlertDto.CitizenId)
                 .NotEmpty().WithMessage("CitizenId is required.");
 
-            RuleFor(x => x.AlertDto.AlertType)
-                .NotEmpty().WithMessage("AlertType is required.")
-                .Must(t => new[] { "Police", "Fire", "Ambulance" }.Contains(t))
-                .WithMessage("AlertType must be Police, Fire, or Ambulance.");
+            RuleFor(x => x.AlertDto.AlertTypeName)
+                .NotEmpty().WithMessage("AlertTypeName is required.")
+                .MaximumLength(50).WithMessage("Alert type name cannot exceed 50 characters.");
 
             RuleFor(x => x.AlertDto.Description)
-                .NotEmpty().WithMessage("Description is required.")
                 .MaximumLength(200).WithMessage("Description cannot exceed 200 characters.");
 
-            RuleFor(x => x.AlertDto.Location)
-                .NotEmpty().WithMessage("Location is required.")
-                .MaximumLength(150).WithMessage("Location cannot exceed 150 characters.");
+            RuleFor(x => x.AlertDto.Latitude)
+                .NotEmpty().WithMessage("Latitude is required.")
+                .InclusiveBetween(-90, 90).WithMessage("Latitude must be between -90 and 90.");
+
+            RuleFor(x => x.AlertDto.Longitude)
+                .NotEmpty().WithMessage("Longitude is required.")
+                .InclusiveBetween(-180, 180).WithMessage("Longitude must be between");
         }
     }
 }
