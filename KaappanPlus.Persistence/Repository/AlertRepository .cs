@@ -50,5 +50,41 @@ namespace KaappanPlus.Persistence.Repository
                 .OrderByDescending(a => a.ReportedAt)
                 .ToListAsync();
         }
+
+        public async Task<IEnumerable<Alert>> GetByTenantAsync(Guid tenantId)
+        {
+            return await _context.Alerts
+                .Include(a => a.AlertTypeRef)
+                .Include(a => a.Citizen)
+                .Where(a => a.TenantId == tenantId)
+                .OrderByDescending(a => a.ReportedAt)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Alert>> GetByCitizenAsync(Guid citizenId)
+        {
+            return await _context.Alerts
+                .Include(a => a.AlertTypeRef)
+                .Where(a => a.CitizenId == citizenId)
+                .OrderByDescending(a => a.ReportedAt)
+                .ToListAsync();
+        }
+
+        public async Task<Alert?> GetByIdAsync(Guid id)
+        {
+            return await _context.Alerts
+                .Include(a => a.AlertTypeRef)
+                .FirstOrDefaultAsync(a => a.Id == id);
+        }
+
+        public async Task<IEnumerable<Alert>> GetActiveAlertsAsync(Guid tenantId)
+        {
+            return await _context.Alerts
+                .Where(a => a.TenantId == tenantId && a.Status != "Resolved")
+                .ToListAsync();
+        }
+
+        public Task<AlertType?> GetByNameAsync(string name, CancellationToken ct = default)
+           => _alertContext.AlertTypes.FirstOrDefaultAsync(x => x.Name == name, ct);
     }
 }

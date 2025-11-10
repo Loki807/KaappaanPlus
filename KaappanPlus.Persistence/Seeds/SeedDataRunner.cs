@@ -23,6 +23,10 @@ namespace KaappanPlus.Persistence.Seeds
                 logger.LogInformation("✅ SuperAdmin created.");
 
                 logger.LogInformation("🎉 Seeding completed successfully.");
+
+                await AlertTypeSeeder.SeedAlertTypesAsync(context);
+                logger.LogInformation("✅ AlertTypes seeded successfully.");
+
             }
             catch (Exception ex)
             {

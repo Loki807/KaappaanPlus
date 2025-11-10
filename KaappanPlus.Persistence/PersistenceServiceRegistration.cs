@@ -1,4 +1,5 @@
 ﻿using KaappaanPlus.Application.Contracts;
+using KaappaanPlus.Application.Contracts.IBase;
 using KaappaanPlus.Application.Contracts.Persistence;
 using KaappanPlus.Persistence.Data;
 using KaappanPlus.Persistence.Repository;
@@ -31,7 +32,15 @@ namespace KaappanPlus.Persistence
             services.AddScoped<IAlertRepository, AlertRepository>();
             services.AddScoped<ICitizenRepository, CitizenRepository>();
             services.AddScoped<IAlertRepository, AlertRepository>();
-
+            // ✅ Add Generic + Alert repositories
+            services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            services.AddScoped<IAlertRepository, AlertRepository>();
+            services.AddScoped<IAlertTypeRepository, AlertTypeRepository>(); // 🔥 THIS LINE IS MANDATORY
+            services.AddScoped<ITenantRepository, TenantRepository>();
+            services.AddScoped<IRoleRepository, RoleRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
+            //services.AddScoped<IAlertResponderRepository, AlertResponderRepository>();
+            services.AddScoped<IAlertResponderRepository, AlertResponderRepository>(); // ✅ ADD THIS LINE
             return services;
         }
     }

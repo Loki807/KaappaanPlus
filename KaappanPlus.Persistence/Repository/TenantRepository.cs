@@ -87,6 +87,10 @@ namespace KaappanPlus.Persistence.Repository
                     cancellationToken);
         }
 
+        public async Task<Tenant?> GetByCityAsync(string city, CancellationToken ct = default)
+        {
+            return await _context.Tenants.FirstOrDefaultAsync(t => t.City.ToLower() == city.ToLower(), ct);
+        }
     }
 }
 
