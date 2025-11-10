@@ -24,7 +24,7 @@ namespace KaappanPlus.Persistence.Data
         public DbSet<AlertResponder> AlertResponders { get; set; } = default!;
         public DbSet<LocationLog> LocationLogs { get; set; } = default!;
         public DbSet<AlertType> AlertTypes { get; set; } = default!;
-       
+        
         public DbSet<Citizen> Citizens { get; set; } = default!;
         IQueryable<Citizen> IAppDbContext.Citizens => Citizens;
         IQueryable<Alert> IAppDbContext.Alerts => Alerts;
@@ -39,6 +39,18 @@ namespace KaappanPlus.Persistence.Data
       
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+
+            modelBuilder.Entity<Alert>()
+                .HasOne(a => a.AlertTypeRef)
+                .WithMany()
+                .HasForeignKey(a => a.AlertTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<AlertResponder>()
+                .HasOne(ar => ar.Alert)
+                .WithMany()
+                .HasForeignKey(ar => ar.AlertId);
+
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
             base.OnModelCreating(modelBuilder);
         }

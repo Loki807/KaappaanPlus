@@ -6,12 +6,9 @@ using System.Threading.Tasks;
 
 namespace KaappaanPlus.Application.Features.Alerts.DTOs
 {
-    public class CreateAlertDto
+    public class AlertTypeDto
     {
-        public Guid CitizenId { get; set; }
-        public string AlertTypeName { get; set; } = default!;
+        public string Name { get; set; } = default!;
         public string Description { get; set; } = default!;
-        public double Latitude { get; set; }
-        public double Longitude { get; set; }
     }
 }

@@ -55,6 +55,8 @@ namespace KaappaanPlus.Application.Features.Citizens.Handlers.Commands
                 dto.EmergencyContact
             );
 
+
+
             await _citizenRepo.AddAsync(citizen);
 
             return appUser.Id;

@@ -26,5 +26,15 @@ namespace KaappaanPlus.Application.Contracts.Persistence
         Task<List<AppUser>> GetRespondersByCityAndRolesAsync(string city, IEnumerable<string> roles, CancellationToken ct = default);
 
         Task DeleteAsync(AppUser user);
+
+
+
+
+
+
+
+
+
+        Task<IEnumerable<AppUser>> GetRespondersByRolesAsync(Guid tenantId, List<string> roles, CancellationToken ct);
     }
 }

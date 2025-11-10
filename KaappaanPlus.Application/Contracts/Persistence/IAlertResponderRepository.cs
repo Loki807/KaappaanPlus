@@ -13,3 +13,4 @@ namespace KaappaanPlus.Application.Contracts.Persistence
         Task<IEnumerable<AlertResponder>> GetByAlertIdAsync(Guid alertId, CancellationToken ct = default);
     }
 }
+

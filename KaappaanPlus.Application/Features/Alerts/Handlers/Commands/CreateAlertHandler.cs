@@ -40,68 +40,43 @@ namespace KaappaanPlus.Application.Features.Alerts.Handlers.Commands
             _logger = logger;
         }
 
-        public async Task<Guid> Handle(CreateAlertCommand request, CancellationToken cancellationToken)
+        public async Task<Guid> Handle(CreateAlertCommand req, CancellationToken ct)
         {
-            var dto = request.AlertDto;
+            var dto = req.Alert;
 
-            // ✅ 1. Validate citizen
-            var citizen = await _citizenRepo.GetByIdAsync(dto.CitizenId);
-            if (citizen == null)
-                throw new Exception("Citizen not found.");
+            var citizen = await _citizenRepo.GetByIdAsync(dto.CitizenId)
+                          ?? throw new Exception("Citizen not found");
 
-            // ✅ 2. Validate alert type
-            var alertType = await _alertTypeRepo.GetByNameAsync(dto.AlertTypeName, cancellationToken);
-            if (alertType == null)
-                throw new Exception($"Invalid alert type: {dto.AlertTypeName}");
+            var tenant = await _tenantRepo.GetByIdAsync(citizen.TenantId)
+                         ?? throw new Exception("Tenant for citizen not found");
 
-            // ✅ 3. Find matching tenant (by citizen city)
-            var tenant = await _tenantRepo.GetByCityAsync(citizen.AppUser.Email); // adjust to actual city logic
-            if (tenant == null)
-                throw new Exception("No tenant found for this citizen’s area.");
+            var type = await _alertTypeRepo.GetByNameAsync(dto.AlertTypeName, ct)
+                       ?? throw new Exception($"AlertType '{dto.AlertTypeName}' not found");
 
-            // ✅ 4. Create alert
-            var alert = new Alert(
-                dto.CitizenId,
-                tenant.Id,
-                alertType.Id,
-                dto.Description,
-                dto.Latitude,
-                dto.Longitude
-            );
+            var alert = new Alert(citizen.Id, tenant.Id, type.Id, dto.Description, dto.Latitude, dto.Longitude, type.Service);
 
             await _alertRepo.AddAsync(alert);
 
-            // ✅ 5. Decide which responders should receive it
-            var targetRoles = new List<string>();
-            switch (dto.AlertTypeName.ToLower())
+            // Dispatch logic based on AlertType
+            var dispatchOrder = new List<string>();
+            switch (dto.AlertTypeName.Trim().ToLowerInvariant())
             {
+                case "accident": dispatchOrder.AddRange(new[] { "Police", "Ambulance" }); break;
+                case "fire": dispatchOrder.AddRange(new[] { "Fire", "Ambulance", "Police" }); break;
                 case "womensafety":
-                case "crime":
-                    targetRoles.Add("Police");
-                    break;
-                case "accident":
-                    targetRoles.AddRange(new[] { "Police", "Ambulance" });
-                    break;
-                case "fire":
-                    targetRoles.AddRange(new[] { "Fire", "Ambulance", "Police" });
-                    break;
-                case "medical":
-                    targetRoles.AddRange(new[] { "Ambulance", "Police" });
-                    break;
-                default:
-                    targetRoles.Add("Police");
-                    break;
+                case "crime": dispatchOrder.Add("Police"); break;
+                case "medical": dispatchOrder.AddRange(new[] { "Ambulance", "Police" }); break;
+                default: dispatchOrder.Add("Police"); break;
             }
 
-            // ✅ 6. Find responders (Police/Fire/Ambulance)
-            var responders = await _userRepo.GetRespondersByCityAndRolesAsync(tenant.City!, targetRoles, cancellationToken);
-
+            // Find responders (Police, Fire, Ambulance) based on dispatch logic
+            var responders = await _userRepo.GetRespondersByRolesAsync(tenant.Id, dispatchOrder, ct);
             foreach (var responder in responders)
             {
-                await _responderRepo.AddAsync(new AlertResponder(alert.Id, responder.Id, "Auto-assigned"), cancellationToken);
+                await _responderRepo.AddAsync(new AlertResponder(alert.Id, responder.Id, "Auto-assigned"), ct);
             }
 
-            _logger.LogInformation("✅ Alert created and assigned to {count} responders.", responders.Count);
+            _logger.LogInformation("Alert {AlertId} created for {Type} and assigned to {Count} responders.", alert.Id, type.Name, responders.Count());
 
             return alert.Id;
         }

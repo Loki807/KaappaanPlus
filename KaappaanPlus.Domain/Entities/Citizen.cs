@@ -15,7 +15,7 @@ namespace KaappaanPlus.Domain.Entities
         public string? NIC { get; private set; }
         public string? Address { get; private set; }
         public string? EmergencyContact { get; private set; }
-
+        public Guid TenantId { get; private set; }  // Add this
         private Citizen() { } // EF Core needs this
 
         // ✅ Constructor
@@ -36,5 +36,17 @@ namespace KaappaanPlus.Domain.Entities
             EmergencyContact = emergencyContact;
             SetUpdated("system");
         }
+
+        public Citizen(Guid appUserId, string? nic, string? address, Guid tenantId, string? emergencyContact = null)
+        {
+            AppUserId = appUserId;
+            NIC = nic;
+            Address = address;
+            TenantId = tenantId;
+            EmergencyContact = emergencyContact;
+            SetCreated("system");
+        }
+
+      
     }
 }

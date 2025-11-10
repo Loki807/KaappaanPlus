@@ -8,20 +8,9 @@ using System.Threading.Tasks;
 
 namespace KaappaanPlus.Application.Contracts.Persistence
 {
-    public interface IAlertTypeRepository : IGenericRepository<AlertType>
+    public interface IAlertTypeRepository
     {
-        /// <summary>
-        /// Get an alert type by its name (e.g. "Fire", "Accident").
-        /// </summary>
         Task<AlertType?> GetByNameAsync(string name, CancellationToken ct = default);
-
-        /// <summary>
-        /// Get all active alert types.
-        /// </summary>
-        Task<List<AlertType>> GetActiveAsync(CancellationToken ct = default);
-
-
-        Task<IEnumerable<AlertType>> GetAllAsync();
-        Task<AlertType?> GetByNameAsync(string name);
+        Task AddAsync(AlertType alertType, CancellationToken ct = default);
     }
 }

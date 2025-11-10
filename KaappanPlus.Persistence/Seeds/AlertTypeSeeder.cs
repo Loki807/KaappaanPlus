@@ -17,11 +17,11 @@ namespace KaappanPlus.Persistence.Seeds
 
             var types = new List<AlertType>
             {
-                new AlertType("Fire", "Fire accidents or burns"),
-                new AlertType("Accident", "Vehicle or road accidents"),
-                new AlertType("WomenSafety", "Emergency for women safety"),
-                new AlertType("Crime", "Robbery, murder or criminal activity"),
-                new AlertType("Medical", "Medical or health emergencies")
+                new AlertType("Fire", "Fire accidents or burns", ServiceType.Fire),
+                new AlertType("Accident", "Vehicle or road accidents", ServiceType.Ambulance),
+                new AlertType("WomenSafety", "Emergency for women safety", ServiceType.Police),
+                new AlertType("Crime", "Robbery, murder or criminal activity", ServiceType.Police),
+                new AlertType("Medical", "Medical or health emergencies", ServiceType.Ambulance)
             };
 
             await context.AlertTypes.AddRangeAsync(types);

@@ -7,26 +7,19 @@ using System.Threading.Tasks;
 
 namespace KaappaanPlus.Domain.Entities
 {
-    public sealed class AlertType : AuditableEntity
+    public class AlertType : BaseEntity
     {
         public string Name { get; private set; } = default!;
-        public string? Description { get; private set; }
-        public bool IsActive { get; private set; } = true;
+        public string Description { get; private set; } = default!;
 
-        private AlertType() { }
+        // ServiceType to classify the AlertType
+        public ServiceType Service { get; private set; }
 
-        public AlertType(string name, string? description = null)
+        public AlertType(string name, string description, ServiceType service)
         {
             Name = name;
             Description = description;
-            IsActive = true;
-            SetCreated("system");
-        }
-
-        public void Deactivate()
-        {
-            IsActive = false;
-            SetUpdated("system");
+            Service = service;
         }
     }
 }

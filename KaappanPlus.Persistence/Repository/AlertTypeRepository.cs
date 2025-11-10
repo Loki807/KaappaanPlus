@@ -10,41 +10,27 @@ using System.Threading.Tasks;
 
 namespace KaappanPlus.Persistence.Repository
 {
-    public class AlertTypeRepository : GenericRepository<AlertType>, IAlertTypeRepository
+    public class AlertTypeRepository : IAlertTypeRepository
     {
-        private readonly AppDbContext _db;
+        private readonly AppDbContext _context;
 
-        public AlertTypeRepository(AppDbContext db) : base(db)
+        public AlertTypeRepository(AppDbContext context)
         {
-            _db = db;
+            _context = context;
         }
 
-        // ✅ Get alert type by name
+        // Get alert type by name
         public async Task<AlertType?> GetByNameAsync(string name, CancellationToken ct = default)
         {
-            return await _db.AlertTypes
-                .Where(a => a.Name.ToLower() == name.ToLower() && a.IsActive)
-                .FirstOrDefaultAsync(ct);
+            return await _context.AlertTypes
+                .FirstOrDefaultAsync(a => a.Name == name, ct);
         }
 
-        // ✅ Get all active types
-        public async Task<List<AlertType>> GetActiveAsync(CancellationToken ct = default)
+        // Add new alert type
+        public async Task AddAsync(AlertType alertType, CancellationToken ct = default)
         {
-            return await _db.AlertTypes
-                .Where(a => a.IsActive)
-                .OrderBy(a => a.Name)
-                .ToListAsync(ct);
-        }
-
-        public async Task<AlertType?> GetByNameAsync(string name)
-        {
-            return await _db.AlertTypes
-                .FirstOrDefaultAsync(t => t.Name.ToLower() == name.ToLower());
-        }
-
-        public async Task<IEnumerable<AlertType>> GetAllAsync()
-        {
-            return await _db.AlertTypes.OrderBy(t => t.Name).ToListAsync();
+            await _context.AlertTypes.AddAsync(alertType, ct);
+            await _context.SaveChangesAsync(ct);
         }
     }
 }

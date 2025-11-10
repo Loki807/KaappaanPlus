@@ -7,9 +7,8 @@ using System.Threading.Tasks;
 
 namespace KaappaanPlus.Application.Features.Alerts.Requests.Commands
 {
-    public class UpdateAlertStatusCommand : IRequest<Unit>
+    public class DeleteAlertCommand : IRequest<Guid>
     {
-        public Guid AlertId { get; set; }
-        public string Status { get; set; } = default!;
+        public Guid Id { get; set; }  // The ID of the alert to be deleted
     }
 }

@@ -28,9 +28,18 @@ namespace KaappaanPlus.Application.Features.Alerts.Handlers.Queries
         public async Task<List<AlertDto>> Handle(GetAlertsByTenantQuery request, CancellationToken cancellationToken)
         {
             var alerts = await _alertRepo.GetAlertsByTenantAsync(request.TenantId);
-            _logger.LogInformation($"Fetched {alerts.Count} alerts for Tenant: {request.TenantId}");
 
+            if (alerts == null || !alerts.Any())
+            {
+                _logger.LogInformation($"No alerts found for Tenant: {request.TenantId}");
+                return new List<AlertDto>();  // Return an empty list if no alerts are found.
+            }
+
+            _logger.LogInformation($"Fetched {alerts.Count()} alerts for Tenant: {request.TenantId}");
+
+            // Mapping the alerts to AlertDto and returning the result
             return _mapper.Map<List<AlertDto>>(alerts);
         }
+
     }
 }
