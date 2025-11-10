@@ -7,57 +7,20 @@ using System.Threading.Tasks;
 
 namespace KaappaanPlus.Domain.Entities
 {
-    public class AlertResponder : AuditableEntity
+    public class AlertResponder : BaseEntity
     {
-
-        // 🔹 Foreign Keys
         public Guid AlertId { get; private set; }
-        public Guid AppUserId { get; private set; }   // Police / Fire / Ambulance user (Tenant-based)
+        public Guid ResponderId { get; private set; }
+        public string AssignedBy { get; private set; } = "Auto-Assigned"; // who assigned the alert (could be 'system', 'admin')
 
-        // 🔹 Navigation Properties
         public Alert Alert { get; private set; } = default!;
-        public AppUser AppUser { get; private set; } = default!;
+        public AppUser Responder { get; private set; } = default!;
 
-        // 🔹 Extra Info
-        public DateTime AssignedAt { get; private set; } = DateTime.UtcNow;
-        public DateTime? RespondedAt { get; private set; }
-        public string Status { get; private set; } = "Pending";  // Pending / Acknowledged / Resolved
-        public string? Notes { get; private set; }
-        public string ServiceType { get; private set; } = default!;
-
-        private AlertResponder() { } // EF Core requirement
-
-        // ✅ Constructor
-        public AlertResponder(Guid alertId, Guid appUserId)
+        public AlertResponder(Guid alertId, Guid responderId, string assignedBy)
         {
             AlertId = alertId;
-            AppUserId = appUserId;
-            AssignedAt = DateTime.UtcNow;
-            Status = "Pending";
+            ResponderId = responderId;
+            AssignedBy = assignedBy;
         }
-
-        // ✅ Methods
-        public void Acknowledge(string? notes = null)
-        {
-            Status = "Acknowledged";
-            Notes = notes;
-            RespondedAt = DateTime.UtcNow;
-        }
-
-        public void Resolve(string? notes = null)
-        {
-            Status = "Resolved";
-            Notes = notes;
-            RespondedAt = DateTime.UtcNow;
-        }
-        public AlertResponder(Guid alertId, Guid appUserId, string serviceType)
-        {
-            AlertId = alertId;
-            AppUserId = appUserId;
-            ServiceType = serviceType;
-            AssignedAt = DateTime.UtcNow;
-            Status = "Pending";
-        }
-
     }
 }

@@ -91,6 +91,12 @@ namespace KaappanPlus.Persistence.Repository
                 .ToListAsync(ct);
         }
 
+        public async Task<IEnumerable<AppUser>> GetRespondersByRolesAsync(Guid tenantId, List<string> roles, CancellationToken ct)
+        {
+            return await _context.AppUsers
+                .Where(u => u.TenantId == tenantId && roles.Contains(u.Role))
+                .ToListAsync(ct);
+        }
     }
 }
 

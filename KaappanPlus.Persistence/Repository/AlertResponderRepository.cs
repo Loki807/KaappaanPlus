@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace KaappanPlus.Persistence.Repository
 {
-    internal class AlertResponderRepository : IAlertResponderRepository
+    public class AlertResponderRepository : IAlertResponderRepository
     {
         private readonly AppDbContext _context;
 
@@ -19,7 +19,7 @@ namespace KaappanPlus.Persistence.Repository
             _context = context;
         }
 
-        // ✅ Add new responder record (Police / Fire / Ambulance)
+        // Add a new responder to an alert
         public async Task<Guid> AddAsync(AlertResponder responder, CancellationToken ct = default)
         {
             await _context.AlertResponders.AddAsync(responder, ct);
@@ -27,12 +27,12 @@ namespace KaappanPlus.Persistence.Repository
             return responder.Id;
         }
 
-        // ✅ Get all responders linked to a specific Alert
+        // Get all responders by Alert ID
         public async Task<IEnumerable<AlertResponder>> GetByAlertIdAsync(Guid alertId, CancellationToken ct = default)
         {
             return await _context.AlertResponders
+                .Include(r => r.Responder) // Include responder details (AppUser)
                 .Where(r => r.AlertId == alertId)
-                .Include(r => r.AppUser)     // optional: to load responder user details
                 .ToListAsync(ct);
         }
     }

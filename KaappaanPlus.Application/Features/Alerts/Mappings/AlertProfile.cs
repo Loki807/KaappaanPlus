@@ -13,10 +13,8 @@ namespace KaappaanPlus.Application.Features.Alerts.Mappings
     {
         public AlertProfile()
         {
-            CreateMap<Alert, AlertDto>()
-                .ForMember(dest => dest.CitizenName, opt => opt.MapFrom(src => src.Citizen.AppUser.Name))
-                .ForMember(dest => dest.TenantName, opt => opt.MapFrom(src => src.Tenant.Name))
-                .ForMember(dest => dest.ReportedAt, opt => opt.MapFrom(src => src.ReportedAt));
+            CreateMap<Alert, AlertDto>();
+                
         }
     }
 }

@@ -27,10 +27,22 @@ namespace KaappaanPlus.Application.Features.Alerts.Handlers.Queries
 
         public async Task<List<AlertDto>> Handle(GetAlertsByCitizenQuery request, CancellationToken cancellationToken)
         {
+            // Fetch alerts for the citizen
             var alerts = await _alertRepo.GetAlertsByCitizenAsync(request.CitizenId);
-            _logger.LogInformation($"Fetched {alerts.Count} alerts for Citizen: {request.CitizenId}");
 
+            // Check if alerts is null or empty
+            if (alerts == null || !alerts.Any())
+            {
+                _logger.LogInformation($"No alerts found for Citizen: {request.CitizenId}");
+                return new List<AlertDto>();  // Return an empty list if no alerts found
+            }
+
+            // Log the number of alerts fetched
+            _logger.LogInformation($"Fetched {alerts.Count()} alerts for Citizen: {request.CitizenId}");
+
+            // Map the fetched alerts to AlertDto and return
             return _mapper.Map<List<AlertDto>>(alerts);
         }
+
     }
 }

@@ -37,11 +37,8 @@ namespace KaappaanPlus.Application.Common.Behaviors
 
                 if (failures.Count != 0)
                 {
-                    var errorDict = failures
-                        .GroupBy(f => f.PropertyName, f => f.ErrorMessage)
-                        .ToDictionary(g => g.Key, g => g.ToArray());
-
-                    throw new ValidationException((IEnumerable<FluentValidation.Results.ValidationFailure>)errorDict);
+                    throw new ValidationException(failures);
+                   
                 }
             }
 

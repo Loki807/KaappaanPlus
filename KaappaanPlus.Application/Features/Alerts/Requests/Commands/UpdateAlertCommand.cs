@@ -8,9 +8,8 @@ using System.Threading.Tasks;
 
 namespace KaappaanPlus.Application.Features.Alerts.Requests.Commands
 {
-    public class CreateAlertCommand : IRequest<Guid>
+    public class UpdateAlertCommand : IRequest<Guid>
     {
-        public CreateAlertDto Alert { get; set; } = default!;
+        public UpdateAlertDto UpdateAlertDto { get; set; } = default!;  // Ensure this property exists
     }
-
 }

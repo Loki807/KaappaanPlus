@@ -8,26 +8,17 @@ using System.Threading.Tasks;
 
 namespace KaappaanPlus.Application.Contracts.Persistence
 {
-    public interface IAlertRepository : IGenericRepository<Alert>
+    public interface IAlertRepository
     {
-        Task<AlertType?> GetByNameAsync(string name, CancellationToken ct = default);
-        Task<List<Alert>> GetAlertsByTenantAsync(Guid tenantId);
-        Task<List<Alert>> GetAlertsByCitizenAsync(Guid citizenId);
-        //Task<Guid> AddAsync(Alert alert, CancellationToken ct = default);
-        //Task<Alert?> GetByIdAsync(Guid id, CancellationToken ct = default);
-        //Task<IEnumerable<Alert>> GetAllAsync(CancellationToken ct = default);
-        //Task UpdateAsync(Alert alert, CancellationToken ct = default);
-        //Task DeleteAsync(Guid id, CancellationToken ct = default);
-        Task<List<Alert>> GetAlertsByStatusAsync(Guid tenantId, string status);
+        Task<Guid> AddAsync(Alert alert, CancellationToken ct = default);
+        Task<IEnumerable<Alert>> GetByCitizenAsync(Guid citizenId, CancellationToken ct = default);
+        Task<Alert?> GetByIdAsync(Guid id, CancellationToken ct = default);
+        Task UpdateAsync(Alert alert, CancellationToken ct = default);
+        Task DeleteAsync(Alert alert, CancellationToken ct = default);
 
-
-  
-        Task<Alert?> GetByIdAsync(Guid id);
-
-
-        Task<IEnumerable<Alert>> GetByTenantAsync(Guid tenantId);
-        Task<IEnumerable<Alert>> GetByCitizenAsync(Guid citizenId);
-        Task<IEnumerable<Alert>> GetActiveAlertsAsync(Guid tenantId);
+        Task<IEnumerable<Alert>> GetAlertsByCitizenAsync(Guid citizenId, CancellationToken ct = default);
+        Task<IEnumerable<Alert>> GetAlertsByTenantAsync(Guid tenantId, CancellationToken ct = default);
 
     }
 }
+

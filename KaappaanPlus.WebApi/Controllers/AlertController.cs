@@ -14,44 +14,45 @@ namespace KaappaanPlus.WebApi.Controllers
     public class AlertController : ControllerBase
     {
         private readonly IMediator _mediator;
-        private readonly IAlertRepository _alertRepo;
 
-        public AlertController(IMediator mediator, IAlertRepository alertRepo)
+        public AlertController(IMediator mediator)
         {
             _mediator = mediator;
-            _alertRepo = alertRepo;
         }
 
-        [HttpPost("create")]
-        public async Task<IActionResult> CreateAlert([FromBody] CreateAlertDto dto)
-        {
-            if (dto == null || string.IsNullOrWhiteSpace(dto.AlertTypeName))
-                return BadRequest("Invalid alert details.");
-
-            var id = await _mediator.Send(new CreateAlertCommand { AlertDto = dto });
-            return Ok(new { message = "Alert sent successfully.", alertId = id });
-        }
-
+        // GET api/alert/citizen/{citizenId}
         [HttpGet("citizen/{citizenId}")]
-        public async Task<IActionResult> GetByCitizen(Guid citizenId)
+        public async Task<IActionResult> GetAlertsByCitizen(Guid citizenId)
         {
-            var alerts = await _alertRepo.GetByCitizenAsync(citizenId);
+            var alerts = await _mediator.Send(new GetAlertsByCitizenQuery { CitizenId = citizenId });
             return Ok(alerts);
         }
 
+        // GET api/alert/tenant/{tenantId}
         [HttpGet("tenant/{tenantId}")]
-        public async Task<IActionResult> GetByTenant(Guid tenantId)
+        public async Task<IActionResult> GetAlertsByTenant(Guid tenantId)
         {
-            var alerts = await _alertRepo.GetByTenantAsync(tenantId);
+            var alerts = await _mediator.Send(new GetAlertsByTenantQuery { TenantId = tenantId });
             return Ok(alerts);
         }
 
-        [HttpPut("update-status/{id}")]
-        public async Task<IActionResult> UpdateStatus(Guid id, [FromBody] string status)
+        // DELETE api/alert/{id}
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteAlert(Guid id)
         {
-            await _mediator.Send(new UpdateAlertStatusCommand { AlertId = id, Status = status });
-            return Ok(new { message = $"Alert status updated to {status}" });
+            var deletedAlertId = await _mediator.Send(new DeleteAlertCommand { Id = id });
+            return Ok(new { message = "Alert deleted successfully", alertId = deletedAlertId });
+        }
+
+        // PUT api/alert/{id}
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateAlert(Guid id, [FromBody] UpdateAlertDto updateAlertDto)
+        {
+            if (id != updateAlertDto.Id)
+                return BadRequest("ID mismatch.");
+
+            var updatedAlertId = await _mediator.Send(new UpdateAlertCommand { UpdateAlertDto = updateAlertDto });
+            return Ok(new { message = "Alert updated successfully", alertId = updatedAlertId });
         }
     }
-
 }
