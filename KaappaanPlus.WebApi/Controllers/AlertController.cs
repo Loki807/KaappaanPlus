@@ -54,5 +54,28 @@ namespace KaappaanPlus.WebApi.Controllers
             var updatedAlertId = await _mediator.Send(new UpdateAlertCommand { UpdateAlertDto = updateAlertDto });
             return Ok(new { message = "Alert updated successfully", alertId = updatedAlertId });
         }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateAlert([FromBody] CreateAlertDto dto)
+        {
+            // Check if the input dto is valid
+            if (dto == null || string.IsNullOrEmpty(dto.AlertTypeName) || string.IsNullOrEmpty(dto.Description))
+            {
+                return BadRequest("Invalid alert details.");
+            }
+
+            try
+            {
+                // Send the CreateAlertCommand to the handler
+                var alertId = await _mediator.Send(new CreateAlertCommand { Alert = dto });
+                return Ok(new { message = "Alert created successfully", alertId = alertId });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred", error = ex.Message });
+            }
+        }
+
+
     }
 }
