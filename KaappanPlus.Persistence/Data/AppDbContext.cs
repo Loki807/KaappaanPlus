@@ -40,7 +40,25 @@ namespace KaappanPlus.Persistence.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
+
+
+            // Modify delete behavior for Alert and AppUser relationships in AlertResponder
+            modelBuilder.Entity<AlertResponder>()
+                .HasOne(ar => ar.Alert)
+                .WithMany() // Assuming no reverse navigation property
+                .HasForeignKey(ar => ar.AlertId)
+                .OnDelete(DeleteBehavior.Restrict); // Set to Restrict instead of Cascade
+
+            modelBuilder.Entity<AlertResponder>()
+                .HasOne(ar => ar.Responder)
+                .WithMany() // Assuming no reverse navigation property
+                .HasForeignKey(ar => ar.ResponderId)
+                .OnDelete(DeleteBehavior.Restrict); // Set to Restrict instead of Cascade
+
             base.OnModelCreating(modelBuilder);  // This line is already there, no need to call it again.
+
+
+
         }
 
 
