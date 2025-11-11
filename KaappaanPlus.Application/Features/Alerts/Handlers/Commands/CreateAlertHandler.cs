@@ -71,10 +71,10 @@ namespace KaappaanPlus.Application.Features.Alerts.Handlers.Commands
 
             // Find responders (Police, Fire, Ambulance) based on dispatch logic
             var responders = await _userRepo.GetRespondersByRolesAsync(tenant.Id, dispatchOrder, ct);
-            foreach (var responder in responders)
-            {
-                await _responderRepo.AddAsync(new AlertResponder(alert.Id, responder.Id, "Auto-assigned"), ct);
-            }
+            //foreach (var responder in responders)
+            //{
+            //    await _responderRepo.AddAsync(new AlertResponder(alert.Id, responder.Id, "Auto-assigned"), ct);
+            //}
 
             _logger.LogInformation("Alert {AlertId} created for {Type} and assigned to {Count} responders.", alert.Id, type.Name, responders.Count());
 

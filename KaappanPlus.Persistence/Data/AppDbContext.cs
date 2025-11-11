@@ -1,6 +1,6 @@
-﻿using KaappaanPlus.Application.Contracts;
+﻿using Microsoft.EntityFrameworkCore;
+using KaappaanPlus.Application.Contracts;
 using KaappaanPlus.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,24 +36,13 @@ namespace KaappanPlus.Persistence.Data
         IQueryable<AppUser> IAppDbContext.AppUsers => AppUsers;
         IQueryable<Role> IAppDbContext.Roles => Roles;
         IQueryable<UserRole> IAppDbContext.UserRoles => UserRoles;
-      
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-
-            modelBuilder.Entity<Alert>()
-                .HasOne(a => a.AlertTypeRef)
-                .WithMany()
-                .HasForeignKey(a => a.AlertTypeId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<AlertResponder>()
-                .HasOne(ar => ar.Alert)
-                .WithMany()
-                .HasForeignKey(ar => ar.AlertId);
-
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
-            base.OnModelCreating(modelBuilder);
+            base.OnModelCreating(modelBuilder);  // This line is already there, no need to call it again.
         }
+
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
             => base.SaveChangesAsync(cancellationToken);
@@ -67,6 +56,11 @@ namespace KaappanPlus.Persistence.Data
         where T : class
         {
             await Set<T>().AddAsync(entity, cancellationToken);
+        }
+
+        public async Task<T> FindAsync<T>(Guid id, CancellationToken cancellationToken = default) where T : class
+        {
+            return await Set<T>().FindAsync(new object[] { id }, cancellationToken);
         }
 
     }

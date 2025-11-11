@@ -28,12 +28,6 @@ namespace KaappanPlus.Persistence.Repository
         }
 
         // Get all responders by Alert ID
-        public async Task<IEnumerable<AlertResponder>> GetByAlertIdAsync(Guid alertId, CancellationToken ct = default)
-        {
-            return await _context.AlertResponders
-                .Include(r => r.Responder) // Include responder details (AppUser)
-                .Where(r => r.AlertId == alertId)
-                .ToListAsync(ct);
-        }
+       
     }
 }
