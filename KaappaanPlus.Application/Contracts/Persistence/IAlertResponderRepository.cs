@@ -9,8 +9,7 @@ namespace KaappaanPlus.Application.Contracts.Persistence
 {
     public interface IAlertResponderRepository
     {
-        Task<Guid> AddAsync(AlertResponder responder, CancellationToken ct = default);
-        Task<IEnumerable<AlertResponder>> GetByAlertIdAsync(Guid alertId, CancellationToken ct = default);
+        Task AddAsync(AlertResponder alertResponder, CancellationToken cancellationToken = default);
     }
 }
 

@@ -26,7 +26,8 @@ namespace KaappanPlus.Persistence.Seeds
 
                 await AlertTypeSeeder.SeedAlertTypesAsync(context);
                 logger.LogInformation("✅ AlertTypes seeded successfully.");
-
+                //await AlertResponderSeeder.SeedAlertRespondersAsync(context);
+                await AlertSeeder.SeedAlertsAsync(context);
             }
             catch (Exception ex)
             {

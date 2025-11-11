@@ -1,6 +1,6 @@
-﻿using KaappaanPlus.Application.Contracts;
+﻿using Microsoft.EntityFrameworkCore;
+using KaappaanPlus.Application.Contracts;
 using KaappaanPlus.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,24 +36,31 @@ namespace KaappanPlus.Persistence.Data
         IQueryable<AppUser> IAppDbContext.AppUsers => AppUsers;
         IQueryable<Role> IAppDbContext.Roles => Roles;
         IQueryable<UserRole> IAppDbContext.UserRoles => UserRoles;
-      
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
 
-            modelBuilder.Entity<Alert>()
-                .HasOne(a => a.AlertTypeRef)
-                .WithMany()
-                .HasForeignKey(a => a.AlertTypeId)
-                .OnDelete(DeleteBehavior.Restrict);
 
+            // Modify delete behavior for Alert and AppUser relationships in AlertResponder
             modelBuilder.Entity<AlertResponder>()
                 .HasOne(ar => ar.Alert)
-                .WithMany()
-                .HasForeignKey(ar => ar.AlertId);
+                .WithMany() // Assuming no reverse navigation property
+                .HasForeignKey(ar => ar.AlertId)
+                .OnDelete(DeleteBehavior.Restrict); // Set to Restrict instead of Cascade
 
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
-            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<AlertResponder>()
+                .HasOne(ar => ar.Responder)
+                .WithMany() // Assuming no reverse navigation property
+                .HasForeignKey(ar => ar.ResponderId)
+                .OnDelete(DeleteBehavior.Restrict); // Set to Restrict instead of Cascade
+
+            base.OnModelCreating(modelBuilder);  // This line is already there, no need to call it again.
+
+
+
         }
+
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
             => base.SaveChangesAsync(cancellationToken);
@@ -67,6 +74,11 @@ namespace KaappanPlus.Persistence.Data
         where T : class
         {
             await Set<T>().AddAsync(entity, cancellationToken);
+        }
+
+        public async Task<T> FindAsync<T>(Guid id, CancellationToken cancellationToken = default) where T : class
+        {
+            return await Set<T>().FindAsync(new object[] { id }, cancellationToken);
         }
 
     }

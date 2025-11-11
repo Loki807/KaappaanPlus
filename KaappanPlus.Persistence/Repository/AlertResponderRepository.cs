@@ -1,4 +1,5 @@
-﻿using KaappaanPlus.Application.Contracts.Persistence;
+﻿using KaappaanPlus.Application.Contracts;
+using KaappaanPlus.Application.Contracts.Persistence;
 using KaappaanPlus.Domain.Entities;
 using KaappanPlus.Persistence.Data;
 using Microsoft.EntityFrameworkCore;
@@ -12,28 +13,17 @@ namespace KaappanPlus.Persistence.Repository
 {
     public class AlertResponderRepository : IAlertResponderRepository
     {
-        private readonly AppDbContext _context;
+        private readonly IAppDbContext _context;
 
-        public AlertResponderRepository(AppDbContext context)
+        public AlertResponderRepository(IAppDbContext context)
         {
             _context = context;
         }
 
-        // Add a new responder to an alert
-        public async Task<Guid> AddAsync(AlertResponder responder, CancellationToken ct = default)
+        public async Task AddAsync(AlertResponder alertResponder, CancellationToken cancellationToken = default)
         {
-            await _context.AlertResponders.AddAsync(responder, ct);
-            await _context.SaveChangesAsync(ct);
-            return responder.Id;
+            await _context.AddEntityAsync(alertResponder, cancellationToken);
         }
 
-        // Get all responders by Alert ID
-        public async Task<IEnumerable<AlertResponder>> GetByAlertIdAsync(Guid alertId, CancellationToken ct = default)
-        {
-            return await _context.AlertResponders
-                .Include(r => r.Responder) // Include responder details (AppUser)
-                .Where(r => r.AlertId == alertId)
-                .ToListAsync(ct);
-        }
     }
 }
