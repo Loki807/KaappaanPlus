@@ -20,32 +20,52 @@ namespace KaappaanPlus.WebApi.Controllers
             _mediator = mediator;
         }
 
-        // GET api/alert/citizen/{citizenId}
+        // CREATE ALERT (Only Citizens can create alerts)
+        [HttpPost("create")]
+        [Authorize(Roles = "Citizen")] // Only Citizen role allowed to create an alert
+        public async Task<IActionResult> CreateAlert([FromBody] CreateAlertDto createAlertDto)
+        {
+            if (createAlertDto == null)
+            {
+                return BadRequest("Invalid alert data.");
+            }
+
+            // Create the alert via MediatR
+            var createdAlertId = await _mediator.Send(new CreateAlertCommand { Alert= createAlertDto });
+
+            return Ok(new { message = "Alert created successfully", alertId = createdAlertId });
+        }
+
+        // GET ALERTS by Citizen (citizenId)
         [HttpGet("citizen/{citizenId}")]
+        [Authorize(Roles = "Citizen, SuperAdmin, TenantAdmin")] // Citizens can view their own alerts, SuperAdmin and TenantAdmin can view all alerts
         public async Task<IActionResult> GetAlertsByCitizen(Guid citizenId)
         {
             var alerts = await _mediator.Send(new GetAlertsByCitizenQuery { CitizenId = citizenId });
             return Ok(alerts);
         }
 
-        // GET api/alert/tenant/{tenantId}
+        // GET ALERTS by Tenant (tenantId)
         [HttpGet("tenant/{tenantId}")]
+        [Authorize(Roles = "SuperAdmin, TenantAdmin")] // Only SuperAdmin and TenantAdmin can view alerts for a tenant
         public async Task<IActionResult> GetAlertsByTenant(Guid tenantId)
         {
             var alerts = await _mediator.Send(new GetAlertsByTenantQuery { TenantId = tenantId });
             return Ok(alerts);
         }
 
-        // DELETE api/alert/{id}
+        // DELETE ALERT by Id
         [HttpDelete("{id}")]
+        [Authorize(Roles = "SuperAdmin, TenantAdmin")] // Only SuperAdmin and TenantAdmin can delete alerts
         public async Task<IActionResult> DeleteAlert(Guid id)
         {
             var deletedAlertId = await _mediator.Send(new DeleteAlertCommand { Id = id });
             return Ok(new { message = "Alert deleted successfully", alertId = deletedAlertId });
         }
 
-        // PUT api/alert/{id}
+        // UPDATE ALERT by Id
         [HttpPut("{id}")]
+        [Authorize(Roles = "SuperAdmin, TenantAdmin")] // Only SuperAdmin and TenantAdmin can update alerts
         public async Task<IActionResult> UpdateAlert(Guid id, [FromBody] UpdateAlertDto updateAlertDto)
         {
             if (id != updateAlertDto.Id)
@@ -54,23 +74,5 @@ namespace KaappaanPlus.WebApi.Controllers
             var updatedAlertId = await _mediator.Send(new UpdateAlertCommand { UpdateAlertDto = updateAlertDto });
             return Ok(new { message = "Alert updated successfully", alertId = updatedAlertId });
         }
-
-        // POST api/alert/create
-        [HttpPost("create")]
-        [Authorize(Roles = "TenantAdmin, SuperAdmin")]
-        public async Task<IActionResult> CreateAlert([FromBody] CreateAlertDto createAlertDto)
-        {
-            if (createAlertDto == null)
-            {
-                return BadRequest("Invalid alert data.");
-            }
-
-            // Send the request to the mediator for creating the alert
-            var createdAlertId = await _mediator.Send(new CreateAlertCommand { Alert= createAlertDto });
-
-            return Ok(new { message = "Alert created successfully", alertId = createdAlertId });
-        }
-
-
     }
 }
