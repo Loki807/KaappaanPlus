@@ -77,5 +77,22 @@ namespace KaappanPlus.Persistence.Repository
                 .AsNoTracking()
                 .ToListAsync(ct);
         }
+
+        public Task<List<Alert>> GetAlertsByCitizenIdAsync(Guid citizenId, CancellationToken ct)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<List<Alert>> GetAlertsByTenantIdAsync(Guid tenantId, CancellationToken ct)
+        {
+            return await _context.Alerts
+                .Include(a => a.AlertTypeRef)  // include type (Fire, Accident, etc.)
+                .Include(a => a.Citizen)       // include citizen info
+                .Where(a => a.TenantId == tenantId)
+                .OrderByDescending(a => a.ReportedAt)
+                .ToListAsync(ct);
+        }
+
     }
 }
+
