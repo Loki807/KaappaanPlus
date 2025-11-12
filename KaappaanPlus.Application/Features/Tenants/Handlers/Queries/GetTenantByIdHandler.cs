@@ -18,27 +18,33 @@ namespace KaappaanPlus.Application.Features.Tenants.Handlers.Queries
     {
         private readonly ITenantRepository _tenantRepo;
         private readonly IMapper _mapper;
-        private readonly ILogger<GetTenantByIdHandler> _logger;
 
-        public GetTenantByIdHandler(ITenantRepository tenantRepo, IMapper mapper, ILogger<GetTenantByIdHandler> logger)
+        public GetTenantByIdHandler(ITenantRepository tenantRepo, IMapper mapper)
         {
             _tenantRepo = tenantRepo;
             _mapper = mapper;
-            _logger = logger;
         }
 
         public async Task<TenantDto> Handle(GetTenantByIdQuery request, CancellationToken cancellationToken)
         {
+            // 🔹 Step 1: Retrieve tenant by ID from repository
             var tenant = await _tenantRepo.GetByIdAsync(request.Id, cancellationToken);
 
+            // 🔹 Step 2: If no tenant found, throw domain-friendly exception
             if (tenant == null)
             {
-                _logger.LogWarning("❌ Tenant with ID {Id} not found.", request.Id);
-                throw new NotFoundException(nameof(tenant), request.Id);
+                throw new NotFoundException("Tenant", request.Id);
             }
 
-            _logger.LogInformation("✅ Tenant {Name} retrieved successfully.", tenant.Name);
-            return _mapper.Map<TenantDto>(tenant);
+            // 🔹 Step 3: Map entity → DTO safely
+            var mappedTenant = _mapper.Map<TenantDto>(tenant);
+
+            // 🔹 Step 4: Safety check (optional)
+            if (mappedTenant == null)
+                throw new Exception("Failed to map tenant details.");
+
+            // 🔹 Step 5: Return the final DTO
+            return mappedTenant;
         }
     }
 }

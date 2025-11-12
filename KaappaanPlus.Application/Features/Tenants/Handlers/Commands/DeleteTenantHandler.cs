@@ -15,12 +15,11 @@ namespace KaappaanPlus.Application.Features.Tenants.Handlers.Commands
     public class DeleteTenantHandler : IRequestHandler<DeleteTenantCommand, Unit>
     {
         private readonly ITenantRepository _tenantRepo;
-        private readonly ILogger<DeleteTenantHandler> _logger;
-
+     
         public DeleteTenantHandler(ITenantRepository tenantRepo, ILogger<DeleteTenantHandler> logger)
         {
             _tenantRepo = tenantRepo;
-            _logger = logger;
+          
         }
 
         public async Task<Unit> Handle(DeleteTenantCommand request, CancellationToken cancellationToken)
@@ -29,12 +28,12 @@ namespace KaappaanPlus.Application.Features.Tenants.Handlers.Commands
 
             if (tenant == null)
             {
-                _logger.LogWarning("❌ Tenant with ID {Id} not found.", request.Id);
+              
                 throw new NotFoundException(nameof(tenant), request.Id);
             }
 
             await _tenantRepo.DeleteAsync(request.Id, cancellationToken);
-            _logger.LogInformation("🗑️ Tenant {Name} deleted successfully.", tenant.Name);
+            
             return Unit.Value;
         }
     }

@@ -14,13 +14,12 @@ namespace KaappaanPlus.Application.Features.Alerts.Handlers.Commands
     {
         private readonly IAlertRepository _alertRepo;
         private readonly IAlertTypeRepository _alertTypeRepo;
-        private readonly ILogger<UpdateAlertHandler> _logger;
-
+       
         public UpdateAlertHandler(IAlertRepository alertRepo, IAlertTypeRepository alertTypeRepo, ILogger<UpdateAlertHandler> logger)
         {
             _alertRepo = alertRepo;
             _alertTypeRepo = alertTypeRepo;
-            _logger = logger;
+           
         }
 
         public async Task<Guid> Handle(UpdateAlertCommand request, CancellationToken cancellationToken)
@@ -31,7 +30,6 @@ namespace KaappaanPlus.Application.Features.Alerts.Handlers.Commands
             var alert = await _alertRepo.GetByIdAsync(dto.Id);
             if (alert == null)
             {
-                _logger.LogWarning($"Alert not found: {dto.Id}");
                 throw new KeyNotFoundException("Alert not found.");
             }
 
@@ -41,14 +39,12 @@ namespace KaappaanPlus.Application.Features.Alerts.Handlers.Commands
                 var alertType = await _alertTypeRepo.GetByNameAsync(dto.AlertTypeName, cancellationToken);
                 if (alertType == null)
                 {
-                    _logger.LogWarning($"AlertType '{dto.AlertTypeName}' not found for update.");
                     throw new Exception($"AlertType '{dto.AlertTypeName}' not found.");
                 }
 
                 // Update the AlertType
                 alert.AlertTypeId = alertType.Id;
                 alert.AlertTypeRef = alertType; // Optionally store reference to the AlertType
-                _logger.LogInformation($"AlertType for Alert {dto.Id} updated to {dto.AlertTypeName}.");
             }
 
             // Step 3: Update other alert fields
@@ -60,9 +56,7 @@ namespace KaappaanPlus.Application.Features.Alerts.Handlers.Commands
             // Step 4: Save the updated alert back to the repository
             await _alertRepo.UpdateAsync(alert);
 
-            // Step 5: Log the update
-            _logger.LogInformation($"Alert {dto.Id} updated successfully with new details.");
-
+            
             // Step 6: Return the updated alert ID
             return alert.Id;
         }

@@ -20,7 +20,7 @@ namespace KaappaanPlus.Application.Features.Alerts.Handlers.Commands
         private readonly ITenantRepository _tenantRepo;
         private readonly IUserRepository _userRepo;
         private readonly IAlertResponderRepository _responderRepo;
-        private readonly ILogger<CreateAlertHandler> _logger;
+       
 
         public CreateAlertHandler(
             IAlertRepository alertRepo,
@@ -37,7 +37,7 @@ namespace KaappaanPlus.Application.Features.Alerts.Handlers.Commands
             _tenantRepo = tenantRepo;
             _userRepo = userRepo;
             _responderRepo = responderRepo;
-            _logger = logger;
+           
         }
 
         public async Task<Guid> Handle(CreateAlertCommand req, CancellationToken ct)
@@ -53,7 +53,17 @@ namespace KaappaanPlus.Application.Features.Alerts.Handlers.Commands
             var type = await _alertTypeRepo.GetByNameAsync(dto.AlertTypeName, ct)
                        ?? throw new Exception($"AlertType '{dto.AlertTypeName}' not found");
 
-            var alert = new Alert(citizen.Id, tenant.Id, type.Id, dto.Description, dto.Latitude, dto.Longitude, type.Service);
+            var alert = new Alert(
+                        citizen.Id,
+                        type.Id,
+                        dto.Description,
+                        dto.Latitude,
+                        dto.Longitude,
+                        type.Service
+                    );
+
+            // ✅ Add this
+            alert.Location = $"{dto.Latitude}, {dto.Longitude}";
 
             await _alertRepo.AddAsync(alert);
 
@@ -78,7 +88,7 @@ namespace KaappaanPlus.Application.Features.Alerts.Handlers.Commands
                 await _responderRepo.AddAsync(new AlertResponder(alert.Id, responder.Id, "Auto-assigned"), ct);
             }
 
-            _logger.LogInformation("Alert {AlertId} created for {Type} and assigned to {Count} responders.", alert.Id, type.Name, responders.Count());
+           
 
             return alert.Id;
         }

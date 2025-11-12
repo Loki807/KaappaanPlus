@@ -16,13 +16,12 @@ namespace KaappaanPlus.Application.Features.Citizens.Handlers.Queries
     {
         private readonly ICitizenRepository _citizenRepo;
         private readonly IMapper _mapper;
-        private readonly ILogger<GetAllCitizensQueryHandler> _logger;
-
+       
         public GetAllCitizensQueryHandler(ICitizenRepository citizenRepo, IMapper mapper, ILogger<GetAllCitizensQueryHandler> logger)
         {
             _citizenRepo = citizenRepo;
             _mapper = mapper;
-            _logger = logger;
+           
         }
 
         public async Task<List<CitizenDto>> Handle(GetAllCitizensQuery request, CancellationToken cancellationToken)

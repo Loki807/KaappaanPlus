@@ -15,17 +15,31 @@ namespace KaappanPlus.Persistence.Seeds
         {
             if (await context.Alerts.AnyAsync()) return;
 
-            // Fetch AlertTypes
             var alertTypes = await context.AlertTypes.ToListAsync();
 
             var alerts = new List<Alert>
             {
-                new Alert(Guid.NewGuid(), Guid.NewGuid(), alertTypes.FirstOrDefault(t => t.Name == "Fire")?.Id ?? Guid.NewGuid(), "Fire at Market Road", 9.6618, 80.0089, ServiceType.Fire),
-                new Alert(Guid.NewGuid(), Guid.NewGuid(), alertTypes.FirstOrDefault(t => t.Name == "Accident")?.Id ?? Guid.NewGuid(), "Car accident on Main Street", 9.6750, 80.0334, ServiceType.Ambulance),
+                new Alert(
+                    Guid.NewGuid(), // CitizenId
+                    alertTypes.FirstOrDefault(t => t.Name == "Fire")?.Id ?? Guid.NewGuid(), // AlertTypeId
+                    "Fire at Market Road",
+                    9.6618,
+                    80.0089,
+                    ServiceType.Fire
+                ),
+                new Alert(
+                    Guid.NewGuid(), // CitizenId
+                    alertTypes.FirstOrDefault(t => t.Name == "Accident")?.Id ?? Guid.NewGuid(), // AlertTypeId
+                    "Car accident on Main Street",
+                    9.6750,
+                    80.0334,
+                    ServiceType.Ambulance
+                )
             };
 
             await context.Alerts.AddRangeAsync(alerts);
             await context.SaveChangesAsync();
         }
+
     }
 }

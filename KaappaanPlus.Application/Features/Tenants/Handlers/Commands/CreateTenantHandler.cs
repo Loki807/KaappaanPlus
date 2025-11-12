@@ -17,20 +17,17 @@ namespace KaappaanPlus.Application.Features.Tenants.Handlers.Commands
         private readonly IRoleRepository _roleRepo;
         private readonly IAppDbContext _dbContext;
         private readonly IMapper _mapper;
-        private readonly ILogger<CreateTenantHandler> _logger;
 
         public CreateTenantHandler(
             ITenantRepository tenantRepo,
             IRoleRepository roleRepo,
             IAppDbContext dbContext,
-            IMapper mapper,
-            ILogger<CreateTenantHandler> logger)
+            IMapper mapper)
         {
             _tenantRepo = tenantRepo;
             _roleRepo = roleRepo;
             _dbContext = dbContext;
             _mapper = mapper;
-            _logger = logger;
         }
 
         public async Task<Guid> Handle(CreateTenantCommand request, CancellationToken cancellationToken)
@@ -51,14 +48,13 @@ namespace KaappaanPlus.Application.Features.Tenants.Handlers.Commands
 
             // ✅ Save
             var tenantId = await _tenantRepo.AddAsync(tenant, cancellationToken);
-            _logger.LogInformation("✅ Tenant created: {TenantName} ({ServiceType})", tenant.Name, tenant.ServiceType);
 
             // ✅ Auto-create TenantAdmin only if not exists
             var alreadyHasAdmin = await _tenantRepo.TenantAdminExistsAsync(tenantId, cancellationToken);
             if (!alreadyHasAdmin)
                 await CreateTenantAdminAsync(tenant, cancellationToken);
             else
-                _logger.LogWarning("⚠️ TenantAdmin already exists for {TenantName}", tenant.Name);
+                return tenantId; // instead of _logger.LogWarning
 
             return tenantId;
         }
@@ -69,8 +65,8 @@ namespace KaappaanPlus.Application.Features.Tenants.Handlers.Commands
             var role = await _roleRepo.GetByNameAsync("TenantAdmin", ct);
             if (role == null)
             {
-                _logger.LogWarning("⚠️ Role 'TenantAdmin' not found for {TenantName}", tenant.Name);
-                return;
+                // ⚠️ Role not found; skip admin creation
+                throw new Exception($"Role 'TenantAdmin' not found for tenant {tenant.Name}");
             }
 
             // ✅ Clean email pattern
@@ -100,9 +96,8 @@ namespace KaappaanPlus.Application.Features.Tenants.Handlers.Commands
             await _dbContext.AddEntityAsync(admin, ct);
             await _dbContext.SaveChangesAsync(ct);
 
-            // 7️⃣ Log credentials
-            _logger.LogInformation("✅ TenantAdmin created for {TenantName}. Email: {Email}", tenant.Name, email);
-            _logger.LogInformation("🔑 Default password: Admin@123");
+            // ✅ Return confirmation instead of log
+            return;
         }
     }
 }

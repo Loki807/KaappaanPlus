@@ -15,13 +15,12 @@ namespace KaappaanPlus.Application.Features.Citizens.Handlers.Commands
     {
         private readonly ICitizenRepository _citizenRepo;
         private readonly IUserRepository _userRepo;
-        private readonly ILogger<UpdateCitizenHandler> _logger;
-
+       
         public UpdateCitizenHandler(ICitizenRepository citizenRepo, IUserRepository userRepo, ILogger<UpdateCitizenHandler> logger)
         {
             _citizenRepo = citizenRepo;
             _userRepo = userRepo;
-            _logger = logger;
+           
         }
 
         public async Task<Unit> Handle(UpdateCitizenCommand request, CancellationToken cancellationToken)
@@ -46,7 +45,7 @@ namespace KaappaanPlus.Application.Features.Citizens.Handlers.Commands
             await _userRepo.UpdateAsync(appUser);
             await _citizenRepo.UpdateAsync(citizen);
 
-            _logger.LogInformation($"Citizen ({citizen.Id}) and AppUser ({appUser.Id}) updated successfully.");
+           
             return Unit.Value;
         }
     }

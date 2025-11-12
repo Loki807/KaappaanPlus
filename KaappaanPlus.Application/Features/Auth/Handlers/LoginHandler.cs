@@ -10,12 +10,11 @@ namespace KaappaanPlus.Application.Features.Auth.Handlers
     public class LoginHandler : IRequestHandler<LoginCommand, LoginResponseDto>
     {
         private readonly IAuthService _authService;
-        private readonly ILogger<LoginHandler> _logger;
-
+       
         public LoginHandler(IAuthService authService, ILogger<LoginHandler> logger)
         {
             _authService = authService;
-            _logger = logger;
+           
         }
 
         public async Task<LoginResponseDto> Handle(LoginCommand request, CancellationToken cancellationToken)
@@ -27,7 +26,6 @@ namespace KaappaanPlus.Application.Features.Auth.Handlers
                 // 🔹 If user must change password
                 if (result.Message.Contains("Password change required"))
                 {
-                    _logger.LogWarning("Password change required for {Email}", request.LoginDto.Email);
                     return new LoginResponseDto
                     {
                         Token = string.Empty,
@@ -41,8 +39,9 @@ namespace KaappaanPlus.Application.Features.Auth.Handlers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Login failed for {Email}", request.LoginDto.Email);
-                throw;
+
+                // 🔹 General fallback exception
+                throw new Exception($"Login failed due to an unexpected error: {ex.Message}");
             }
         }
     }
