@@ -24,7 +24,7 @@ namespace KaappaanPlus.Infrastructure
             services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IAuthService, AuthService>();
-
+            services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<IRoleRepository, RoleRepository>();
             // services.AddScoped<ITenantRepository, TenantRepository>();
             // services.AddScoped<IUserRepository, UserRepository>();
