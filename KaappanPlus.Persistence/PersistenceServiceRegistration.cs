@@ -40,7 +40,9 @@ namespace KaappanPlus.Persistence
             services.AddScoped<IRoleRepository, RoleRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             //services.AddScoped<IAlertResponderRepository, AlertResponderRepository>();
-            services.AddScoped<IAlertResponderRepository, AlertResponderRepository>(); // ✅ ADD THIS LINE
+            services.AddScoped<IAlertResponderRepository, AlertResponderRepository>(); 
+            
+            // ✅ ADD THIS LINE
             return services;
         }
     }

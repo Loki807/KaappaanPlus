@@ -2,6 +2,7 @@
 using KaappaanPlus.Application;
 using KaappaanPlus.Application.Common.Exceptions;
 using KaappaanPlus.Infrastructure;
+using KaappaanPlus.WebApi.Hubs;
 using KaappanPlus.Persistence;
 using KaappanPlus.Persistence.Data;
 using KaappanPlus.Persistence.Seeds;
@@ -57,7 +58,7 @@ namespace KaappaanPlus.WebApi
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
-           
+            builder.Services.AddSignalR();
 
             var app = builder.Build();
 
@@ -82,7 +83,7 @@ namespace KaappaanPlus.WebApi
             app.UseAuthorization();
 
             app.UseCors("AllowAngular");
-
+            app.MapHub<AlertHub>("/alertHub");
             app.MapControllers();
 
             
