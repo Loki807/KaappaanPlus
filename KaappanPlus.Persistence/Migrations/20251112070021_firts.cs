@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace KaappanPlus.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class lokiraj : Migration
+    public partial class firts : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -222,6 +222,8 @@ namespace KaappanPlus.Persistence.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     AlertId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ResponderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    AssignmentReason = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -235,13 +237,24 @@ namespace KaappanPlus.Persistence.Migrations
                         column: x => x.AlertId,
                         principalTable: "Alerts",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_AlertResponders_AppUsers_ResponderId",
+                        column: x => x.ResponderId,
+                        principalTable: "AppUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AlertResponders_AlertId",
                 table: "AlertResponders",
                 column: "AlertId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AlertResponders_ResponderId",
+                table: "AlertResponders",
+                column: "ResponderId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Alerts_AlertTypeId",

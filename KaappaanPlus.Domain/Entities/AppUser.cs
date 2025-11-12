@@ -13,6 +13,9 @@ namespace KaappaanPlus.Domain.Entities
         public string? PasswordHash { get;  set; }    // never store plain password
         public string Role { get;  set; } = default!;
         public bool IsActive { get;  set; } = true;
+        public string? EmailOtp { get; set; }
+        public DateTime? OtpExpiryTime { get; set; }
+        public bool IsEmailConfirmed { get; set; } = false;
 
         // Navigation
         public Tenant Tenant { get; private set; } = default!;
