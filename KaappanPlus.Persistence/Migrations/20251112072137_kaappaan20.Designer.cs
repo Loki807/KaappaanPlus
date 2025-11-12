@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KaappanPlus.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251111071528_lokiraj")]
-    partial class lokiraj
+    [Migration("20251112072137_kaappaan20")]
+    partial class kaappaan20
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -96,11 +96,18 @@ namespace KaappanPlus.Persistence.Migrations
                     b.Property<Guid>("AlertId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("AssignmentReason")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("ResponderId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -111,6 +118,8 @@ namespace KaappanPlus.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AlertId");
+
+                    b.HasIndex("ResponderId");
 
                     b.ToTable("AlertResponders");
                 });
@@ -416,10 +425,18 @@ namespace KaappanPlus.Persistence.Migrations
                     b.HasOne("KaappaanPlus.Domain.Entities.Alert", "Alert")
                         .WithMany()
                         .HasForeignKey("AlertId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("KaappaanPlus.Domain.Entities.AppUser", "Responder")
+                        .WithMany()
+                        .HasForeignKey("ResponderId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Alert");
+
+                    b.Navigation("Responder");
                 });
 
             modelBuilder.Entity("KaappaanPlus.Domain.Entities.AppUser", b =>
