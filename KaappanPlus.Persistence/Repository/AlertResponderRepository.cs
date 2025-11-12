@@ -25,5 +25,13 @@ namespace KaappanPlus.Persistence.Repository
             await _context.AddEntityAsync(alertResponder, cancellationToken);
         }
 
+        public async Task<List<AlertResponder>> GetByAlertIdAsync(Guid alertId, CancellationToken ct)
+        {
+            return await _context.AlertResponders
+                .Include(ar => ar.Alert)      // Include related alert info
+                .Include(ar => ar.Responder)  // Include responder (AppUser)
+                .Where(ar => ar.AlertId == alertId)
+                .ToListAsync(ct);
+        }
     }
 }
