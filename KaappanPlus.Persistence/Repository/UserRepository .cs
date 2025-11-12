@@ -99,11 +99,3 @@ namespace KaappanPlus.Persistence.Repository
         }
     }
 }
-
-
-
-    //lk
-
-    //lk how are you
-
-
