@@ -10,31 +10,32 @@ namespace KaappanPlus.Persistence.Seeds
 {
     public static class SeedDataRunner
     {
-        public static async Task RunAllAsync(AppDbContext context, ILogger logger)
+        public static async Task RunAllAsync(AppDbContext context)
         {
             try
             {
-                logger.LogInformation("🔹 Starting Kaappaan seeding process...");
+                Console.WriteLine("🔹 Starting Kaappaan seeding process...");
 
                 await RoleSeeder.SeedRolesAsync(context);
-                logger.LogInformation("✅ Roles seeded successfully.");
+                Console.WriteLine("✅ Roles seeded successfully.");
 
                 await SuperAdminSeeder.SeedSuperAdminAsync(context);
-                logger.LogInformation("✅ SuperAdmin created.");
-
-                logger.LogInformation("🎉 Seeding completed successfully.");
+                Console.WriteLine("✅ SuperAdmin created.");
 
                 await AlertTypeSeeder.SeedAlertTypesAsync(context);
-                logger.LogInformation("✅ AlertTypes seeded successfully.");
+                Console.WriteLine("✅ AlertTypes seeded successfully.");
+
                 //await AlertResponderSeeder.SeedAlertRespondersAsync(context);
-                await AlertSeeder.SeedAlertsAsync(context);
+                
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "❌ Seeding failed: {Message}", ex.Message);
+                Console.WriteLine($"❌ Seeding failed: {ex.Message}");
+                throw; // Rethrow to stop startup if seeding fails
             }
         }
-
     }
+
 }
+
 

@@ -1,4 +1,5 @@
 ﻿using KaappaanPlus.Application.Contracts;
+using KaappaanPlus.Application.Contracts.Communication;
 using KaappaanPlus.Application.Contracts.Identity;
 using KaappaanPlus.Application.Contracts.Persistence;
 using KaappaanPlus.Infrastructure.Identity;
@@ -25,8 +26,9 @@ namespace KaappaanPlus.Infrastructure
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<IRoleRepository, RoleRepository>();
-           // services.AddScoped<ITenantRepository, TenantRepository>();
-           // services.AddScoped<IUserRepository, UserRepository>();
+            // services.AddScoped<ITenantRepository, TenantRepository>();
+            // services.AddScoped<IUserRepository, UserRepository>();
+           services.AddScoped<IAlertNotifier, SignalRAlertNotifier>();
 
             return services;
         }

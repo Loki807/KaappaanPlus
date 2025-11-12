@@ -12,5 +12,4 @@ namespace KaappaanPlus.Application.Features.Alerts.Requests.Commands
     {
         public CreateAlertDto Alert { get; set; } = default!;
     }
-
 }

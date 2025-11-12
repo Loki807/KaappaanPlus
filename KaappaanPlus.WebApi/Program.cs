@@ -2,6 +2,7 @@
 using KaappaanPlus.Application;
 using KaappaanPlus.Application.Common.Exceptions;
 using KaappaanPlus.Infrastructure;
+using KaappaanPlus.WebApi.Hubs;
 using KaappanPlus.Persistence;
 using KaappanPlus.Persistence.Data;
 using KaappanPlus.Persistence.Seeds;
@@ -57,20 +58,18 @@ namespace KaappaanPlus.WebApi
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
-            builder.Logging.ClearProviders();
-            builder.Logging.AddConsole();
-            builder.Logging.AddFile("Logs/app-log-{Date}.txt", fileSizeLimitBytes: 5_000_000, retainedFileCountLimit: 7);
-
+            builder.Services.AddSignalR();
 
             var app = builder.Build();
 
             // ✅ Run all seeders ONCE at startup
+            // ✅ Run all seeders ONCE at startup
             using (var scope = app.Services.CreateScope())
             {
                 var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-                var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-                await SeedDataRunner.RunAllAsync(db, logger);
+                await SeedDataRunner.RunAllAsync(db);
             }
+
 
             app.UseMiddleware<ErrorHandlingMiddleware>();
             // Configure the HTTP request pipeline.
@@ -84,7 +83,7 @@ namespace KaappaanPlus.WebApi
             app.UseAuthorization();
 
             app.UseCors("AllowAngular");
-
+            app.MapHub<AlertHub>("/alertHub");
             app.MapControllers();
 
             

@@ -19,6 +19,10 @@ namespace KaappaanPlus.Application.Contracts.Persistence
         Task<IEnumerable<Alert>> GetAlertsByCitizenAsync(Guid citizenId, CancellationToken ct = default);
         Task<IEnumerable<Alert>> GetAlertsByTenantAsync(Guid tenantId, CancellationToken ct = default);
 
+
+        Task<List<Alert>> GetAlertsByCitizenIdAsync(Guid citizenId, CancellationToken ct);
+        Task<List<Alert>> GetAlertsByTenantIdAsync(Guid tenantId, CancellationToken ct);
+
     }
 }
 

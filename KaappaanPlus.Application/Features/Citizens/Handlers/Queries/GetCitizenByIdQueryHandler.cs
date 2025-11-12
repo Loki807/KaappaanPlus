@@ -16,13 +16,13 @@ namespace KaappaanPlus.Application.Features.Citizens.Handlers.Queries
     {
         private readonly ICitizenRepository _citizenRepo;
         private readonly IMapper _mapper;
-        private readonly ILogger<GetCitizenByIdQueryHandler> _logger;
+       
 
         public GetCitizenByIdQueryHandler(ICitizenRepository citizenRepo, IMapper mapper, ILogger<GetCitizenByIdQueryHandler> logger)
         {
             _citizenRepo = citizenRepo;
             _mapper = mapper;
-            _logger = logger;
+          
         }
 
         public async Task<CitizenDto> Handle(GetCitizenByIdQuery request, CancellationToken cancellationToken)
@@ -30,7 +30,7 @@ namespace KaappaanPlus.Application.Features.Citizens.Handlers.Queries
             var citizen = await _citizenRepo.GetByIdAsync(request.Id);
             if (citizen == null)
             {
-                _logger.LogWarning($"Citizen not found: {request.Id}");
+               
                 throw new KeyNotFoundException("Citizen not found.");
             }
 

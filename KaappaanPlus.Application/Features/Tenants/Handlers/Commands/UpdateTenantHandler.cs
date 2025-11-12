@@ -17,13 +17,13 @@ namespace KaappaanPlus.Application.Features.Tenants.Handlers.Commands
     {
         private readonly ITenantRepository _tenantRepo;
         private readonly IMapper _mapper;
-        private readonly ILogger<UpdateTenantHandler> _logger;
+       
 
         public UpdateTenantHandler(ITenantRepository tenantRepo, IMapper mapper, ILogger<UpdateTenantHandler> logger)
         {
             _tenantRepo = tenantRepo;
             _mapper = mapper;
-            _logger = logger;
+         
         }
 
         public async Task<Unit> Handle(UpdateTenantCommand request, CancellationToken cancellationToken)
@@ -32,14 +32,14 @@ namespace KaappaanPlus.Application.Features.Tenants.Handlers.Commands
 
             if (existingTenant == null)
             {
-                _logger.LogWarning("❌ Tenant with ID {Id} not found.", request.TenantDto.Id);
+             
                 throw new NotFoundException(nameof(existingTenant), request.TenantDto.Id);
             }
 
             _mapper.Map(request.TenantDto, existingTenant);
             await _tenantRepo.UpdateAsync(existingTenant, cancellationToken);
 
-            _logger.LogInformation("✅ Tenant {Name} updated successfully.", existingTenant.Name);
+            
             return Unit.Value;
         }
     }

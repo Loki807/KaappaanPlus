@@ -16,13 +16,13 @@ namespace KaappaanPlus.Application.Features.Alerts.Handlers.Queries
     {
         private readonly IAlertRepository _alertRepo;
         private readonly IMapper _mapper;
-        private readonly ILogger<GetAlertsByCitizenHandler> _logger;
+       
 
         public GetAlertsByCitizenHandler(IAlertRepository alertRepo, IMapper mapper, ILogger<GetAlertsByCitizenHandler> logger)
         {
             _alertRepo = alertRepo;
             _mapper = mapper;
-            _logger = logger;
+           
         }
 
         public async Task<List<AlertDto>> Handle(GetAlertsByCitizenQuery request, CancellationToken cancellationToken)
@@ -33,12 +33,12 @@ namespace KaappaanPlus.Application.Features.Alerts.Handlers.Queries
             // Check if alerts is null or empty
             if (alerts == null || !alerts.Any())
             {
-                _logger.LogInformation($"No alerts found for Citizen: {request.CitizenId}");
+               
                 return new List<AlertDto>();  // Return an empty list if no alerts found
             }
 
-            // Log the number of alerts fetched
-            _logger.LogInformation($"Fetched {alerts.Count()} alerts for Citizen: {request.CitizenId}");
+          
+           
 
             // Map the fetched alerts to AlertDto and return
             return _mapper.Map<List<AlertDto>>(alerts);

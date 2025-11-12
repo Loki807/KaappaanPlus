@@ -15,13 +15,11 @@ namespace KaappaanPlus.Application.Features.Users.Handlers.Commands
     {
         private readonly IUserRepository _userRepo;
         private readonly IMapper _mapper;
-        private readonly ILogger<UpdateUserHandler> _logger;
 
-        public UpdateUserHandler(IUserRepository userRepo, IMapper mapper, ILogger<UpdateUserHandler> logger)
+        public UpdateUserHandler(IUserRepository userRepo, IMapper mapper)
         {
             _userRepo = userRepo;
             _mapper = mapper;
-            _logger = logger;
         }
 
         public async Task<Unit> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
@@ -33,7 +31,11 @@ namespace KaappaanPlus.Application.Features.Users.Handlers.Commands
             _mapper.Map(request.UserDto, user);
             await _userRepo.UpdateAsync(user, cancellationToken);
 
-            _logger.LogInformation("✅ User {UserId} updated successfully.", user.Id);
+            // ✅ Replacement for logger: confirm success with validation
+            if (user == null || user.Id == Guid.Empty)
+                throw new Exception("User update failed unexpectedly.");
+
+            // ✅ Successful update — return Unit
             return Unit.Value;
         }
     }

@@ -12,12 +12,19 @@ namespace KaappaanPlus.Application.Features.Auth.Validators
     {
         public ChangePasswordDtoValidator()
         {
-            RuleFor(x => x.Email).NotEmpty().EmailAddress();
-            RuleFor(x => x.OldPassword).NotEmpty();
+            RuleFor(x => x.Email).NotEmpty().WithMessage("Email is required")
+                .EmailAddress().WithMessage("Invalid email format");
+
+
+            RuleFor(x => x.OldPassword).NotEmpty().WithMessage("Enter your old password");
+
+
             RuleFor(x => x.NewPassword)
-                .NotEmpty()
-                .MinimumLength(6)
-                .WithMessage("Password must be at least 6 characters long");
+                .NotEmpty().WithMessage("Password cannot be empty!")
+                .MinimumLength(8).WithMessage("Password must be at least 8 characters long")
+                .Matches("[A-Z]").WithMessage("Password must contain at least one uppercase letter.")
+                .Matches("[a-z]").WithMessage("Password must contain at least one lowercase letter.")
+                .Matches("[0-9]").WithMessage("Password must contain at least one number.");
         }
     }
 

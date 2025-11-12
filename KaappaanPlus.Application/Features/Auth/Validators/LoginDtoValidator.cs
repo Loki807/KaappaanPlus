@@ -17,7 +17,7 @@ namespace KaappaanPlus.Application.Features.Auth.DTOs.Validators
 
             RuleFor(x => x.Password)
                 .NotEmpty().WithMessage("Password is required.")
-                .MinimumLength(4).WithMessage("Password must be at least 4 characters long.");
+                .MinimumLength(8).WithMessage("Password must be at least 8 characters long.");
         }
     }
 }
