@@ -16,27 +16,29 @@ namespace KaappaanPlus.Application.Features.Tenants.Handlers.Queries
     {
         private readonly ITenantRepository _tenantRepo;
         private readonly IMapper _mapper;
-        private readonly ILogger<GetAllTenantsHandler> _logger;
 
-        public GetAllTenantsHandler(ITenantRepository tenantRepo, IMapper mapper, ILogger<GetAllTenantsHandler> logger)
+        public GetAllTenantsHandler(ITenantRepository tenantRepo, IMapper mapper)
         {
             _tenantRepo = tenantRepo;
             _mapper = mapper;
-            _logger = logger;
         }
 
         public async Task<List<TenantDto>> Handle(GetAllTenantsQuery request, CancellationToken cancellationToken)
         {
             var tenants = await _tenantRepo.GetAllAsync(cancellationToken);
 
-            if (!tenants.Any())
+            if (tenants == null || !tenants.Any())
             {
-                _logger.LogWarning("⚠️ No tenants found in the system.");
-                return new List<TenantDto>();
+                // ⚠️ If no tenants exist, return empty list or throw message
+                throw new Exception("No tenants found in the system.");
             }
 
-            _logger.LogInformation("✅ {Count} tenants retrieved successfully.", tenants.Count());
-            return _mapper.Map<List<TenantDto>>(tenants);
+            // ✅ Successfully retrieved
+            var tenantList = _mapper.Map<List<TenantDto>>(tenants);
+            if (tenantList == null || tenantList.Count == 0)
+                throw new Exception("Failed to map tenants data.");
+
+            return tenantList;
         }
     }
 }

@@ -16,20 +16,27 @@ namespace KaappaanPlus.Application.Features.Users.Handlers.Query
     {
         private readonly IUserRepository _userRepo;
         private readonly IMapper _mapper;
-        private readonly ILogger<GetAllUsersHandler> _logger;
 
-        public GetAllUsersHandler(IUserRepository userRepo, IMapper mapper, ILogger<GetAllUsersHandler> logger)
+        public GetAllUsersHandler(IUserRepository userRepo, IMapper mapper)
         {
             _userRepo = userRepo;
             _mapper = mapper;
-            _logger = logger;
         }
 
         public async Task<List<UserDto>> Handle(GetAllUsersQuery request, CancellationToken cancellationToken)
         {
             var users = await _userRepo.GetByTenantIdAsync(request.TenantId, cancellationToken);
-            _logger.LogInformation("📄 Retrieved {Count} users for Tenant {TenantId}", users.Count(), request.TenantId);
-            return _mapper.Map<List<UserDto>>(users);
+
+            if (users == null || !users.Any())
+                throw new Exception($"No users found for Tenant ID: {request.TenantId}");
+
+            var mappedUsers = _mapper.Map<List<UserDto>>(users);
+
+            if (mappedUsers == null || mappedUsers.Count == 0)
+                throw new Exception("Failed to map user data.");
+
+            // ✅ Success — return mapped list
+            return mappedUsers;
         }
     }
 }

@@ -29,15 +29,18 @@ namespace KaappaanPlus.Domain.Entities
         public Tenant Tenant { get;  set; } = default!;
 
         // Updated constructor to accept latitude, longitude, and service type
-        public Alert(Guid citizenId, Guid tenantId, Guid alertTypeId, string description, double latitude, double longitude, ServiceType serviceType)
+        public Alert(Guid citizenId, Guid alertTypeId, string description, double latitude, double longitude, ServiceType serviceType)
         {
             CitizenId = citizenId;
-            TenantId = tenantId;
             AlertTypeId = alertTypeId;
             Description = description;
             Latitude = latitude;
             Longitude = longitude;
             ServiceType = serviceType;
+
+            // ✅ Auto-generate location string from coordinates
+            Location = $"{latitude}, {longitude}";
+
             SetCreated("system");
         }
 

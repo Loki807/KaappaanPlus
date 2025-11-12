@@ -14,13 +14,12 @@ namespace KaappaanPlus.Application.Features.Citizens.Handlers.Commands
     {
         private readonly ICitizenRepository _citizenRepo;
         private readonly IUserRepository _userRepo;
-        private readonly ILogger<DeleteCitizenHandler> _logger;
-
+       
         public DeleteCitizenHandler(ICitizenRepository citizenRepo, IUserRepository userRepo, ILogger<DeleteCitizenHandler> logger)
         {
             _citizenRepo = citizenRepo;
             _userRepo = userRepo;
-            _logger = logger;
+          
         }
 
         public async Task<Unit> Handle(DeleteCitizenCommand request, CancellationToken cancellationToken)
@@ -28,7 +27,6 @@ namespace KaappaanPlus.Application.Features.Citizens.Handlers.Commands
             var citizen = await _citizenRepo.GetByIdAsync(request.Id);
             if (citizen == null)
             {
-                _logger.LogWarning($"Citizen not found for ID {request.Id}");
                 throw new KeyNotFoundException("Citizen not found.");
             }
 
@@ -42,10 +40,10 @@ namespace KaappaanPlus.Application.Features.Citizens.Handlers.Commands
             if (appUser != null)
             {
                 await _userRepo.DeleteAsync(appUser);
-                _logger.LogInformation($"AppUser deleted for Citizen {request.Id}");
+
             }
 
-            _logger.LogInformation($"Citizen deleted successfully (ID: {request.Id})");
+          
             return Unit.Value;
         }
     }

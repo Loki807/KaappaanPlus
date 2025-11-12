@@ -16,13 +16,13 @@ namespace KaappaanPlus.Application.Features.Alerts.Handlers.Queries
     {
         private readonly IAlertRepository _alertRepo;
         private readonly IMapper _mapper;
-        private readonly ILogger<GetAlertsByTenantHandler> _logger;
+      
 
         public GetAlertsByTenantHandler(IAlertRepository alertRepo, IMapper mapper, ILogger<GetAlertsByTenantHandler> logger)
         {
             _alertRepo = alertRepo;
             _mapper = mapper;
-            _logger = logger;
+          
         }
 
         public async Task<List<AlertDto>> Handle(GetAlertsByTenantQuery request, CancellationToken cancellationToken)
@@ -31,11 +31,11 @@ namespace KaappaanPlus.Application.Features.Alerts.Handlers.Queries
 
             if (alerts == null || !alerts.Any())
             {
-                _logger.LogInformation($"No alerts found for Tenant: {request.TenantId}");
+               
                 return new List<AlertDto>();  // Return an empty list if no alerts are found.
             }
 
-            _logger.LogInformation($"Fetched {alerts.Count()} alerts for Tenant: {request.TenantId}");
+            
 
             // Mapping the alerts to AlertDto and returning the result
             return _mapper.Map<List<AlertDto>>(alerts);

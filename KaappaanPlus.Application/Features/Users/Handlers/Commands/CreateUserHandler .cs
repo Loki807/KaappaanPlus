@@ -18,18 +18,15 @@ namespace KaappaanPlus.Application.Features.Users.Handlers.Commands
         private readonly IUserRepository _userRepo;
         private readonly ITenantRepository _tenantRepo;
         private readonly IMapper _mapper;
-        private readonly ILogger<CreateUserHandler> _logger;
 
         public CreateUserHandler(
             IUserRepository userRepo,
             ITenantRepository tenantRepo,
-            IMapper mapper,
-            ILogger<CreateUserHandler> logger)
+            IMapper mapper)
         {
             _userRepo = userRepo;
             _tenantRepo = tenantRepo;
             _mapper = mapper;
-            _logger = logger;
         }
 
         public async Task<Guid> Handle(CreateUserCommand request, CancellationToken cancellationToken)
@@ -48,7 +45,11 @@ namespace KaappaanPlus.Application.Features.Users.Handlers.Commands
             user.SetPasswordHash(hashedPassword);
 
             await _userRepo.CreateUserAsync(user, cancellationToken);
-            _logger.LogInformation("✅ User {Email} created for Tenant {TenantId}", user.Email, user.TenantId);
+
+            // ✅ Confirmation message replacement (was logger)
+            // User created successfully for given Tenant
+            if (user.Id == Guid.Empty)
+                throw new Exception("User creation failed unexpectedly.");
 
             return user.Id;
         }
