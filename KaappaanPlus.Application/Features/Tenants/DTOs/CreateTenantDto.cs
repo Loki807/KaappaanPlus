@@ -9,7 +9,8 @@ namespace KaappaanPlus.Application.Features.Tenants.DTOs
     public class CreateTenantDto
     {
         public string Name { get; set; } = default!;
-        
+        public string Email { get; set; } = default!; // Email for both Tenant and TenantAdmin
+
         public string? AddressLine1 { get; set; }
         public string? AddressLine2 { get; set; }
         public string? City { get; set; }

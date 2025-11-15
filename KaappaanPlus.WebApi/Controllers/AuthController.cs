@@ -27,14 +27,20 @@ namespace KaappaanPlus.WebApi.Controllers
         {
             var result = await _mediator.Send(new LoginCommand { LoginDto = dto });
 
-            // ✅ Professional login notification email
+            // ❗ If email is not verified do NOT send login email
+            if (!result.IsEmailConfirmed)
+            {
+                return BadRequest(new { message = "Email not verified. Please verify OTP." });
+            }
+
+            // 📨 Send login notification email
             string loginMessage = $@"
-             <h2>Kaappaan Login Alert</h2>
-             <p>Hi <strong>{result.Name}</strong>,</p>
-             <p>Your account was successfully logged in on <strong>{DateTime.Now:dddd, MMMM dd, yyyy hh:mm tt}</strong>.</p>
-             <p>If this was not you, please reset your password immediately for your safety.</p>
-             <p>Stay safe,<br/>The Kaappaan Security Team</p>
-              ";
+         <h2>Kaappaan Login Alert</h2>
+         <p>Hi <strong>{result.Name}</strong>,</p>
+         <p>Your account was successfully logged in on 
+         <strong>{DateTime.Now:dddd, MMMM dd, yyyy hh:mm tt}</strong>.</p>
+         <p>If this was not you, please reset your password immediately.</p>
+         <p>Stay safe,<br/>Kaappaan Team</p>";
 
             await _notificationService.SendEmailAsync(
                 dto.Email,
@@ -44,6 +50,7 @@ namespace KaappaanPlus.WebApi.Controllers
 
             return Ok(result);
         }
+
 
 
         // ✅ ME
@@ -77,15 +84,19 @@ namespace KaappaanPlus.WebApi.Controllers
         }
 
         // ✅ VERIFY OTP
+        // ✅ VERIFY OTP
         [HttpPost("verify-otp")]
         public async Task<IActionResult> VerifyOtp([FromBody] VerifyOtpDto dto)
         {
-            var success = await _mediator.Send(new VerifyOtpCommand { VerifyOtpDto = dto });
-            if (!success)
-                return BadRequest("Invalid or expired OTP");
+            var response = await _mediator.Send(new VerifyOtpCommand { VerifyOtpDto = dto });
 
-            return Ok(new { Message = "Email verified successfully ✅" });
+            // ❗ No need for `if (!result)` because it's not bool anymore
+            if (response == null)
+                return BadRequest("Invalid OTP");
+
+            return Ok(response);
         }
+
 
 
 

@@ -36,6 +36,13 @@ namespace KaappaanPlus.WebApi.Controllers
             return Ok(new { message = "Alert created successfully", alertId = createdAlertId });
         }
 
+
+
+
+
+
+
+
         // GET ALERTS by Citizen (citizenId)
         [HttpGet("citizen/{citizenId}")]
         [Authorize(Roles = "Citizen, SuperAdmin, TenantAdmin")] // Citizens can view their own alerts, SuperAdmin and TenantAdmin can view all alerts
@@ -50,7 +57,7 @@ namespace KaappaanPlus.WebApi.Controllers
         [Authorize(Roles = "SuperAdmin, TenantAdmin")] // Only SuperAdmin and TenantAdmin can view alerts for a tenant
         public async Task<IActionResult> GetAlertsByTenant(Guid tenantId)
         {
-            var alerts = await _mediator.Send(new GetAlertsByTenantQuery { TenantId = tenantId });
+            var alerts = await _mediator.Send(new GetAlertsByTenantIdQuery { TenantId = tenantId });
             return Ok(alerts);
         }
 
@@ -74,5 +81,21 @@ namespace KaappaanPlus.WebApi.Controllers
             var updatedAlertId = await _mediator.Send(new UpdateAlertCommand { UpdateAlertDto = updateAlertDto });
             return Ok(new { message = "Alert updated successfully", alertId = updatedAlertId });
         }
+
+
+
+
+
+
+
+
+        [HttpGet("{alertId}/responders")]
+        [Authorize(Roles = "TenantAdmin,Police,Fire,Ambulance,SuperAdmin")]
+        public async Task<IActionResult> GetAlertResponders(Guid alertId)
+        {
+            var list = await _mediator.Send(new GetAlertRespondersQuery { AlertId = alertId });
+            return Ok(list);
+        }
+
     }
 }

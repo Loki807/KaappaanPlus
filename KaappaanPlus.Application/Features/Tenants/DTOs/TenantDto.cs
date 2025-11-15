@@ -18,7 +18,7 @@ namespace KaappaanPlus.Application.Features.Tenants.DTOs
         public string? PostalCode { get; set; }
         public string? ContactNumber { get; set; }
         public string? LogoUrl { get; set; }
-
+        public string Email { get; set; } = default!; // Email for both Tenant and TenantAdmin
         // 🆕 New
         public string ServiceType { get; set; } = default!; // Police / Fire / Ambulance
     }

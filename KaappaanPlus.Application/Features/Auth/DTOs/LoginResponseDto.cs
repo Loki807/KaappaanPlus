@@ -6,11 +6,14 @@ using System.Threading.Tasks;
 
 namespace KaappaanPlus.Application.Features.Auth.DTOs
 {
-    public class LoginResponseDto { 
-        public string Token { get; set; } = default!;
-        public string Name { get; set; } = default!; 
-        public string Role { get; set; } = default!;
-        public bool IsFirstLogin { get; set; } = true;
+    public class LoginResponseDto
+    {
+        public string Token { get; set; } = "";
+        public string Name { get; set; } = "";
+        public string Role { get; set; } = "";
+        public bool IsEmailConfirmed { get; set; }
         public string? Message { get; set; }
+        public bool IsFirstLogin { get; set; } = true;
     }
+
 }

@@ -13,6 +13,8 @@ namespace KaappaanPlus.Domain.Entities
         public string Name { get; private set; } = default!;
         public string Code { get; set; } = default!;
 
+        public string? Email { get;  set; }
+
         public string? AddressLine1 { get; private set; }
         public string? AddressLine2 { get; private set; }
         public string? City { get; private set; }
@@ -31,17 +33,18 @@ namespace KaappaanPlus.Domain.Entities
         private Tenant() { } // EF Core needs this
 
         public Tenant(
-            string name,
-            string code,
-            string? addressLine1,
-            string? addressLine2,
-            string? city,
-            string? stateOrDistrict,
-            string? postalCode,
-            string? contactNumber,
-            string? serviceType,   // 🆕 added parameter
-            string? logoUrl = null
-        )
+        string name,
+        string code,
+        string? addressLine1,
+        string? addressLine2,
+        string? city,
+        string? stateOrDistrict,
+        string? postalCode,
+        string? contactNumber,
+        string? email,  // 🆕 added parameter
+        string? serviceType,   // 🆕 added parameter
+        string? logoUrl = null
+    )
         {
             Name = name;
             Code = code;
@@ -52,10 +55,12 @@ namespace KaappaanPlus.Domain.Entities
             PostalCode = postalCode;
             ContactNumber = contactNumber;
             LogoUrl = logoUrl;
+            Email = email ?? "defaultemail@example.com";  // Ensure email is always set
             ServiceType = serviceType ?? "General"; // fallback if missing
 
             SetCreated("system");
         }
+
 
         public void UpdateAddress(
             string? addressLine1,

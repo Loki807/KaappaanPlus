@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace KaappaanPlus.Application.Features.Auth.Requests
 {
-    public class VerifyOtpCommand : IRequest<bool>
+    public class VerifyOtpCommand : IRequest<VerifyOtpResponseDto>
     {
         public VerifyOtpDto VerifyOtpDto { get; set; } = default!;
     }
