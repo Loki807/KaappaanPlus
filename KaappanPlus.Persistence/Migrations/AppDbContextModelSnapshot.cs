@@ -64,7 +64,7 @@ namespace KaappanPlus.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("TenantId")
+                    b.Property<Guid?>("TenantId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -353,6 +353,9 @@ namespace KaappanPlus.Persistence.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -416,8 +419,7 @@ namespace KaappanPlus.Persistence.Migrations
                     b.HasOne("KaappaanPlus.Domain.Entities.Tenant", "Tenant")
                         .WithMany()
                         .HasForeignKey("TenantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("AlertTypeRef");
 

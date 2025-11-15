@@ -21,10 +21,11 @@ namespace KaappaanPlus.Infrastructure.Identity
 
         public async Task SendEmailAsync(string to, string subject, string body)
         {
-            var smtpHost = _config["EmailSettings:SmtpHost"];
-            var smtpUser = _config["EmailSettings:SmtpUser"];
-            var smtpPass = _config["EmailSettings:SmtpPassword"];
-            var smtpPort = int.Parse(_config["EmailSettings:SmtpPort"]);
+            var smtpHost = _config["EmailSettings:SmtpHost"]!;
+            var smtpUser = _config["EmailSettings:SmtpUser"]!;
+            var smtpPass = _config["EmailSettings:SmtpPassword"]!;
+            var smtpPort = int.Parse(_config["EmailSettings:SmtpPort"]!);
+
 
             var mail = new MailMessage
             {

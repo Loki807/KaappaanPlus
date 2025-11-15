@@ -12,32 +12,20 @@ using System.Threading.Tasks;
 
 namespace KaappaanPlus.Application.Features.Alerts.Handlers.Queries
 {
-    public class GetAlertsByTenantHandler : IRequestHandler<GetAlertsByTenantQuery, List<AlertDto>>
+    public class GetAlertsByTenantIdHandler : IRequestHandler<GetAlertsByTenantIdQuery, List<AlertDto>>
     {
         private readonly IAlertRepository _alertRepo;
         private readonly IMapper _mapper;
-      
 
-        public GetAlertsByTenantHandler(IAlertRepository alertRepo, IMapper mapper, ILogger<GetAlertsByTenantHandler> logger)
+        public GetAlertsByTenantIdHandler(IAlertRepository alertRepo, IMapper mapper)
         {
             _alertRepo = alertRepo;
             _mapper = mapper;
-          
         }
 
-        public async Task<List<AlertDto>> Handle(GetAlertsByTenantQuery request, CancellationToken cancellationToken)
+        public async Task<List<AlertDto>> Handle(GetAlertsByTenantIdQuery request, CancellationToken ct)
         {
-            var alerts = await _alertRepo.GetAlertsByTenantAsync(request.TenantId);
-
-            if (alerts == null || !alerts.Any())
-            {
-               
-                return new List<AlertDto>();  // Return an empty list if no alerts are found.
-            }
-
-            
-
-            // Mapping the alerts to AlertDto and returning the result
+            var alerts = await _alertRepo.GetAlertsByTenantIdAsync(request.TenantId, ct);
             return _mapper.Map<List<AlertDto>>(alerts);
         }
 

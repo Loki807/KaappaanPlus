@@ -15,49 +15,45 @@ using System.Threading.Tasks;
 
 namespace KaappaanPlus.Application.Features.Alerts.Handlers.Commands
 {
+
     public class CreateAlertHandler : IRequestHandler<CreateAlertCommand, Guid>
     {
         private readonly IAlertRepository _alertRepo;
         private readonly IAlertTypeRepository _alertTypeRepo;
         private readonly ICitizenRepository _citizenRepo;
-        private readonly ITenantRepository _tenantRepo;
         private readonly IUserRepository _userRepo;
         private readonly IAlertResponderRepository _responderRepo;
         private readonly IAlertNotifier _notifier;
 
-
         public CreateAlertHandler(
-                 IAlertRepository alertRepo,
-                 IAlertTypeRepository alertTypeRepo,
-                 ICitizenRepository citizenRepo,
-                 ITenantRepository tenantRepo,
-                 IUserRepository userRepo,
-                 IAlertResponderRepository responderRepo,
-                 IAlertNotifier notifier)
+            IAlertRepository alertRepo,
+            IAlertTypeRepository alertTypeRepo,
+            ICitizenRepository citizenRepo,
+            IUserRepository userRepo,
+            IAlertResponderRepository responderRepo,
+            IAlertNotifier notifier)
         {
-                _alertRepo = alertRepo;
-                _alertTypeRepo = alertTypeRepo;
-                _citizenRepo = citizenRepo;
-                _tenantRepo = tenantRepo;
-                _userRepo = userRepo;
-                _responderRepo = responderRepo;
-                _notifier = notifier;
-            }
-
+            _alertRepo = alertRepo;
+            _alertTypeRepo = alertTypeRepo;
+            _citizenRepo = citizenRepo;
+            _userRepo = userRepo;
+            _responderRepo = responderRepo;
+            _notifier = notifier;
+        }
 
         public async Task<Guid> Handle(CreateAlertCommand req, CancellationToken ct)
         {
             var dto = req.Alert;
 
+            // 1️⃣ Validate Citizen
             var citizen = await _citizenRepo.GetByIdAsync(dto.CitizenId)
-                          ?? throw new Exception("Citizen not found");
+                           ?? throw new Exception("Citizen not found");
 
-            var tenant = await _tenantRepo.GetByIdAsync(citizen.TenantId)
-                         ?? throw new Exception("Tenant for citizen not found");
-
+            // 2️⃣ Validate Alert Type
             var type = await _alertTypeRepo.GetByNameAsync(dto.AlertTypeName, ct)
                        ?? throw new Exception($"AlertType '{dto.AlertTypeName}' not found");
 
+            // 3️⃣ Create Alert (no TenantId)
             var alert = new Alert(
                 citizen.Id,
                 type.Id,
@@ -72,27 +68,27 @@ namespace KaappaanPlus.Application.Features.Alerts.Handlers.Commands
 
             await _alertRepo.AddAsync(alert);
 
-            // 🔹 Determine which roles should receive the alert
-            var dispatchOrder = new List<string>();
-            switch (dto.AlertTypeName.Trim().ToLowerInvariant())
+            // 4️⃣ Determine roles to notify
+            var dispatchOrder = type.Service switch
             {
-                case "fire": dispatchOrder.AddRange(new[] { "Fire", "Ambulance", "Police" }); break;
-                case "accident": dispatchOrder.AddRange(new[] { "Police", "Ambulance" }); break;
-                case "crime":
-                case "womensafety": dispatchOrder.Add("Police"); break;
-                case "medical": dispatchOrder.Add("Ambulance"); break;
-                default: dispatchOrder.Add("Police"); break;
-            }
+                ServiceType.Fire => new List<string> { "Fire", "Ambulance", "Police" },
+                ServiceType.Ambulance => new List<string> { "Ambulance", "Police" },
+                ServiceType.Police => new List<string> { "Police" },
+                _ => new List<string> { "Police" }
+            };
 
-            // 🔹 Find responders by their roles in that tenant
-            var responders = await _userRepo.GetRespondersByRolesAsync(tenant.Id, dispatchOrder, ct);
+            // 5️⃣ Find responders across all tenants for these roles
+            var responders = await _userRepo.GetRespondersByRolesAsync(Guid.Empty, dispatchOrder, ct);
+            // 👆 Implement your repo to ignore tenantId if Guid.Empty
 
+            // 6️⃣ Assign responders
             foreach (var responder in responders)
             {
-                await _responderRepo.AddAsync(new AlertResponder(alert.Id, responder.Id, "Auto-assigned"), ct);
+                await _responderRepo.AddAsync(
+                    new AlertResponder(alert.Id, responder.Id, "Auto-assigned global"), ct);
             }
 
-            // ✅ Create payload for SignalR
+            // 7️⃣ Build SignalR payload
             var payload = new
             {
                 AlertId = alert.Id,
@@ -104,11 +100,11 @@ namespace KaappaanPlus.Application.Features.Alerts.Handlers.Commands
                 ReportedAt = DateTime.UtcNow
             };
 
-            // ✅ Broadcast to all responder groups (Police, Fire, Ambulance)
+            // 8️⃣ Broadcast live alert to all responder roles
             await _notifier.SendAlertAsync(payload, dispatchOrder.ToArray());
 
             return alert.Id;
         }
-
     }
+
 }

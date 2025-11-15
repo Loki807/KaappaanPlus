@@ -10,7 +10,7 @@ namespace KaappaanPlus.Domain.Entities
     public class Alert : AuditableEntity
     {
         public Guid CitizenId { get; set; }
-        public Guid TenantId { get;  set; }
+        public Guid? TenantId { get; set; }
         public string Description { get; set; } = default!;
         public string Location { get;  set; } = default!;
         public string Status { get; set; } = "Pending"; // Pending / InProgress / Resolved
@@ -26,8 +26,7 @@ namespace KaappaanPlus.Domain.Entities
         public double Longitude { get;  set; }
 
         public Citizen Citizen { get;  set; } = default!;
-        public Tenant Tenant { get;  set; } = default!;
-
+        public Tenant? Tenant { get; set; }
         // Updated constructor to accept latitude, longitude, and service type
         public Alert(Guid citizenId, Guid alertTypeId, string description, double latitude, double longitude, ServiceType serviceType)
         {

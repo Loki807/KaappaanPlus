@@ -31,6 +31,7 @@ namespace KaappanPlus.Persistence.Seeds
                 postalCode: "00001",
                 contactNumber: "0110000000",
                 serviceType: "System",
+                email: "systemtenant@kaappaan.com",  // Added email here
                 logoUrl: null
             );
 
@@ -39,5 +40,6 @@ namespace KaappanPlus.Persistence.Seeds
 
             return tenant.Id;
         }
+
     }
 }

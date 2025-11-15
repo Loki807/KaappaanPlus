@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace KaappaanPlus.Application.Features.Alerts.Validators
 {
-    public class GetAlertsByTenantValidator : AbstractValidator<GetAlertsByTenantQuery>
+    public class GetAlertsByTenantValidator : AbstractValidator<GetAlertsByTenantIdQuery>
     {
         public GetAlertsByTenantValidator()
         {
