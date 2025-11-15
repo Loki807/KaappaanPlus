@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KaappanPlus.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251113160835_emailadd")]
-    partial class emailadd
+    [Migration("20251115163834_gk")]
+    partial class gk
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -244,9 +244,6 @@ namespace KaappanPlus.Persistence.Migrations
 
                     b.Property<string>("NIC")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");

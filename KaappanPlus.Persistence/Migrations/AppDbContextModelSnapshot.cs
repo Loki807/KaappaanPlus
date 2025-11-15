@@ -242,9 +242,6 @@ namespace KaappanPlus.Persistence.Migrations
                     b.Property<string>("NIC")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 

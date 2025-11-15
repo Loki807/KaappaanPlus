@@ -4,11 +4,6 @@ using KaappaanPlus.Application.Features.Citizens.Requests.Commands;
 using KaappaanPlus.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace KaappaanPlus.Application.Features.Citizens.Handlers.Commands
 {
@@ -32,27 +27,28 @@ namespace KaappaanPlus.Application.Features.Citizens.Handlers.Commands
         {
             var dto = request.Citizen;
 
-            // 🧩 Check duplicate
+            // 1️⃣ Check duplicate email
             var existing = await _userRepo.GetByEmailAsync(dto.Email, cancellationToken);
             if (existing != null)
                 throw new Exception("Citizen already registered with this email.");
 
-            // 🧩 Hash password
+            // 2️⃣ Hash password
             var tempUser = new AppUser(Guid.Empty, dto.FullName, dto.Email, dto.PhoneNumber);
             var hasher = new PasswordHasher<AppUser>();
-            var hashed = hasher.HashPassword(tempUser, dto.Password);
+            var hashedPassword = hasher.HashPassword(tempUser, dto.Password);
 
-            // 🧩 Create AppUser
+            // 3️⃣ Create AppUser
             var appUser = new AppUser(Guid.NewGuid(), dto.FullName, dto.Email, dto.PhoneNumber)
             {
-                PasswordHash = hashed,
+                PasswordHash = hashedPassword,
                 Role = "Citizen",
-                TenantId = null // 👈 Optional if SuperAdmin-based citizen
+                TenantId = null,
+                IsEmailConfirmed = false
             };
 
             await _userRepo.CreateUserAsync(appUser, cancellationToken);
 
-            // 🧩 Create Citizen profile linked to AppUser
+            // 4️⃣ Create Citizen profile
             var citizen = new Citizen(
                 appUser.Id,
                 dto.NIC,
@@ -60,24 +56,22 @@ namespace KaappaanPlus.Application.Features.Citizens.Handlers.Commands
                 dto.EmergencyContact
             );
 
-            // 🧩 Generate and send OTP for email verification
+            await _citizenRepo.AddAsync(citizen);
+
+            // 5️⃣ Generate OTP
             var otp = new Random().Next(100000, 999999).ToString();
+
             appUser.EmailOtp = otp;
             appUser.OtpExpiryTime = DateTime.UtcNow.AddMinutes(5);
-            appUser.IsEmailConfirmed = false;
 
             await _userRepo.UpdateAsync(appUser, cancellationToken);
 
-            // Send email
+            // 6️⃣ Send OTP Email
             await _notificationService.SendEmailAsync(
                 appUser.Email,
-                "Kaappaan - Email Verification Code",
-                $"Your verification code is <b>{otp}</b>. It will expire in 5 minutes."
+                "Kaappaan - Email Verification",
+                $"Your OTP verification code is <b>{otp}</b>. It expires in 5 minutes."
             );
-
-            await _citizenRepo.AddAsync(citizen);
-
-           
 
             return appUser.Id;
         }

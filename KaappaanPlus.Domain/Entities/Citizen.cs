@@ -10,29 +10,25 @@ namespace KaappaanPlus.Domain.Entities
 {
     public class Citizen : AuditableEntity
     {
-        public Guid AppUserId { get; private set; }      // FK to AppUser
+        public Guid AppUserId { get; private set; }
         public AppUser AppUser { get; private set; } = default!;
 
         public string? NIC { get; private set; }
-
-
-       
         public string? Address { get; private set; }
         public string? EmergencyContact { get; private set; }
-        public Guid TenantId { get; private set; }  // Add this
-        private Citizen() { } // EF Core needs this
 
-        // ✅ Constructor
+        private Citizen() { }
+
         public Citizen(Guid appUserId, string? nic, string? address, string? emergencyContact = null)
         {
             AppUserId = appUserId;
             NIC = nic;
             Address = address;
             EmergencyContact = emergencyContact;
+
             SetCreated("system");
         }
 
-        // ✅ Update profile safely
         public void UpdateProfile(string? nic, string? address, string? emergencyContact)
         {
             NIC = nic;
@@ -40,17 +36,6 @@ namespace KaappaanPlus.Domain.Entities
             EmergencyContact = emergencyContact;
             SetUpdated("system");
         }
-
-        public Citizen(Guid appUserId, string? nic, string? address, Guid tenantId, string? emergencyContact = null)
-        {
-            AppUserId = appUserId;
-            NIC = nic;
-            Address = address;
-            TenantId = tenantId;
-            EmergencyContact = emergencyContact;
-            SetCreated("system");
-        }
-
-      
     }
+
 }
