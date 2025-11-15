@@ -19,9 +19,15 @@ namespace KaappaanPlus.WebApi.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> RegisterCitizen([FromBody] CitizenRegisterDto dto)
         {
-            var id = await _mediator.Send(new RegisterCitizenCommand { Citizen = dto });
-            return Ok(new { message = "Citizen registered successfully ✅", userId = id });
+            var userId = await _mediator.Send(new RegisterCitizenCommand { Citizen = dto });
+
+            return Ok(new
+            {
+                message = "OTP sent to your email. Please verify to activate your account.",
+                userId = userId
+            });
         }
+
 
         [HttpPut("update/{id}")]
         public async Task<IActionResult> Update(Guid id, [FromBody] UpdateCitizenDto dto)

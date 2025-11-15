@@ -42,7 +42,7 @@ namespace KaappaanPlus.WebApi
                 });
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy("Frontends", policy =>
+                options.AddPolicy("AllowAll", policy =>
                     policy
                         .WithOrigins(
                             "http://localhost:4200",   // Angular
