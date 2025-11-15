@@ -63,13 +63,20 @@ namespace KaappanPlus.Persistence.Repository
         public async Task DeleteAsync(Guid id, CancellationToken ct = default)
         {
             var tenant = await _context.Tenants.FindAsync(new object[] { id }, ct);
+
             if (tenant != null)
             {
-                tenant.IsActive = false;
-                _context.Tenants.Update(tenant);
-                await _context.SaveChangesAsync(ct);
+                var users = _context.AppUsers.Where(u => u.TenantId == id).ToList();
+                foreach (var u in users)
+                {
+                    u.TenantId = null;
+                }
+                _context.Tenants.Remove(tenant);
+                await _context.SaveChangesAsync();
+
             }
         }
+
 
 
         public async Task<bool> ExistsAsync(Guid? tenantId, CancellationToken ct = default)
