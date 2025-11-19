@@ -43,17 +43,13 @@ namespace KaappaanPlus.WebApi
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowAll", policy =>
-                    policy
-                        .WithOrigins(
-                            "http://localhost:4200",   // Angular
-                            "http://127.0.0.1:5500",   // Live Server (your HTML)
-                            "http://localhost:5500"    // Live Server alt
-                        )
-                        .AllowAnyHeader()
-                        .AllowAnyMethod()
-                        .AllowCredentials()           // important for SignalR/websockets
-                );
+                {
+                    policy.AllowAnyOrigin()
+                          .AllowAnyHeader()
+                          .AllowAnyMethod();
+                });
             });
+
 
 
             builder.Services.AddAuthorization();
@@ -87,10 +83,13 @@ namespace KaappaanPlus.WebApi
             }
             app.UseMiddleware<ErrorHandlingMiddleware>();
             app.UseHttpsRedirection();
+            app.UseCors("AllowAll");
+
+
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseCors("AllowAll");
+            
             app.MapHub<AlertHub>("/alertHub");
             app.MapControllers();
 

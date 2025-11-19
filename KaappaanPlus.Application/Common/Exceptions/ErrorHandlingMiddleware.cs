@@ -53,8 +53,16 @@ namespace KaappaanPlus.Application.Common.Exceptions
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Unhandled exception");
-                await HandleExceptionAsync(context, HttpStatusCode.InternalServerError, "An unexpected error occurred");
+
+                await HandleExceptionAsync(context,
+                    HttpStatusCode.InternalServerError,
+                    new
+                    {
+                        error = ex.Message,
+                        stack = ex.StackTrace
+                    });
             }
+
         }
 
         private static async Task HandleExceptionAsync(HttpContext context, HttpStatusCode code, object message)

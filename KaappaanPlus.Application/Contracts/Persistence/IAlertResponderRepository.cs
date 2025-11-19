@@ -12,8 +12,10 @@ namespace KaappaanPlus.Application.Contracts.Persistence
         Task AddAsync(AlertResponder alertResponder, CancellationToken cancellationToken = default);
 
 
-
-
+        Task<List<AlertResponder>> GetRespondersByAlertAsync(Guid alertId);
+        Task<AlertResponder?> GetByAlertAndResponderAsync(Guid alertId, Guid responderId);
+        Task UpdateAsync(AlertResponder entity);
+        Task<AlertResponder?> GetByAlertAndResponderAsync(Guid alertId, Guid responderId, CancellationToken ct);
         Task<List<AlertResponder>> GetByAlertIdAsync(Guid alertId, CancellationToken ct);
     }
 }

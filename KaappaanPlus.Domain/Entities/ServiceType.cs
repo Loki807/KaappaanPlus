@@ -8,10 +8,13 @@ namespace KaappaanPlus.Domain.Entities
 {
     public enum ServiceType
     {
-        Police,
-        Fire,
-        Ambulance,
-        DisasterManagement,
-        CoastGuard
+        Police,             // Crime / harassment alerts
+        Fire,               // Fire emergencies
+        Ambulance,          // Medical / accident alerts
+        DisasterManagement, // Natural disasters, landslides, floods
+        CoastGuard,         // Beach & sea emergencies
+
+        University          // University student emergencies handled by staff
     }
+
 }
