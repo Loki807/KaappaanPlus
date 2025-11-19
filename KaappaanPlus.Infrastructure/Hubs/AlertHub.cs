@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.SignalR;
-using System.Text.RegularExpressions;
 
 namespace KaappaanPlus.WebApi.Hubs
 {
@@ -11,10 +10,18 @@ namespace KaappaanPlus.WebApi.Hubs
             await base.OnConnectedAsync();
         }
 
-        public async Task JoinResponderGroup(string role)
+        // Citizen or Responder joins the alert group
+        public async Task JoinAlertGroup(string alertId)
         {
-            await Groups.AddToGroupAsync(Context.ConnectionId, role);
-            Console.WriteLine($"✅ {Context.ConnectionId} joined {role}");
+            await Groups.AddToGroupAsync(Context.ConnectionId, alertId);
+            Console.WriteLine($"✔ Joined alert group: {alertId} ({Context.ConnectionId})");
+        }
+
+        // Optional: for leaving
+        public async Task LeaveAlertGroup(string alertId)
+        {
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, alertId);
+            Console.WriteLine($"❌ Left alert group: {alertId} ({Context.ConnectionId})");
         }
     }
 }

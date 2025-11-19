@@ -69,13 +69,39 @@ namespace KaappaanPlus.Application.Features.Alerts.Handlers.Commands
             await _alertRepo.AddAsync(alert);
 
             // 4️⃣ Determine roles to notify
-            var dispatchOrder = type.Service switch
+            // SEND ALERT ALSO TO TENANT ADMIN
+            // 4️⃣ Determine roles to notify
+            var dispatchOrder = new List<string> { "TenantAdmin" };
+
+            // ⭐ Special rule for StudentSOS
+            if (type.Name == "StudentSOS")
             {
-                ServiceType.Fire => new List<string> { "Fire", "Ambulance", "Police" },
-                ServiceType.Ambulance => new List<string> { "Ambulance", "Police" },
-                ServiceType.Police => new List<string> { "Police" },
-                _ => new List<string> { "Police" }
-            };
+                dispatchOrder.Add("UniversityStaff");
+            }
+            else
+            {
+                // Normal routing for other alert types
+                switch (type.Service)
+                {
+                    case ServiceType.Fire:
+                        dispatchOrder.AddRange(new[] { "Fire", "Ambulance", "Police" });
+                        break;
+
+                    case ServiceType.Ambulance:
+                        dispatchOrder.AddRange(new[] { "Ambulance", "Police" });
+                        break;
+
+                    case ServiceType.Police:
+                        dispatchOrder.Add("Police");
+                        break;
+
+                    default:
+                        dispatchOrder.Add("Police");
+                        break;
+                }
+            }
+
+
 
             // 5️⃣ Find responders across all tenants for these roles
             var responders = await _userRepo.GetRespondersByRolesAsync(Guid.Empty, dispatchOrder, ct);
@@ -101,7 +127,7 @@ namespace KaappaanPlus.Application.Features.Alerts.Handlers.Commands
             };
 
             // 8️⃣ Broadcast live alert to all responder roles
-            await _notifier.SendAlertAsync(payload, dispatchOrder.ToArray());
+            await _notifier.SendAlertAsync(payload, dispatchOrder.Distinct().ToArray());
 
             return alert.Id;
         }

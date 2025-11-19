@@ -26,7 +26,9 @@ namespace KaappanPlus.Persistence.Seeds
                 new Role("Police"),
                 new Role("Fire"),
                 new Role("Traffic"),
-                new Role("Ambulance")
+                new Role("Ambulance"),
+                new Role("UniversityStaff")
+
             };
 
             await context.Roles.AddRangeAsync(roles);

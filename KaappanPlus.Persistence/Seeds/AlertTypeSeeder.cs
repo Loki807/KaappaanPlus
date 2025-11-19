@@ -21,7 +21,8 @@ namespace KaappanPlus.Persistence.Seeds
                 new AlertType("Accident", "Vehicle or road accidents", ServiceType.Ambulance),
                 new AlertType("WomenSafety", "Emergency for women safety", ServiceType.Police),
                 new AlertType("Crime", "Robbery, murder or criminal activity", ServiceType.Police),
-                new AlertType("Medical", "Medical or health emergencies", ServiceType.Ambulance)
+                new AlertType("Medical", "Medical or health emergencies", ServiceType.Ambulance),
+                new AlertType("StudentSOS", "Student emergency inside university", ServiceType.University)
             };
 
             await context.AlertTypes.AddRangeAsync(types);

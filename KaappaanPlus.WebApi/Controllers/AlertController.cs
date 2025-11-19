@@ -1,7 +1,11 @@
 ﻿using KaappaanPlus.Application.Contracts.Persistence;
+using KaappaanPlus.Application.Extensions;
 using KaappaanPlus.Application.Features.Alerts.DTOs;
 using KaappaanPlus.Application.Features.Alerts.Requests.Commands;
 using KaappaanPlus.Application.Features.Alerts.Requests.Queries;
+using KaappaanPlus.Application.Features.Responders.DTOs;
+using KaappaanPlus.Application.Features.Responders.Handlers.Commands;
+using KaappaanPlus.Application.Features.Responders.Request.Commands;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -96,6 +100,58 @@ namespace KaappaanPlus.WebApi.Controllers
             var list = await _mediator.Send(new GetAlertRespondersQuery { AlertId = alertId });
             return Ok(list);
         }
+
+
+        [HttpPost("accept")]
+        [Authorize(Roles = "Police,Fire,Ambulance,TenantAdmin")]
+        public async Task<IActionResult> AcceptAlert([FromBody] AcceptAlertDto dto)
+        {
+            var responderId = User.GetUserId(); // Extension method
+
+            var id = await _mediator.Send(new AcceptAlertCommand
+            {
+                AlertId = dto.AlertId,
+                ResponderId = responderId
+            });
+
+            return Ok(new { message = "Alert accepted", alertId = id });
+        }
+
+
+
+        [HttpPost("location/update")]
+        [Authorize(Roles = "Police,Fire,Ambulance")]
+        public async Task<IActionResult> UpdateResponderLocation([FromBody] UpdateResponderLocationDto dto)
+        {
+            var responderId = User.GetUserId();
+
+            await _mediator.Send(new UpdateResponderLocationCommand
+            {
+                AlertId = dto.AlertId,
+                ResponderId = responderId,
+                Latitude = dto.Latitude,
+                Longitude = dto.Longitude
+            });
+
+            return Ok(new { message = "Location updated" });
+        }
+
+
+        [HttpPost("complete")]
+        [Authorize(Roles = "Police,Fire,Ambulance")]
+        public async Task<IActionResult> CompleteAlert([FromBody] AcceptAlertDto dto)
+        {
+            var responderId = User.GetUserId();
+
+            var id = await _mediator.Send(new CompleteAlertCommand
+            {
+                AlertId = dto.AlertId,
+                ResponderId = responderId
+            });
+
+            return Ok(new { message = "Alert marked completed", alertId = id });
+        }
+
 
     }
 }
