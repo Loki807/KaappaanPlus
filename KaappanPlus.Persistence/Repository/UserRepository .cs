@@ -97,5 +97,13 @@ namespace KaappanPlus.Persistence.Repository
                 .Where(u => u.TenantId == tenantId && roles.Contains(u.Role))
                 .ToListAsync(ct);
         }
+
+        public async Task<AppUser?> GetTenantAdminByTenantIdAsync(Guid tenantId)
+        {
+            return await _context.AppUsers
+                .Where(u => u.TenantId == tenantId && u.Role == "TenantAdmin")
+                .FirstOrDefaultAsync();
+        }
+
     }
 }

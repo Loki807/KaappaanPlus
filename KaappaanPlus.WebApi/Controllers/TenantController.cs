@@ -80,6 +80,17 @@ namespace KaappaanPlus.WebApi.Controllers
         }
 
 
+
+        [HttpGet("tenants-with-admin")]
+        [Authorize(Roles = "SuperAdmin")]
+        public async Task<IActionResult> GetTenantsWithAdmin()
+        {
+            var result = await _mediator.Send(new GetAllTenantsWithAdminQuery());
+            return Ok(result);
+        }
+
+
+
     }
 }
 

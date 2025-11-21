@@ -32,6 +32,7 @@ namespace KaappaanPlus.Application.Contracts.Persistence
 
 
 
+        Task<AppUser?> GetTenantAdminByTenantIdAsync(Guid tenantId);
 
         Task UpdateAsync(AppUser user, CancellationToken cancellationToken = default);
         Task<AppUser?> GetByEmailAsync(string email, CancellationToken cancellationToken = default);

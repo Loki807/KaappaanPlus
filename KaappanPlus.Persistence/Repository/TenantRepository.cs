@@ -98,6 +98,13 @@ namespace KaappanPlus.Persistence.Repository
         {
             return await _context.Tenants.FirstOrDefaultAsync(t => t.City.ToLower() == city.ToLower(), ct);
         }
+
+        public async Task<List<Tenant>> GetAllAsync()
+        {
+            return await _context.Tenants.ToListAsync();
+        }
+
+
     }
 }
 

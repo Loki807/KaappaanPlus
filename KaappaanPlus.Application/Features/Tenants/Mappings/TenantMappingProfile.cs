@@ -27,6 +27,9 @@ namespace KaappaanPlus.Application.Features.Tenants.Mappings
 
             // 📤 Read (Entity → DTO)
             CreateMap<Tenant, TenantDto>();
+
+
+
         }
     }
 }
