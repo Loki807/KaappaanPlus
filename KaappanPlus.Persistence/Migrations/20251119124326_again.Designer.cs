@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KaappanPlus.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251115163834_gk")]
-    partial class gk
+    [Migration("20251119124326_again")]
+    partial class again
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -105,6 +105,12 @@ namespace KaappanPlus.Persistence.Migrations
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<double?>("Latitude")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("Longitude")
+                        .HasColumnType("float");
 
                     b.Property<Guid>("ResponderId")
                         .HasColumnType("uniqueidentifier");
@@ -264,6 +270,9 @@ namespace KaappanPlus.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("CitizenId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -285,10 +294,12 @@ namespace KaappanPlus.Persistence.Migrations
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid?>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CitizenId");
 
                     b.HasIndex("UserId");
 
@@ -470,11 +481,15 @@ namespace KaappanPlus.Persistence.Migrations
 
             modelBuilder.Entity("KaappaanPlus.Domain.Entities.LocationLog", b =>
                 {
+                    b.HasOne("KaappaanPlus.Domain.Entities.Citizen", "Citizen")
+                        .WithMany()
+                        .HasForeignKey("CitizenId");
+
                     b.HasOne("KaappaanPlus.Domain.Entities.AppUser", "User")
                         .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("Citizen");
 
                     b.Navigation("User");
                 });
