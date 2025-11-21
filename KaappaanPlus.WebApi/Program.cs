@@ -1,5 +1,4 @@
-﻿
-using KaappaanPlus.Application;
+﻿using KaappaanPlus.Application;
 using KaappaanPlus.Application.Common.Exceptions;
 using KaappaanPlus.Infrastructure;
 using KaappaanPlus.WebApi.Hubs;
@@ -7,7 +6,6 @@ using KaappanPlus.Persistence;
 using KaappanPlus.Persistence.Data;
 using KaappanPlus.Persistence.Seeds;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -19,12 +17,12 @@ namespace KaappaanPlus.WebApi
         {
             var builder = WebApplication.CreateBuilder(args);
 
-
-            builder.Services.AddApplicationServices();          // Application Layer
-            builder.Services.AddPersistence(builder.Configuration);  // Persistence Layer
+            // Application Layers
+            builder.Services.AddApplicationServices();
+            builder.Services.AddPersistence(builder.Configuration);
             builder.Services.AddInfrastructureServices(builder.Configuration);
 
-            // JWT auth
+            // JWT Authentication
             var jwt = builder.Configuration.GetSection("JwtSettings");
             builder.Services
                 .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -40,61 +38,51 @@ namespace KaappaanPlus.WebApi
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt["Key"]!))
                     };
                 });
-            builder.Services.AddCors(options =>
+
+            // CORS
+            builder.Services.AddCors(o =>
             {
-                options.AddPolicy("AllowAll", policy =>
-                {
-                    policy.AllowAnyOrigin()
-                          .AllowAnyHeader()
-                          .AllowAnyMethod();
-                });
+                o.AddPolicy("AllowAll", p =>
+                    p.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
             });
-
-
 
             builder.Services.AddAuthorization();
 
-
-
-
-            // Add services to the container.
-
+            // Controllers + Swagger
             builder.Services.AddControllers();
-            // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-            builder.Services.AddOpenApi();
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen();
+
+            // SignalR
             builder.Services.AddSignalR();
 
             var app = builder.Build();
 
-            // ✅ Run all seeders ONCE at startup
-            // ✅ Run all seeders ONCE at startup
+            // ⭐ ALWAYS ENABLE SWAGGER on EC2/public server
+            app.UseSwagger();
+            app.UseSwaggerUI();
+
+            // ❌ DO NOT USE HTTPS REDIRECT (EC2 without SSL)
+            // app.UseHttpsRedirection();  // Removed
+
+            // Global Error Handler
+            app.UseMiddleware<ErrorHandlingMiddleware>();
+
+            app.UseCors("AllowAll");
+
+            app.UseAuthentication();
+            app.UseAuthorization();
+
+            // Seed Database
             using (var scope = app.Services.CreateScope())
             {
                 var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
                 await SeedDataRunner.RunAllAsync(db);
             }
 
-
-            app.UseMiddleware<ErrorHandlingMiddleware>();
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
-                app.MapOpenApi();
-            }
-            app.UseMiddleware<ErrorHandlingMiddleware>();
-            app.UseHttpsRedirection();
-            app.UseCors("AllowAll");
-
-
-            app.UseAuthentication();
-            app.UseAuthorization();
-
-            
+            // Routes
             app.MapHub<AlertHub>("/alertHub");
             app.MapControllers();
-
-            
-
 
             app.Run();
         }
