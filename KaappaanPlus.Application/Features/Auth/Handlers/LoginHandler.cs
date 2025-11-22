@@ -57,8 +57,13 @@ namespace KaappaanPlus.Application.Features.Auth.Handlers
                 return new LoginResponseDto
                 {
                     IsEmailConfirmed = false,
-                    Message = "OTP sent. Please verify."
+                    Message = "OTP sent. Please verify.",
+                    Name = user.Name,
+                    Role = user.Role,
+                    Token = "",
+                    CitizenId = user.Id   // ⭐ ADD THIS
                 };
+
             }
 
             // ⭐ ADMIN → PASSWORD CHANGE?

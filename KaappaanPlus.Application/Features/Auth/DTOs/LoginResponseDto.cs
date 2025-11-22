@@ -14,6 +14,8 @@ namespace KaappaanPlus.Application.Features.Auth.DTOs
         public bool IsEmailConfirmed { get; set; }
         public string? Message { get; set; }
         public bool IsFirstLogin { get; set; } = true;
+
+        public Guid CitizenId { get; set; }     // ⭐ ADD THIS
     }
 
 }
