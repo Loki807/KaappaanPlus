@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace KaappanPlus.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class gk : Migration
+    public partial class @new : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -128,31 +128,6 @@ namespace KaappanPlus.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "LocationLogs",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Latitude = table.Column<double>(type: "float", nullable: false),
-                    Longitude = table.Column<double>(type: "float", nullable: false),
-                    LoggedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_LocationLogs", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_LocationLogs_AppUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AppUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "UserRoles",
                 columns: table => new
                 {
@@ -220,6 +195,36 @@ namespace KaappanPlus.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "LocationLogs",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    CitizenId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Latitude = table.Column<double>(type: "float", nullable: false),
+                    Longitude = table.Column<double>(type: "float", nullable: false),
+                    LoggedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LocationLogs", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_LocationLogs_AppUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AppUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_LocationLogs_Citizens_CitizenId",
+                        column: x => x.CitizenId,
+                        principalTable: "Citizens",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AlertResponders",
                 columns: table => new
                 {
@@ -227,6 +232,8 @@ namespace KaappanPlus.Persistence.Migrations
                     AlertId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ResponderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     AssignmentReason = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Latitude = table.Column<double>(type: "float", nullable: true),
+                    Longitude = table.Column<double>(type: "float", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -289,6 +296,11 @@ namespace KaappanPlus.Persistence.Migrations
                 name: "IX_Citizens_AppUserId",
                 table: "Citizens",
                 column: "AppUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LocationLogs_CitizenId",
+                table: "LocationLogs",
+                column: "CitizenId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_LocationLogs_UserId",
