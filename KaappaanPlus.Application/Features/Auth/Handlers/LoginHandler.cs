@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 namespace KaappaanPlus.Application.Features.Auth.Handlers
 {
     public class LoginHandler : IRequestHandler<LoginCommand, object>
+
     {
         private readonly IUserRepository _userRepo;
         private readonly IAuthService _authService;

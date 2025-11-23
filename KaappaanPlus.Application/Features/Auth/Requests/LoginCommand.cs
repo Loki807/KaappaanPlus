@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace KaappaanPlus.Application.Features.Auth.Requests
 {
-    public class LoginCommand : IRequest<LoginResponseDto>
+    public class LoginCommand : IRequest<object>
     {
         public LoginDto LoginDto { get; set; } = default!;
     }
