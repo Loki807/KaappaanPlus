@@ -12,6 +12,9 @@ namespace KaappaanPlus.Application.Features.Auth.DTOs
         public string Name { get; set; } = default!;
         public string Role { get; set; } = default!;
         public string Message { get; set; } = default!;
+
+        public Guid CitizenId { get; set; }
+
     }
 
 }

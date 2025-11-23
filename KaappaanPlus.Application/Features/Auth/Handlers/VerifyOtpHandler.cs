@@ -10,11 +10,16 @@ namespace KaappaanPlus.Application.Features.Auth.Handlers
     {
         private readonly IUserRepository _userRepo;
         private readonly IJwtTokenGenerator _jwt;
+        private readonly ICitizenRepository _citizenRepo;   // ⭐ ADDED
 
-        public VerifyOtpHandler(IUserRepository userRepo, IJwtTokenGenerator jwt)
+        public VerifyOtpHandler(
+            IUserRepository userRepo,
+            IJwtTokenGenerator jwt,
+            ICitizenRepository citizenRepo)                 // ⭐ ADDED
         {
             _userRepo = userRepo;
             _jwt = jwt;
+            _citizenRepo = citizenRepo;                    // ⭐ ADDED
         }
 
         public async Task<VerifyOtpResponseDto> Handle(VerifyOtpCommand request, CancellationToken ct)
@@ -38,6 +43,11 @@ namespace KaappaanPlus.Application.Features.Auth.Handlers
 
             await _userRepo.UpdateAsync(user, ct);
 
+            // ⭐ GET CITIZEN RECORD
+            var citizen = await _citizenRepo.GetByUserIdAsync(user.Id);
+            if (citizen == null)
+                throw new Exception("Citizen record not found");
+
             // Generate token after verification
             var token = _jwt.GenerateToken(user, user.Role);
 
@@ -46,7 +56,8 @@ namespace KaappaanPlus.Application.Features.Auth.Handlers
                 Token = token,
                 Name = user.Name,
                 Role = user.Role,
-                Message = "Email verified successfully"
+                Message = "Email verified successfully",
+                CitizenId = citizen.Id            // ⭐ ONLY CHANGE
             };
         }
     }
