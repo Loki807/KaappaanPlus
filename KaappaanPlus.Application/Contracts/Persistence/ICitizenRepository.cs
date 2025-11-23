@@ -17,8 +17,9 @@ namespace KaappaanPlus.Application.Contracts.Persistence
         Task<Citizen?> GetByIdAsync(Guid id);
 
         Task DeleteAsync(Citizen citizen);
+        Task<Citizen?> GetByUserIdAsync(Guid appUserId);
 
-        
+
     }
 
 }
