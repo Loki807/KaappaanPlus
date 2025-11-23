@@ -10,20 +10,22 @@ using Microsoft.AspNetCore.Identity;
 namespace KaappaanPlus.Application.Features.Auth.Handlers
 {
     public class LoginHandler : IRequestHandler<LoginCommand, object>
-
     {
         private readonly IUserRepository _userRepo;
         private readonly IAuthService _authService;
         private readonly INotificationService _notification;
+        private readonly ICitizenRepository _citizenRepo;     // ⭐ ADDED
 
         public LoginHandler(
             IUserRepository userRepo,
             IAuthService authService,
-            INotificationService notification)
+            INotificationService notification,
+            ICitizenRepository citizenRepo)                    // ⭐ ADDED
         {
             _userRepo = userRepo;
             _authService = authService;
             _notification = notification;
+            _citizenRepo = citizenRepo;                       // ⭐ ADDED
         }
 
         public async Task<object> Handle(LoginCommand request, CancellationToken ct)
@@ -46,6 +48,11 @@ namespace KaappaanPlus.Application.Features.Auth.Handlers
             // ⭐ CITIZEN LOGIN → OTP FLOW
             if (role == "Citizen")
             {
+                // ⭐ GET REAL CITIZEN ROW
+                var citizen = await _citizenRepo.GetByUserIdAsync(user.Id);
+                if (citizen == null)
+                    throw new Exception("Citizen record not found");
+
                 var otp = new Random().Next(100000, 999999).ToString();
 
                 user.EmailOtp = otp;
@@ -65,7 +72,7 @@ namespace KaappaanPlus.Application.Features.Auth.Handlers
                     Token = "",
                     FullName = user.Name,
                     Message = "OTP sent. Please verify.",
-                    CitizenId = user.Id,
+                    CitizenId = citizen.Id,   // ⭐ FIXED (REAL CITIZEN ID)
                     IsEmailConfirmed = false
                 };
             }
