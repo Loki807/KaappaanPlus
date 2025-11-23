@@ -2,6 +2,7 @@
 using KaappaanPlus.Application.Contracts.Identity;
 using KaappaanPlus.Application.Features.Auth.DTOs;
 using KaappaanPlus.Application.Features.Auth.Requests;
+using KaappaanPlus.Application.Features.Citizens.DTOs;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -24,26 +25,27 @@ namespace KaappaanPlus.WebApi.Controllers
 
         // ⭐ LOGIN
         [HttpPost("login")]
-        public async Task<ActionResult<LoginResponseDto>> Login([FromBody] LoginDto dto)
+        public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {
             var result = await _mediator.Send(new LoginCommand { LoginDto = dto });
 
-            // ⭐ CITIZEN OTP FLOW - NO LOGIN EMAIL
-            if (result.Role == "Citizen" && !result.IsEmailConfirmed)
-            {
-                return Ok(result);   // Return OTP sent message
-            }
+            // ⭐ CITIZEN LOGIN
+            if (result is CitizenLoginResponseDto citizenResult)
+                return Ok(citizenResult);
 
-            // ⭐ AFTER FULL LOGIN (admins or verified citizen)
-            if (result.IsEmailConfirmed == true)
+            // ⭐ ADMIN / RESPONDER LOGIN
+            var adminResult = (LoginResponseDto)result;
+
+            // 👉 Your existing login email notification stays EXACTLY same
+            if (adminResult.IsEmailConfirmed == true)
             {
                 string loginMessage = $@"
-                    <h2>Kaappaan Login Alert</h2>
-                    <p>Hi <strong>{result.Name}</strong>,</p>
-                    <p>Your account was successfully logged in on 
-                    <strong>{DateTime.Now:dddd, MMMM dd, yyyy hh:mm tt}</strong>.</p>
-                    <p>If this was not you, please reset your password immediately.</p>
-                    <p>Stay safe,<br/>Kaappaan Team</p>";
+            <h2>Kaappaan Login Alert</h2>
+            <p>Hi <strong>{adminResult.Name}</strong>,</p>
+            <p>Your account was successfully logged in on 
+            <strong>{DateTime.Now:dddd, MMMM dd, yyyy hh:mm tt}</strong>.</p>
+            <p>If this was not you, please reset your password immediately.</p>
+            <p>Stay safe,<br/>Kaappaan Team</p>";
 
                 await _notificationService.SendEmailAsync(
                     dto.Email,
@@ -52,8 +54,10 @@ namespace KaappaanPlus.WebApi.Controllers
                 );
             }
 
-            return Ok(result);
+            return Ok(adminResult);
         }
+
+
 
         // ⭐ ME
         [Authorize]
