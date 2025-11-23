@@ -13,18 +13,20 @@ namespace KaappaanPlus.Application.Features.Auth.Handlers
         private readonly IUserRepository _userRepo;
         private readonly IAuthService _authService;
         private readonly INotificationService _notification;
-        private readonly ICitizenRepository _citizenRepo;  //   ⭐ ADDED
+
+        // ⭐ ADDED
+        private readonly ICitizenRepository _citizenRepo;
 
         public LoginHandler(
             IUserRepository userRepo,
             IAuthService authService,
             INotificationService notification,
-            ICitizenRepository citizenRepo)                 //   ⭐ ADDED
+            ICitizenRepository citizenRepo)               // ⭐ ADDED
         {
             _userRepo = userRepo;
             _authService = authService;
             _notification = notification;
-            _citizenRepo = citizenRepo;                    //   ⭐ ADDED
+            _citizenRepo = citizenRepo;                   // ⭐ ADDED
         }
 
         public async Task<LoginResponseDto> Handle(LoginCommand request, CancellationToken ct)
@@ -45,8 +47,10 @@ namespace KaappaanPlus.Application.Features.Auth.Handlers
             // ⭐ ONLY CITIZEN → OTP
             if (role == "Citizen")
             {
-                // ⭐ GET REAL CITIZEN ID
+                // ⭐ GET CITIZEN ID FROM CITIZEN TABLE
                 var citizen = await _citizenRepo.GetByUserIdAsync(user.Id);
+                if (citizen == null)
+                    throw new Exception("Citizen record not found for user");
 
                 var otp = new Random().Next(100000, 999999).ToString();
 
@@ -62,6 +66,7 @@ namespace KaappaanPlus.Application.Features.Auth.Handlers
                     $"<h2>Your OTP is <b>{otp}</b></h2><p>Expires in 5 mins.</p>"
                 );
 
+                // ⭐ RETURN CITIZEN ID ALSO
                 return new LoginResponseDto
                 {
                     IsEmailConfirmed = false,
@@ -69,11 +74,11 @@ namespace KaappaanPlus.Application.Features.Auth.Handlers
                     Name = user.Name,
                     Role = user.Role,
                     Token = "",
-                    CitizenId = citizen.Id  // ⭐ FIXED (Only 1 line changed)
+                    CitizenId = citizen.Id      // ⭐ ADDED
                 };
             }
 
-            // ⭐ ADMIN
+            // ADMIN FIRST LOGIN CHECK
             if (user.MustChangePassword)
             {
                 return new LoginResponseDto
@@ -87,9 +92,7 @@ namespace KaappaanPlus.Application.Features.Auth.Handlers
                 };
             }
 
-            // NORMAL LOGIN
             var loginResult = await _authService.LoginAsync(dto.Email, dto.Password);
-
             return loginResult;
         }
     }
