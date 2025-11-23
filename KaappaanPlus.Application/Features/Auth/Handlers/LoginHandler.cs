@@ -11,14 +11,20 @@ namespace KaappaanPlus.Application.Features.Auth.Handlers
     public class LoginHandler : IRequestHandler<LoginCommand, LoginResponseDto>
     {
         private readonly IUserRepository _userRepo;
-        private readonly IAuthService _authService;   // ⭐ IMPORTANT
+        private readonly IAuthService _authService;
         private readonly INotificationService _notification;
+        private readonly ICitizenRepository _citizenRepo;  //   ⭐ ADDED
 
-        public LoginHandler(IUserRepository userRepo, IAuthService authService, INotificationService notification)
+        public LoginHandler(
+            IUserRepository userRepo,
+            IAuthService authService,
+            INotificationService notification,
+            ICitizenRepository citizenRepo)                 //   ⭐ ADDED
         {
             _userRepo = userRepo;
-            _authService = authService;     // ⭐ ADD THIS
+            _authService = authService;
             _notification = notification;
+            _citizenRepo = citizenRepo;                    //   ⭐ ADDED
         }
 
         public async Task<LoginResponseDto> Handle(LoginCommand request, CancellationToken ct)
@@ -29,7 +35,6 @@ namespace KaappaanPlus.Application.Features.Auth.Handlers
             if (user == null)
                 throw new UnauthorizedAccessException("Invalid email or password");
 
-            // Password verify
             var hasher = new PasswordHasher<AppUser>();
             var verify = hasher.VerifyHashedPassword(user, user.PasswordHash!, dto.Password);
             if (verify == PasswordVerificationResult.Failed)
@@ -40,6 +45,9 @@ namespace KaappaanPlus.Application.Features.Auth.Handlers
             // ⭐ ONLY CITIZEN → OTP
             if (role == "Citizen")
             {
+                // ⭐ GET REAL CITIZEN ID
+                var citizen = await _citizenRepo.GetByUserIdAsync(user.Id);
+
                 var otp = new Random().Next(100000, 999999).ToString();
 
                 user.EmailOtp = otp;
@@ -61,12 +69,11 @@ namespace KaappaanPlus.Application.Features.Auth.Handlers
                     Name = user.Name,
                     Role = user.Role,
                     Token = "",
-                    CitizenId = user.Id   // ⭐ ADD THIS
+                    CitizenId = citizen.Id  // ⭐ FIXED (Only 1 line changed)
                 };
-
             }
 
-            // ⭐ ADMIN → PASSWORD CHANGE?
+            // ⭐ ADMIN
             if (user.MustChangePassword)
             {
                 return new LoginResponseDto
@@ -80,7 +87,7 @@ namespace KaappaanPlus.Application.Features.Auth.Handlers
                 };
             }
 
-            // ⭐ FINAL LOGIN → GET TOKEN FROM AUTH SERVICE
+            // NORMAL LOGIN
             var loginResult = await _authService.LoginAsync(dto.Email, dto.Password);
 
             return loginResult;
