@@ -63,6 +63,11 @@ namespace KaappanPlus.Persistence.Repository
         
         }
 
+        public async Task<Citizen?> GetByUserIdAsync(Guid appUserId)
+        {
+            return await _context.Citizens
+                .FirstOrDefaultAsync(x => x.AppUserId == appUserId);
+        }
 
     }
 
