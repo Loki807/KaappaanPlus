@@ -98,9 +98,10 @@ namespace KaappaanPlus.Application.Features.Auth.Handlers
             // ⭐ ADMIN (TENANT ADMIN / SUPER ADMIN)
             if (user.MustChangePassword)
             {
+                var login = await _authService.LoginAsync(dto.Email, dto.Password);
                 return new LoginResponseDto
                 {
-                    Token = "",
+                    Token = login.Token,
                     Name = user.Name,
                     Role = user.Role,
                     Message = "Password change required",
@@ -110,7 +111,7 @@ namespace KaappaanPlus.Application.Features.Auth.Handlers
                 };
             }
 
-            // ⭐ NORMAL ADMIN LOGIN (JWT)
+            // ⭐ NORMAL ADMIN LOGIN (JWT)qwf
             return await _authService.LoginAsync(dto.Email, dto.Password);
         }
     }
