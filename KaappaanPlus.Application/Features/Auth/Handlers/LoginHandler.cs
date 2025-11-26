@@ -77,6 +77,24 @@ namespace KaappaanPlus.Application.Features.Auth.Handlers
                 };
             }
 
+            // ⭐ RESPONDER LOGIN  (Police, Fire, Ambulance, Traffic)
+            if (role == "Police" || role == "Fire" || role == "Ambulance" || role == "Traffic")
+            {
+                var login = await _authService.LoginAsync(dto.Email, dto.Password);
+
+                return new LoginResponseDto
+                {
+                    Token = login.Token,
+                    Name = user.Name,
+                    Role = user.Role,
+                    Message = "Responder login successful",
+                    IsEmailConfirmed = true,
+                    IsFirstLogin = false
+
+                };
+            }
+
+
             // ⭐ ADMIN (TENANT ADMIN / SUPER ADMIN)
             if (user.MustChangePassword)
             {
@@ -87,7 +105,8 @@ namespace KaappaanPlus.Application.Features.Auth.Handlers
                     Role = user.Role,
                     Message = "Password change required",
                     IsFirstLogin = true,
-                    IsEmailConfirmed = true
+                    IsEmailConfirmed = true,
+                    
                 };
             }
 
