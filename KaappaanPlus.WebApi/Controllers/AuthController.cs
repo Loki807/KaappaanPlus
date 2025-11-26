@@ -73,7 +73,7 @@ namespace KaappaanPlus.WebApi.Controllers
         }
 
         // ⭐ CHANGE PASSWORD
-        [Authorize]
+        
         [HttpPost("change-password")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
         {

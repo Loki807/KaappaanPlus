@@ -23,5 +23,12 @@ namespace KaappaanPlus.WebApi.Hubs
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, alertId);
             Console.WriteLine($"❌ Left alert group: {alertId} ({Context.ConnectionId})");
         }
+
+        public async Task JoinRoleGroup(string role)
+        {
+            await Groups.AddToGroupAsync(Context.ConnectionId, role);
+            Console.WriteLine($"Responder joined role group: {role}");
+        }
+
     }
 }
