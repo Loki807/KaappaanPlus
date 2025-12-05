@@ -39,11 +39,18 @@ namespace KaappaanPlus.WebApi
                     };
                 });
 
-            // CORS
-            builder.Services.AddCors(o =>
+            // ⭐ FIXED CORS (Azure + Netlify)
+            builder.Services.AddCors(options =>
             {
-                o.AddPolicy("AllowAll", p =>
-                    p.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+                options.AddPolicy("AllowAll", policy =>
+                    policy.WithOrigins(
+                            "https://kaappaan.netlify.app",
+                            "http://localhost:4200"
+                        )
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials()
+                );
             });
 
             builder.Services.AddAuthorization();
@@ -58,16 +65,14 @@ namespace KaappaanPlus.WebApi
 
             var app = builder.Build();
 
-            // ⭐ ALWAYS ENABLE SWAGGER on EC2/public server
+            // Swagger
             app.UseSwagger();
             app.UseSwaggerUI();
-
-            // ❌ DO NOT USE HTTPS REDIRECT (EC2 without SSL)
-            // app.UseHttpsRedirection();  // Removed
 
             // Global Error Handler
             app.UseMiddleware<ErrorHandlingMiddleware>();
 
+            // ⭐ Enable CORS middleware
             app.UseCors("AllowAll");
 
             app.UseAuthentication();
@@ -85,10 +90,6 @@ namespace KaappaanPlus.WebApi
             app.MapControllers();
 
             app.Run();
-
-            //New change to check 
-            //here is the new change
-
         }
     }
-}
+} //new cors
