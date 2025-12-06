@@ -19,6 +19,8 @@ namespace KaappaanPlus.Infrastructure.Identity
             _config = config;
         }
 
+      
+
         public async Task SendEmailAsync(string to, string subject, string body)
         {
             var smtpHost = _config["EmailSettings:SmtpHost"]!;
@@ -44,5 +46,7 @@ namespace KaappaanPlus.Infrastructure.Identity
 
             await smtp.SendMailAsync(mail);
         }
+
+       
     }
 }

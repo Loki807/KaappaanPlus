@@ -30,5 +30,8 @@ namespace KaappaanPlus.WebApi.Hubs
             Console.WriteLine($"Responder joined role group: {role}");
         }
 
+      
+
+
     }
 }

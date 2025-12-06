@@ -9,5 +9,7 @@ namespace KaappaanPlus.Application.Contracts.Identity
     public interface INotificationService
     {
         Task SendEmailAsync(string to, string subject, string body);
+
+        
     }
 }
