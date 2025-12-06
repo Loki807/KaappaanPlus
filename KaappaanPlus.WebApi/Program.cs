@@ -17,12 +17,11 @@ namespace KaappaanPlus.WebApi
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Application Layers
             builder.Services.AddApplicationServices();
             builder.Services.AddPersistence(builder.Configuration);
             builder.Services.AddInfrastructureServices(builder.Configuration);
 
-            // JWT Authentication
+            // JWT
             var jwt = builder.Configuration.GetSection("JwtSettings");
             builder.Services
                 .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -35,60 +34,55 @@ namespace KaappaanPlus.WebApi
                         ValidateIssuerSigningKey = true,
                         ValidIssuer = jwt["Issuer"],
                         ValidAudience = jwt["Audience"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt["Key"]!))
+                        IssuerSigningKey =
+                            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt["Key"]!))
                     };
                 });
 
-            // CORS
-            builder.Services.AddCors(o =>
+            // ⭐ FIXED CORS
+            builder.Services.AddCors(options =>
             {
-                o.AddPolicy("AllowAll", p =>
-                    p.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+                options.AddPolicy("AllowAll", policy =>
+                    policy
+                        .WithOrigins(
+                            "https://kaappaan.netlify.app",
+                            "http://localhost:4200"
+                        )
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                );
             });
 
             builder.Services.AddAuthorization();
-
-            // Controllers + Swagger
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-
-            // SignalR
             builder.Services.AddSignalR();
 
             var app = builder.Build();
 
-            // ⭐ ALWAYS ENABLE SWAGGER on EC2/public server
             app.UseSwagger();
             app.UseSwaggerUI();
 
-            // ❌ DO NOT USE HTTPS REDIRECT (EC2 without SSL)
-            // app.UseHttpsRedirection();  // Removed
-
-            // Global Error Handler
-            app.UseMiddleware<ErrorHandlingMiddleware>();
-
+            // ⭐ MUST BE FIRST MIDDLEWARE
             app.UseCors("AllowAll");
 
             app.UseAuthentication();
             app.UseAuthorization();
 
-            // Seed Database
+            // Error handling middleware LAST
+            app.UseMiddleware<ErrorHandlingMiddleware>();
+
             using (var scope = app.Services.CreateScope())
             {
                 var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
                 await SeedDataRunner.RunAllAsync(db);
             }
 
-            // Routes
             app.MapHub<AlertHub>("/alertHub");
             app.MapControllers();
 
             app.Run();
-
-            //New change to check 
-            //here is the new change
-
         }
     }
 }
