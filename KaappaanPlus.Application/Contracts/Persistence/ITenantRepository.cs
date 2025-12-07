@@ -39,5 +39,6 @@ namespace KaappaanPlus.Application.Contracts.Persistence
         Task<Tenant?> GetTenantByCityAndServiceAsync(string city, string serviceType, CancellationToken cancellationToken = default);
 
         Task<List<Tenant>> GetAllAsync();
+
     }
 }

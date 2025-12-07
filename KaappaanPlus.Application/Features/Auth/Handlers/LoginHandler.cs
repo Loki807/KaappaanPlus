@@ -15,17 +15,21 @@ namespace KaappaanPlus.Application.Features.Auth.Handlers
         private readonly IAuthService _authService;
         private readonly INotificationService _notification;
         private readonly ICitizenRepository _citizenRepo;     // ⭐ ADDED
+        private readonly ITenantRepository _tenantRepo;
 
         public LoginHandler(
             IUserRepository userRepo,
             IAuthService authService,
             INotificationService notification,
-            ICitizenRepository citizenRepo)                    // ⭐ ADDED
+            ICitizenRepository citizenRepo,
+             ITenantRepository tenantRepo)
+        // ⭐ ADDED
         {
             _userRepo = userRepo;
             _authService = authService;
             _notification = notification;
-            _citizenRepo = citizenRepo;                       // ⭐ ADDED
+            _citizenRepo = citizenRepo;
+            _tenantRepo = tenantRepo;      // ⭐ ADDED
         }
 
         public async Task<object> Handle(LoginCommand request, CancellationToken ct)
@@ -44,6 +48,11 @@ namespace KaappaanPlus.Application.Features.Auth.Handlers
                 throw new UnauthorizedAccessException("Invalid email or password");
 
             string role = user.Role;
+
+            var tenant = await _tenantRepo.GetByIdAsync(user.TenantId!.Value, ct);
+
+
+            string? serviceType = tenant?.ServiceType ?? "General";
 
             // ⭐ CITIZEN LOGIN → OTP FLOW
             if (role == "Citizen")
@@ -89,7 +98,8 @@ namespace KaappaanPlus.Application.Features.Auth.Handlers
                     Role = user.Role,
                     Message = "Responder login successful",
                     IsEmailConfirmed = true,
-                    IsFirstLogin = false
+                    IsFirstLogin = false,
+                    ServiceType = serviceType
 
                 };
             }
