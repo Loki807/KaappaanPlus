@@ -117,7 +117,7 @@ namespace KaappaanPlus.Application.Features.Alerts.Handlers.Commands
             // 7️⃣ Build SignalR payload
             var payload = new
             {
-                AlertId = alert.Id,
+                AlertId = alert.Id.ToString(),
                 Type = dto.AlertTypeName,
                 Description = dto.Description,
                 Latitude = dto.Latitude,
