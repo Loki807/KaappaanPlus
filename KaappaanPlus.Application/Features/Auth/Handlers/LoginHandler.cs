@@ -99,7 +99,7 @@ namespace KaappaanPlus.Application.Features.Auth.Handlers
                     Message = "Responder login successful",
                     IsEmailConfirmed = true,
                     IsFirstLogin = false,
-                    ServiceType = serviceType
+                    
 
                 };
             }
@@ -117,7 +117,8 @@ namespace KaappaanPlus.Application.Features.Auth.Handlers
                     Message = "Password change required",
                     IsFirstLogin = true,
                     IsEmailConfirmed = true,
-                    
+                    ServiceType = serviceType
+
                 };
             }
 
