@@ -105,20 +105,21 @@ namespace KaappaanPlus.Application.Features.Auth.Handlers
             }
 
 
-            // ⭐ ADMIN (TENANT ADMIN / SUPER ADMIN)
-            if (user.MustChangePassword)
+            if (role == "TenantAdmin" || role == "SuperAdmin")
             {
                 var login = await _authService.LoginAsync(dto.Email, dto.Password);
+
                 return new LoginResponseDto
                 {
                     Token = login.Token,
                     Name = user.Name,
                     Role = user.Role,
-                    Message = "Password change required",
-                    IsFirstLogin = true,
+                    Message = user.MustChangePassword
+                                ? "Password change required"
+                                : "Admin login successful",
+                    IsFirstLogin = user.MustChangePassword,
                     IsEmailConfirmed = true,
-                    ServiceType = serviceType
-
+                    ServiceType = serviceType   // ⭐ ALWAYS RETURN SERVICETYPE
                 };
             }
 

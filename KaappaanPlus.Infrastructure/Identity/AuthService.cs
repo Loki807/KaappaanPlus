@@ -34,16 +34,7 @@ namespace KaappaanPlus.Infrastructure.Identity
             if (result == PasswordVerificationResult.Failed)
                 throw new UnauthorizedAccessException("Invalid email or password");
 
-            if (user.MustChangePassword)
-            {
-                return new LoginResponseDto
-                {
-                    Token = string.Empty,
-                    Name = user.Name,
-                    Role = user.Role,
-                    Message = "Password change required before login"
-                };
-            }
+            
 
             var role = user.UserRoles.FirstOrDefault()?.Role?.Name ?? user.Role;
             var token = _jwt.GenerateToken(user, role);
