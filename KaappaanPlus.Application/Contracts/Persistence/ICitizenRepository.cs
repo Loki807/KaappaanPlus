@@ -19,7 +19,7 @@ namespace KaappaanPlus.Application.Contracts.Persistence
         Task DeleteAsync(Citizen citizen);
         Task<Citizen?> GetByUserIdAsync(Guid appUserId);
 
-
+        Task UpdateAsync(Citizen citizen, CancellationToken cancellationToken);
 
     }
 

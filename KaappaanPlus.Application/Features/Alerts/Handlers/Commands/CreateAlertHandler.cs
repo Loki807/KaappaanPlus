@@ -123,7 +123,8 @@ namespace KaappaanPlus.Application.Features.Alerts.Handlers.Commands
                 Latitude = dto.Latitude,
                 Longitude = dto.Longitude,
                 Service = type.Service.ToString(),
-                ReportedAt = DateTime.UtcNow
+                ReportedAt = DateTime.UtcNow,
+               
             };
 
             // 8️⃣ Broadcast live alert to all responder roles
