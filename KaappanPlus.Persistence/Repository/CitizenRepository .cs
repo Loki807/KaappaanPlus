@@ -69,6 +69,12 @@ namespace KaappanPlus.Persistence.Repository
                 .FirstOrDefaultAsync(x => x.AppUserId == appUserId);
         }
 
+        public async Task UpdateAsync(Citizen citizen, CancellationToken ct)
+        {
+            _context.Citizens.Update(citizen);
+            await _context.SaveChangesAsync(ct);
+        }
+
     }
 
 

@@ -12,5 +12,8 @@ namespace KaappaanPlus.Application.Features.Alerts.DTOs
         public string ResponderName { get; set; } = default!;
         public string Role { get; set; } = default!;
         public string AssignmentReason { get; set; } = default!;
+
+        public string EmergencyContact { get; set; } = "";
+
     }
 }

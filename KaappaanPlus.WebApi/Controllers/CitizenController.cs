@@ -1,4 +1,5 @@
-﻿using KaappaanPlus.Application.Features.Citizens.DTOs;
+﻿using KaappaanPlus.Application.Contracts.Persistence;
+using KaappaanPlus.Application.Features.Citizens.DTOs;
 using KaappaanPlus.Application.Features.Citizens.Requests.Commands;
 using KaappaanPlus.Application.Features.Citizens.Requests.Quries;
 using MediatR;
@@ -14,6 +15,8 @@ namespace KaappaanPlus.WebApi.Controllers
     {
 
         private readonly IMediator _mediator;
+        
+
         public CitizenController(IMediator mediator) => _mediator = mediator;
 
         [HttpPost("register")]
@@ -62,6 +65,37 @@ namespace KaappaanPlus.WebApi.Controllers
             return Ok(new { Message = "Citizen and linked AppUser deleted successfully ✅" });
         }
 
+
+
+
+
+        [HttpGet("emergency-contact/{citizenId}")]
+        public async Task<IActionResult> GetEmergencyContact(Guid citizenId)
+        {
+            var contact = await _mediator.Send(new GetEmergencyContactQuery
+            {
+                CitizenId = citizenId
+            });
+
+            return Ok(new { emergencyContact = contact });
+        }
+
+
+
+        [HttpPut("emergency-contact")]
+        public async Task<IActionResult> UpdateEmergencyContact([FromBody] UpdateEmergencyContactDto dto)
+        {
+            var result = await _mediator.Send(new UpdateEmergencyContactCommand
+            {
+                ContactDto = dto
+            });
+
+            return Ok(new
+            {
+                message = "Emergency contact updated successfully",
+                success = result
+            });
+        }
 
     }
 }
