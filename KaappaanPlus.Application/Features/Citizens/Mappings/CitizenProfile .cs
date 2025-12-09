@@ -9,34 +9,28 @@ using System.Threading.Tasks;
 
 namespace KaappaanPlus.Application.Features.Citizens.Mappings
 {
+
     public class CitizenProfile : Profile
     {
         public CitizenProfile()
         {
+            // MAIN MAPPING (Entity → DTO)
             CreateMap<Citizen, CitizenDto>()
-                  .ForMember(dest => dest.AppUserId, opt => opt.MapFrom(src => src.AppUserId))
-                  .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.AppUser.Name))
-                  .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.AppUser.Email))
-                  .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.AppUser.Phone))
-                  .ForMember(dest => dest.NIC, opt => opt.MapFrom(src => src.NIC))
-                  .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
-                  .ForMember(dest => dest.EmergencyContact, opt => opt.MapFrom(src => src.EmergencyContact));
+                .ForMember(dest => dest.AppUserId, opt => opt.MapFrom(src => src.AppUserId))
+                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.AppUser.Name))
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.AppUser.Email))
+                .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.AppUser.Phone))
+                .ForMember(dest => dest.NIC, opt => opt.MapFrom(src => src.NIC))
+                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
+                .ForMember(dest => dest.EmergencyContact, opt => opt.MapFrom(src => src.EmergencyContact));
 
-            // ✅ Login
+            // LOGIN RESPONSE DTO
             CreateMap<Citizen, CitizenLoginResponseDto>();
 
-            // ✅ Update
+            // UPDATE DTO → ENTITY
             CreateMap<UpdateCitizenDto, Citizen>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore());
-
-            // ✅ For viewing
-            CreateMap<Citizen, CitizenRegisterDto>();
-
-            // 🔹 View (Entity → DTO)
-            CreateMap<Citizen, CitizenDto>();
-
-            // 🔹 Optional reverse mapping (for tests / admin forms)
-            CreateMap<CitizenDto, Citizen>();
         }
     }
 }
+
