@@ -95,6 +95,10 @@ namespace KaappaanPlus.Application.Features.Alerts.Handlers.Commands
                         dispatchOrder.Add("Police");
                         break;
 
+                    case ServiceType.University:
+                        dispatchOrder.Add("UniversityStaff");
+                        break;
+                        
                     default:
                         dispatchOrder.Add("Police");
                         break;
