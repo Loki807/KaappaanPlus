@@ -78,7 +78,7 @@ namespace KaappaanPlus.Application.Features.Auth.Handlers
             }
 
             // ⭐ RESPONDER LOGIN  (Police, Fire, Ambulance, Traffic)
-            if (role == "Police" || role == "Fire" || role == "Ambulance" || role == "Traffic")
+            if (role == "Police" || role == "Fire" || role == "Ambulance" || role == "Traffic" || role=="UniversityStaff")
             {
                 var login = await _authService.LoginAsync(dto.Email, dto.Password);
 
