@@ -68,5 +68,19 @@ namespace KaappanPlus.Persistence.Repository
                 .Where(x => x.AlertId == alertId)
                 .ToListAsync();
         }
+
+        public async Task<List<AlertResponder>> GetByResponderIdAsync(Guid responderId, CancellationToken ct)
+        {
+            var sevenDaysAgo = DateTime.UtcNow.AddDays(-7);
+            return await _context.AlertResponders
+                .Include(ar => ar.Alert)
+                    .ThenInclude(a => a.AlertTypeRef)
+                .Include(ar => ar.Alert)
+                    .ThenInclude(a => a.Citizen)
+                        .ThenInclude(c => c.AppUser)
+                .Where(ar => ar.ResponderId == responderId && ar.CreatedAt >= sevenDaysAgo)
+                .OrderByDescending(ar => ar.Alert.ReportedAt)
+                .ToListAsync(ct);
+        }
     }
 }

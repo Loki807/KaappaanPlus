@@ -26,6 +26,14 @@ public class AcceptAlertHandler : IRequestHandler<AcceptAlertCommand, Guid>
         var alert = await _alerts.GetByIdAsync(req.AlertId, ct)
             ?? throw new Exception("Alert not found");
 
+        // Idempotency: If already InProgress, check if we are just re-accepting
+        // This simple check prevents most double-tap crashing
+        if (alert.Status == "InProgress") 
+        {
+             // We return success immediately as it's already done
+             return alert.Id;
+        }
+
         // Update status to InProgress
         alert.UpdateStatus("InProgress");
         await _alerts.UpdateAsync(alert, ct);
@@ -39,10 +47,12 @@ public class AcceptAlertHandler : IRequestHandler<AcceptAlertCommand, Guid>
             mapping = new AlertResponder(req.AlertId, req.ResponderId, "Accepted by responder");
             await _alertResponders.AddAsync(mapping, ct);
         }
-
-        mapping.SetUpdated("system");
-        await _alertResponders.UpdateAsync(mapping);
-
+        else
+        {
+            mapping.SetUpdated("system");
+            await _alertResponders.UpdateAsync(mapping);
+        }
+    
         // 🔥 Notify the citizen
         await _notifier.NotifyCitizenAsync(req.AlertId, new
         {
@@ -51,6 +61,15 @@ public class AcceptAlertHandler : IRequestHandler<AcceptAlertCommand, Guid>
             responderId = req.ResponderId,
             message = "Responder accepted your alert",
             timestamp = DateTime.UtcNow
+        });
+
+        // 🔥 Notify other responders that this is taken
+        string[] responderRoles = { "Police", "Fire", "Ambulance", "UniversityStaff" };
+        await _notifier.NotifyRespondersAsync(responderRoles, new
+        {
+            alertId = req.AlertId,
+            status = "Accepted",
+            message = "Alert has been accepted by someone else."
         });
 
         return alert.Id;

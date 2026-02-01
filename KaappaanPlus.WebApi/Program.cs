@@ -37,19 +37,34 @@ namespace KaappaanPlus.WebApi
                         IssuerSigningKey =
                             new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt["Key"]!))
                     };
+
+                    // ⭐ REQUIRED FOR SIGNALR ON MOBILE (Connect via Query parameter)
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            var accessToken = context.Request.Query["access_token"];
+                            var path = context.Request.Path;
+                            
+                            if (!string.IsNullOrEmpty(accessToken) && path.Value.Contains("/alertHub"))
+                            {
+                                Console.WriteLine($"🔑 [SignalR] Token found for path: {path}");
+                                context.Token = accessToken;
+                            }
+                            return Task.CompletedTask;
+                        }
+                    };
                 });
 
-            // ⭐ FIXED CORS
+            // ⭐ FIXED CORS FOR MOBILE / NGROK
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowAll", policy =>
                     policy
-                        .WithOrigins(
-                            "https://kaappaan.netlify.app",
-                            "http://localhost:4200"
-                        )
+                        .SetIsOriginAllowed(origin => true) // Allow any origin (localhost, ngrok, mobile IP)
                         .AllowAnyHeader()
                         .AllowAnyMethod()
+                        .AllowCredentials() // Essential for SignalR
                 );
             });
 
@@ -57,7 +72,20 @@ namespace KaappaanPlus.WebApi
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-            builder.Services.AddSignalR();
+            var signalRBuilder = builder.Services.AddSignalR(options =>
+            {
+                options.EnableDetailedErrors = true;
+                options.KeepAliveInterval = TimeSpan.FromSeconds(15);
+                options.ClientTimeoutInterval = TimeSpan.FromSeconds(30);
+            });
+
+            // ☁️ CLOUD SCALABILITY: Use Azure SignalR if configured
+            var azureSignalR = builder.Configuration["Azure:SignalR:ConnectionString"];
+            if (!string.IsNullOrWhiteSpace(azureSignalR))
+            {
+                Console.WriteLine("🚀 Using Azure SignalR Service for High Scale");
+                signalRBuilder.AddAzureSignalR(azureSignalR);
+            }
 
             var app = builder.Build();
 

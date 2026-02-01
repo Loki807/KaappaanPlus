@@ -37,8 +37,14 @@ namespace KaappaanPlus.Application.Common.Behaviors
 
                 if (failures.Count != 0)
                 {
+                    // 🔍 LOGGING: Print errors to debug console
+                    foreach (var failure in failures)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"❌ VALIDATION ERROR: Property {failure.PropertyName} failed validation. Error: {failure.ErrorMessage}");
+                        Console.WriteLine($"❌ VALIDATION ERROR: {failure.PropertyName} - {failure.ErrorMessage}");
+                    }
+
                     throw new ValidationException(failures);
-                   
                 }
             }
 

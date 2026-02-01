@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KaappanPlus.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251208115242_new")]
-    partial class @new
+    [Migration("20260119080238_lokiraj")]
+    partial class lokiraj
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

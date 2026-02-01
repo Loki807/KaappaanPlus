@@ -42,13 +42,17 @@ namespace KaappaanPlus.Application.Features.Users.Handlers.Commands
             if (tenant == null)
                 throw new KeyNotFoundException($"Tenant not found for ID: {user.TenantId}");
 
-            // Assign the user role based on the tenant's ServiceType
-            user.Role = tenant.ServiceType switch
+            // Assign the user role based on the tenant's ServiceType (Case-Insensitive)
+            // Normalize to Title Case or use explicit casing in switch
+            string type = tenant.ServiceType?.Trim() ?? "";
+
+            user.Role = type switch
             {
-                "Police" => "Police",         // Assign "Police" role if the tenant's ServiceType is "Police"
-                "Fire" => "Fire",             // Assign "Fire" role if the tenant's ServiceType is "Fire"
-                "Ambulance" => "Ambulance",   // Assign "Ambulance" role if the tenant's ServiceType is "Ambulance"
-                _ => "Citizen"                // Default role if the ServiceType is not recognized
+                var t when t.Equals("Police", StringComparison.OrdinalIgnoreCase) => "Police",
+                var t when t.Equals("Fire", StringComparison.OrdinalIgnoreCase) => "Fire",
+                var t when t.Equals("Ambulance", StringComparison.OrdinalIgnoreCase) => "Ambulance",
+                var t when t.Equals("University", StringComparison.OrdinalIgnoreCase) => "UniversityStaff",
+                _ => "Citizen"
             };
 
             // Check if the user already exists based on email

@@ -47,7 +47,7 @@ namespace KaappanPlus.Persistence.Repository
         }
 
         public async Task<Citizen?> GetByIdAsync(Guid id)
-              => await _context.Citizens.FirstOrDefaultAsync(c => c.Id == id);
+              => await _context.Citizens.Include(c => c.AppUser).FirstOrDefaultAsync(c => c.Id == id);
 
         public async Task UpdateAsync(Citizen citizen)
         {

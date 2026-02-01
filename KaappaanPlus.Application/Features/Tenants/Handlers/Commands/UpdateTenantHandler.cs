@@ -32,11 +32,31 @@ namespace KaappaanPlus.Application.Features.Tenants.Handlers.Commands
 
             if (existingTenant == null)
             {
-             
                 throw new NotFoundException(nameof(existingTenant), request.TenantDto.Id);
             }
 
-            _mapper.Map(request.TenantDto, existingTenant);
+            // Update Basic Info
+            existingTenant.UpdateInfo(
+                request.TenantDto.Name,
+                request.TenantDto.Code,
+                request.TenantDto.Email,
+                request.TenantDto.ServiceType,
+                request.TenantDto.ContactNumber,
+                request.TenantDto.LogoUrl
+            );
+
+            // Update Address
+            existingTenant.UpdateAddress(
+                request.TenantDto.AddressLine1,
+                request.TenantDto.AddressLine2,
+                request.TenantDto.City,
+                request.TenantDto.StateOrDistrict,
+                request.TenantDto.PostalCode
+            );
+
+            if (request.TenantDto.IsActive) existingTenant.Activate();
+            else existingTenant.Deactivate();
+
             await _tenantRepo.UpdateAsync(existingTenant, cancellationToken);
 
             

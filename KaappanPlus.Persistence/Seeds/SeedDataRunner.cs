@@ -25,6 +25,9 @@ namespace KaappanPlus.Persistence.Seeds
                 await AlertTypeSeeder.SeedAlertTypesAsync(context);
                 Console.WriteLine("✅ AlertTypes seeded successfully.");
 
+                await UniversitySeeder.SeedUniversityTenantAsync(context);
+                Console.WriteLine("✅ University environment seeded.");
+
                 //await AlertResponderSeeder.SeedAlertRespondersAsync(context);
                 
             }

@@ -56,12 +56,21 @@ namespace KaappaanPlus.WebApi.Controllers
             return Ok(alerts);
         }
 
-        // GET ALERTS by Tenant (tenantId)
         [HttpGet("tenant/{tenantId}")]
         [Authorize(Roles = "SuperAdmin, TenantAdmin")] // Only SuperAdmin and TenantAdmin can view alerts for a tenant
         public async Task<IActionResult> GetAlertsByTenant(Guid tenantId)
         {
             var alerts = await _mediator.Send(new GetAlertsByTenantIdQuery { TenantId = tenantId });
+            return Ok(alerts);
+        }
+
+        // GET ALERTS by Responder
+        [HttpGet("responder")]
+        [Authorize(Roles = "Police,Fire,Ambulance,UniversityStaff,TenantAdmin")]
+        public async Task<IActionResult> GetAlertsByResponder()
+        {
+            var responderId = User.GetUserId();
+            var alerts = await _mediator.Send(new GetAlertsByResponderQuery { ResponderId = responderId });
             return Ok(alerts);
         }
 
@@ -94,7 +103,7 @@ namespace KaappaanPlus.WebApi.Controllers
 
 
         [HttpGet("{alertId}/responders")]
-        [Authorize(Roles = "TenantAdmin,Police,Fire,Ambulance,SuperAdmin")]
+        [Authorize(Roles = "TenantAdmin,Police,Fire,Ambulance,UniversityStaff,SuperAdmin")] // ⭐ ADDED UniversityStaff
         public async Task<IActionResult> GetAlertResponders(Guid alertId)
         {
             var list = await _mediator.Send(new GetAlertRespondersQuery { AlertId = alertId });
@@ -103,7 +112,7 @@ namespace KaappaanPlus.WebApi.Controllers
 
 
         [HttpPost("accept")]
-        [Authorize(Roles = "Police,Fire,Ambulance,TenantAdmin")]
+        [Authorize(Roles = "Police,Fire,Ambulance,UniversityStaff,TenantAdmin")] // ⭐ ADDED UniversityStaff
         public async Task<IActionResult> AcceptAlert([FromBody] AcceptAlertDto dto)
         {
             var responderId = User.GetUserId(); // Extension method
@@ -120,7 +129,7 @@ namespace KaappaanPlus.WebApi.Controllers
 
 
         [HttpPost("location/update")]
-        [Authorize(Roles = "Police,Fire,Ambulance")]
+        [Authorize(Roles = "Police,Fire,Ambulance,UniversityStaff,TenantAdmin")]
         public async Task<IActionResult> UpdateResponderLocation([FromBody] UpdateResponderLocationDto dto)
         {
             var responderId = User.GetUserId();
@@ -138,7 +147,7 @@ namespace KaappaanPlus.WebApi.Controllers
 
 
         [HttpPost("complete")]
-        [Authorize(Roles = "Police,Fire,Ambulance")]
+        [Authorize(Roles = "Police,Fire,Ambulance,UniversityStaff,TenantAdmin")]
         public async Task<IActionResult> CompleteAlert([FromBody] AcceptAlertDto dto)
         {
             var responderId = User.GetUserId();

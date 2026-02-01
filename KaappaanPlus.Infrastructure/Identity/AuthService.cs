@@ -39,12 +39,16 @@ namespace KaappaanPlus.Infrastructure.Identity
             var role = user.UserRoles.FirstOrDefault()?.Role?.Name ?? user.Role;
             var token = _jwt.GenerateToken(user, role);
 
+            // Fetch tenant to get ServiceType
+            var tenant = await _db.Tenants.FirstOrDefaultAsync(t => t.Id == user.TenantId);
+
             return new LoginResponseDto
             {
                 Token = token,
                 Name = user.Name,
                 Role = role,
-                Message = "Login successful"
+                Message = "Login successful",
+                ServiceType = tenant?.ServiceType
             };
         }
 

@@ -61,6 +61,24 @@ namespace KaappaanPlus.Domain.Entities
             SetCreated("system");
         }
 
+        public void UpdateInfo(
+            string name,
+            string code,
+            string? email,
+            string? serviceType,
+            string? contactNumber,
+            string? logoUrl
+        )
+        {
+            Name = name;
+            Code = code;
+            Email = email;
+            ServiceType = serviceType ?? ServiceType;
+            ContactNumber = contactNumber;
+            LogoUrl = logoUrl;
+            SetUpdated("system");
+        }
+
 
         public void UpdateAddress(
             string? addressLine1,

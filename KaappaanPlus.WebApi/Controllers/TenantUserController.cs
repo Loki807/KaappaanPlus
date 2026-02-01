@@ -42,7 +42,10 @@ namespace KaappaanPlus.WebApi.Controllers
         // ✅ 2️⃣ Get All Users by Tenant
         // --------------------------------------------------
         // 🔗 GET: https://localhost:7055/api/admin/tenant/user/all/{tenantId}
-        [Authorize(Roles = "SuperAdmin,TenantAdmin")]
+        // ✅ 2️⃣ Get All Users by Tenant
+        // --------------------------------------------------
+        // 🔗 GET: https://localhost:7055/api/admin/tenant/user/all/{tenantId}
+        [Authorize(Roles = "SuperAdmin,TenantAdmin,Police,Fire,Ambulance,UniversityStaff")]
         [HttpGet("all/{tenantId:guid}")]
         public async Task<IActionResult> GetAllUsers(Guid tenantId)
         {
@@ -53,7 +56,7 @@ namespace KaappaanPlus.WebApi.Controllers
         // ✅ 3️⃣ Get User by Id
         // --------------------------------------------------
         // 🔗 GET: https://localhost:7055/api/admin/tenant/user/{id}
-        [Authorize(Roles = "SuperAdmin,TenantAdmin")]
+        [Authorize(Roles = "SuperAdmin,TenantAdmin,Police,Fire,Ambulance,UniversityStaff")]
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetUserById(Guid id)
         {

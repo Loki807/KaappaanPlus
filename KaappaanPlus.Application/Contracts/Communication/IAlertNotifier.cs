@@ -16,6 +16,9 @@ namespace KaappaanPlus.Application.Contracts.Communication
         // 🔥 Live responder location tracking
         Task SendResponderLocationAsync(Guid alertId, object payload);
 
+        // 🔥 Notify responders that an alert is taken / handled
+        Task NotifyRespondersAsync(string[] roles, object payload);
+
 
     }
 }

@@ -31,9 +31,10 @@ namespace KaappaanPlus.Application.Features.Auth.Handlers
         public async Task<object> Handle(LoginCommand request, CancellationToken ct)
         {
             var dto = request.LoginDto;
+            Console.WriteLine($"🔐 Login Attempt for: '{dto.Email}'");
 
             // 🔍 Find user
-            var user = await _userRepo.GetByEmailAsync(dto.Email, ct);
+            var user = await _userRepo.GetByEmailAsync(dto.Email?.Trim()!, ct);
             if (user == null)
                 throw new UnauthorizedAccessException("Invalid email or password");
 
@@ -45,13 +46,25 @@ namespace KaappaanPlus.Application.Features.Auth.Handlers
 
             string role = user.Role;
 
+            // 🔍 Debug Role
+            // System.Diagnostics.Debug.WriteLine($"USER ROLE: {user.Role}"); 
+
             // ⭐ CITIZEN LOGIN → OTP FLOW
             if (role == "Citizen")
             {
                 // ⭐ GET REAL CITIZEN ROW
                 var citizen = await _citizenRepo.GetByUserIdAsync(user.Id);
+                
+                // 🛑 SAFETY FALLBACK: If user is marked as 'Citizen' but has no Citizen record,
+                // check if they are actually a responder or admin (Data Integrity Issue)
                 if (citizen == null)
-                    throw new Exception("Citizen record not found");
+                {
+                    // Allow falling through to check other roles? 
+                    // No, if role is explicitly "Citizen", falling through won't match "Police" etc.
+                    
+                    // Throw a more descriptive error
+                     throw new Exception($"Data Error: User '{user.Email}' is marked as 'Citizen' but has no Citizen profile.");
+                }
 
                 var otp = new Random().Next(100000, 999999).ToString();
 
@@ -89,8 +102,8 @@ namespace KaappaanPlus.Application.Features.Auth.Handlers
                     Role = user.Role,
                     Message = "Responder login successful",
                     IsEmailConfirmed = true,
-                    IsFirstLogin = false
-
+                    IsFirstLogin = false,
+                    ServiceType = login.ServiceType
                 };
             }
 
@@ -107,7 +120,7 @@ namespace KaappaanPlus.Application.Features.Auth.Handlers
                     Message = "Password change required",
                     IsFirstLogin = true,
                     IsEmailConfirmed = true,
-                    
+                    ServiceType = login.ServiceType
                 };
             }
 

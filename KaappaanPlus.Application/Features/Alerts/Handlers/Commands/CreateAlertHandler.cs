@@ -118,7 +118,15 @@ namespace KaappaanPlus.Application.Features.Alerts.Handlers.Commands
                     new AlertResponder(alert.Id, responder.Id, "Auto-assigned global"), ct);
             }
 
-            // 7️⃣ Build SignalR payload
+            // 7️⃣ Gather Citizen Details (Robust check)
+            var citizenUser = citizen.AppUser;
+            if (citizenUser == null)
+            {
+                // Fallback fetch if Include failed for some reason
+                citizenUser = await _userRepo.GetByIdAsync(citizen.AppUserId, ct);
+            }
+
+            // 8️⃣ Build SignalR payload
             var payload = new
             {
                 AlertId = alert.Id.ToString(),
@@ -128,10 +136,13 @@ namespace KaappaanPlus.Application.Features.Alerts.Handlers.Commands
                 Longitude = dto.Longitude,
                 Service = type.Service.ToString(),
                 ReportedAt = DateTime.UtcNow,
-               
+                CitizenPhone = citizenUser?.Phone ?? "Not Provided",
+                CitizenName = citizenUser?.Name ?? "Emergency Victim",
+                CitizenAddress = citizen.Address ?? "Location Pending",
+                EmergencyContact = citizen.EmergencyContact ?? "Not Provided"
             };
 
-            // 8️⃣ Broadcast live alert to all responder roles
+            // 9️⃣ Broadcast live alert to all responder roles
             await _notifier.SendAlertAsync(payload, dispatchOrder.Distinct().ToArray());
 
             return alert.Id;

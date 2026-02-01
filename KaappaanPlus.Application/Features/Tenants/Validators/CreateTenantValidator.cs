@@ -27,8 +27,8 @@ namespace KaappaanPlus.Application.Features.Tenants.Validators
 
             RuleFor(x => x.TenantDto.ServiceType)
                 .NotEmpty().WithMessage("ServiceType is required.")
-                .Must(s => new[] { "Police", "Fire", "Ambulance","University" }.Contains(s))
-                .WithMessage("ServiceType must be one of: Police, Fire, University,or Ambulance.");
+                .Must(s => new[] { "Police", "Fire", "Ambulance", "University" }.Contains(s, StringComparer.OrdinalIgnoreCase))
+                .WithMessage("ServiceType must be one of: Police, Fire, Ambulance, or University.");
         }
 
         private bool BeAValidPhoneNumber(string? phone)
