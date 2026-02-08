@@ -1,0 +1,60 @@
+name: Deploy Backend (.NET) to EC2
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Publish API
+        working-directory: KaappaanPlus
+        run: dotnet publish KaappaanPlus.WebApi/KaappaanPlus.WebApi.csproj -c Release -o ./publish
+
+      - name: Deploy to EC2 via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+          script: |
+            # Stop existing service (assuming a systemd service named kaappaan-api)
+            sudo systemctl stop kaappaan-api || true
+            
+            # Clean old files
+            sudo rm -rf /var/www/kaappaan-api/*
+            
+            # Create directory if it doesn't exist
+            sudo mkdir -p /var/www/kaappaan-api
+            
+            # Sync files (using scp in the next step or manual move)
+            # For simplicity, we assume files are transferred. 
+            # In a real scenario, we'd use a separate upload step or git pull on server.
+
+      - name: Upload Files to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+          source: "KaappaanPlus/publish/*"
+          target: "/var/www/kaappaan-api"
+          strip_components: 2
+
+      - name: Restart API Service
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+          script: |
+            sudo systemctl start kaappaan-api

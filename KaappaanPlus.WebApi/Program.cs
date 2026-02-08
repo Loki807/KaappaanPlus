@@ -48,7 +48,7 @@ namespace KaappaanPlus.WebApi
                             
                             if (!string.IsNullOrEmpty(accessToken) && path.Value.Contains("/alertHub"))
                             {
-                                Console.WriteLine($"🔑 [SignalR] Token found for path: {path}");
+                                // Console.WriteLine($"🔑 [SignalR] Token found for path: {path}");
                                 context.Token = accessToken;
                             }
                             return Task.CompletedTask;
@@ -61,7 +61,7 @@ namespace KaappaanPlus.WebApi
             {
                 options.AddPolicy("AllowAll", policy =>
                     policy
-                        .SetIsOriginAllowed(origin => true) // Allow any origin (localhost, ngrok, mobile IP)
+                        .SetIsOriginAllowed(origin => true) // ✅ Allows: localhost, ngrok, d12q3zkftvfo29.cloudfront.net
                         .AllowAnyHeader()
                         .AllowAnyMethod()
                         .AllowCredentials() // Essential for SignalR

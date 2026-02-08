@@ -6,7 +6,7 @@ namespace KaappaanPlus.WebApi.Hubs
     {
         public override async Task OnConnectedAsync()
         {
-            Console.WriteLine($"🔗 Connected: {Context.ConnectionId}");
+            // Console.WriteLine($"🔗 Connected: {Context.ConnectionId}");
             await base.OnConnectedAsync();
         }
 
@@ -20,7 +20,7 @@ namespace KaappaanPlus.WebApi.Hubs
             
             await Groups.AddToGroupAsync(Context.ConnectionId, normalizedId);
             
-            Console.WriteLine($"✔ Join: User {userId} joined group {normalizedId} (Conn: {Context.ConnectionId})");
+            // Console.WriteLine($"✔ Join: User {userId} joined group {normalizedId} (Conn: {Context.ConnectionId})");
             
             // Send confirmation back to the caller
             await Clients.Caller.SendAsync("AlertGroupJoined", normalizedId);
@@ -34,7 +34,7 @@ namespace KaappaanPlus.WebApi.Hubs
             var userId = Context.User?.Identity?.Name ?? "Anonymous";
             var normalizedId = alertId.ToLower();
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, normalizedId);
-            Console.WriteLine($"❌ Leave: User {userId} left group {normalizedId} (Conn: {Context.ConnectionId})");
+            // Console.WriteLine($"❌ Leave: User {userId} left group {normalizedId} (Conn: {Context.ConnectionId})");
         }
 
         public async Task JoinRoleGroup(string role)
@@ -42,7 +42,7 @@ namespace KaappaanPlus.WebApi.Hubs
             if (string.IsNullOrEmpty(role)) return;
 
             await Groups.AddToGroupAsync(Context.ConnectionId, role);
-            Console.WriteLine($"Responder joined role group: {role}");
+            // Console.WriteLine($"Responder joined role group: {role}");
         }
 
         public async Task StreamLocation(string alertId, double lat, double lng, float heading, float speed)

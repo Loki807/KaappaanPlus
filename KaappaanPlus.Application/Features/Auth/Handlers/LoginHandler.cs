@@ -107,7 +107,7 @@ namespace KaappaanPlus.Application.Features.Auth.Handlers
                 };
             }
 
-
+            //test
             // ⭐ ADMIN (TENANT ADMIN / SUPER ADMIN)
             if (user.MustChangePassword)
             {
