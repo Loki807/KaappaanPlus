@@ -46,7 +46,7 @@ namespace KaappaanPlus.WebApi
                             var accessToken = context.Request.Query["access_token"];
                             var path = context.Request.Path;
                             
-                            if (!string.IsNullOrEmpty(accessToken) && path.Value.Contains("/alertHub"))
+                            if (!string.IsNullOrEmpty(accessToken) && path.Value.Contains("/api/alertHub"))
                             {
                                 // Console.WriteLine($"🔑 [SignalR] Token found for path: {path}");
                                 context.Token = accessToken;
@@ -107,7 +107,7 @@ namespace KaappaanPlus.WebApi
                 await SeedDataRunner.RunAllAsync(db);
             }
 
-            app.MapHub<AlertHub>("/alertHub");
+            app.MapHub<AlertHub>("/api/alertHub");
             app.MapControllers();
 
             app.Run();
