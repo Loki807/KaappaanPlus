@@ -1,4 +1,5 @@
-﻿using KaappaanPlus.Application.Contracts.Persistence;
+﻿using KaappaanPlus.Application.Contracts.Communication;
+using KaappaanPlus.Application.Contracts.Persistence;
 using KaappaanPlus.Application.Extensions;
 using KaappaanPlus.Application.Features.Alerts.DTOs;
 using KaappaanPlus.Application.Features.Alerts.Requests.Commands;
@@ -18,10 +19,12 @@ namespace KaappaanPlus.WebApi.Controllers
     public class AlertController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly IAlertNotifier _notifier;
 
-        public AlertController(IMediator mediator)
+        public AlertController(IMediator mediator, IAlertNotifier notifier)
         {
             _mediator = mediator;
+            _notifier = notifier;
         }
 
         // CREATE ALERT (Only Citizens can create alerts)
