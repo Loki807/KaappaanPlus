@@ -18,10 +18,25 @@ namespace KaappaanPlus.Infrastructure.Identity
             _hubContext = hubContext;
         }
 
-        public async Task SendAlertAsync(object payload, string[] roles)
+        public async Task SendAlertAsync(object payload, string[] roles, double lat, double lng)
         {
-            foreach (var role in roles)
-                await _hubContext.Clients.Group(role).SendAsync("ReceiveAlert", payload);
+            // 🔎 FIND NEARBY RESPONDERS (within 5km)
+            var nearbyConnectionIds = AlertHub.GetConnectionsNear(lat, lng, 5.0).ToList();
+
+            if (nearbyConnectionIds.Any())
+            {
+                Console.WriteLine($"📍 [SignalR] Sending targeted alert to {nearbyConnectionIds.Count} nearby responders.");
+                await _hubContext.Clients.Clients(nearbyConnectionIds).SendAsync("ReceiveAlert", payload);
+                // Also send to the group as a fallback for high-priority or if we want others to see it in history
+                // But for now, targeted is better as per user request.
+            }
+            else
+            {
+                // FALLBACK: Broadcast to roles if no one is "near" (ensures someone gets help)
+                Console.WriteLine("📍 [SignalR] No responders nearby. Broadcasting to all relevant roles.");
+                foreach (var role in roles)
+                    await _hubContext.Clients.Group(role).SendAsync("ReceiveAlert", payload);
+            }
         }
 
         // ⭐ Notify citizen about acceptance / completion

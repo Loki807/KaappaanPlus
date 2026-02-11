@@ -8,7 +8,7 @@ namespace KaappaanPlus.Application.Contracts.Communication
 {
     public interface IAlertNotifier
     {
-        Task SendAlertAsync(object payload, string[] roles);
+        Task SendAlertAsync(object payload, string[] roles, double lat, double lng);
 
         // 🔥 Notify citizen about responder actions
         Task NotifyCitizenAsync(Guid alertId, object payload);

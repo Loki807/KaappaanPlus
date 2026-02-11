@@ -143,7 +143,7 @@ namespace KaappaanPlus.Application.Features.Alerts.Handlers.Commands
             };
 
             // 9️⃣ Broadcast live alert to all responder roles
-            await _notifier.SendAlertAsync(payload, dispatchOrder.Distinct().ToArray());
+            await _notifier.SendAlertAsync(payload, dispatchOrder.Distinct().ToArray(), dto.Latitude, dto.Longitude);
 
             return alert.Id;
         }
