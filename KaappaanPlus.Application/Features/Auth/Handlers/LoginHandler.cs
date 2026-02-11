@@ -93,7 +93,7 @@ namespace KaappaanPlus.Application.Features.Auth.Handlers
             // ⭐ RESPONDER LOGIN  (Police, Fire, Ambulance, Traffic)
             if (role == "Police" || role == "Fire" || role == "Ambulance" || role == "Traffic" || role=="UniversityStaff")
             {
-                var login = await _authService.LoginAsync(dto.Email, dto.Password);
+                var login = await _authService.LoginAsync(dto.Email ?? "", dto.Password);
 
                 return new LoginResponseDto
                 {
@@ -111,7 +111,7 @@ namespace KaappaanPlus.Application.Features.Auth.Handlers
             // ⭐ ADMIN (TENANT ADMIN / SUPER ADMIN)
             if (user.MustChangePassword)
             {
-                var login = await _authService.LoginAsync(dto.Email, dto.Password);
+                var login = await _authService.LoginAsync(dto.Email ?? "", dto.Password);
                 return new LoginResponseDto
                 {
                     Token = login.Token,
@@ -125,7 +125,7 @@ namespace KaappaanPlus.Application.Features.Auth.Handlers
             }
 
             // ⭐ NORMAL ADMIN LOGIN (JWT)qwf
-            return await _authService.LoginAsync(dto.Email, dto.Password);
+            return await _authService.LoginAsync(dto.Email ?? "", dto.Password);
         }
     }
 }

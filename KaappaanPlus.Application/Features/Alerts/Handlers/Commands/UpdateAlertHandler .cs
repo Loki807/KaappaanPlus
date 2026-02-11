@@ -48,7 +48,7 @@ namespace KaappaanPlus.Application.Features.Alerts.Handlers.Commands
             }
 
             // Step 3: Update other alert fields
-            alert.UpdateStatus(dto.Status);  // Assuming UpdateStatus is implemented correctly
+            alert.UpdateStatus(dto.Status ?? "InProgress");  // Assuming UpdateStatus is implemented correctly
             alert.Description = dto.Description;
             alert.Latitude = dto.Latitude;
             alert.Longitude = dto.Longitude;
