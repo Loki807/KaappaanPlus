@@ -173,6 +173,7 @@ namespace KaappaanPlus.WebApi.Controllers
             if (alert == null) return NotFound();
 
             // Check if it's already resolved or completed
+            // NOTE: It is ALLOWED to cancel specific "InProgress" or "Accepted" missions.
             if (alert.Status == "Resolved" || alert.Status == "Completed")
                 return BadRequest("Cannot cancel a completed mission.");
 
