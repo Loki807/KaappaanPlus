@@ -63,5 +63,11 @@ namespace KaappaanPlus.Infrastructure.Identity
                 await _hubContext.Clients.Group(role).SendAsync("AlertHandled", payload);
             }
         }
+        public async Task NotifyMissionCancelledAsync(Guid alertId)
+        {
+            string groupName = alertId.ToString().ToLower();
+            Console.WriteLine($"🛑 [SignalR] Mission Cancelled: {groupName}");
+            await _hubContext.Clients.Group(groupName).SendAsync("MissionCancelled", new { AlertId = alertId });
+        }
     }
 }

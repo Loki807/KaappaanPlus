@@ -162,5 +162,35 @@ namespace KaappaanPlus.WebApi.Controllers
         }
 
 
+        [HttpPost("cancel")]
+        [Authorize(Roles = "Citizen")]
+        public async Task<IActionResult> CancelAlert([FromBody] Guid alertId)
+        {
+            var alert = await _mediator.Send(new GetAlertByIdQuery { Id = alertId });
+            if (alert == null) return NotFound();
+
+            // Check if it's already resolved or completed
+            if (alert.Status == "Resolved" || alert.Status == "Completed")
+                return BadRequest("Cannot cancel a completed mission.");
+
+            // Normally we'd use a Command, but for speed we'll use UpdateAlert
+            var updateDto = new UpdateAlertDto
+            {
+                Id = alertId,
+                Status = "Cancelled",
+                Description = alert.Description,
+                Latitude = alert.Latitude,
+                Longitude = alert.Longitude
+            };
+
+            await _mediator.Send(new UpdateAlertCommand { UpdateAlertDto = updateDto });
+
+            // ⭐ NOTIFY RESPONDERS TO STOP
+            await _notifier.NotifyMissionCancelledAsync(alertId);
+
+            return Ok(new { message = "Alert cancelled successfully" });
+        }
+
+
     }
 }

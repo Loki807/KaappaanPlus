@@ -19,6 +19,7 @@ namespace KaappaanPlus.Application.Contracts.Communication
         // 🔥 Notify responders that an alert is taken / handled
         Task NotifyRespondersAsync(string[] roles, object payload);
 
-
+        // 🔥 Notify when an alert is cancelled by citizen
+        Task NotifyMissionCancelledAsync(Guid alertId);
     }
 }
