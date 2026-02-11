@@ -20,22 +20,32 @@ namespace KaappaanPlus.Infrastructure.Identity
 
         public async Task SendAlertAsync(object payload, string[] roles, double lat, double lng)
         {
-            // 🔎 FIND NEARBY RESPONDERS (within 5km)
-            var nearbyConnectionIds = AlertHub.GetConnectionsNear(lat, lng, 5.0).ToList();
+            var adminRoles = new[] { "TenantAdmin", "SuperAdmin" };
+            var operationalRoles = roles.Except(adminRoles).ToArray();
 
-            if (nearbyConnectionIds.Any())
+            // 1. ALWAYS Notify Admins (Global Visibility)
+            foreach (var role in roles.Where(r => adminRoles.Contains(r)))
             {
-                Console.WriteLine($"📍 [SignalR] Sending targeted alert to {nearbyConnectionIds.Count} nearby responders.");
-                await _hubContext.Clients.Clients(nearbyConnectionIds).SendAsync("ReceiveAlert", payload);
-                // Also send to the group as a fallback for high-priority or if we want others to see it in history
-                // But for now, targeted is better as per user request.
+                await _hubContext.Clients.Group(role).SendAsync("ReceiveAlert", payload);
             }
-            else
+
+            // 2. Proximity Logic for Responders (Police, Fire, etc.)
+            if (operationalRoles.Any())
             {
-                // FALLBACK: Broadcast to roles if no one is "near" (ensures someone gets help)
-                Console.WriteLine("📍 [SignalR] No responders nearby. Broadcasting to all relevant roles.");
-                foreach (var role in roles)
-                    await _hubContext.Clients.Group(role).SendAsync("ReceiveAlert", payload);
+                var nearbyConnectionIds = AlertHub.GetConnectionsNear(lat, lng, 5.0).ToList();
+
+                if (nearbyConnectionIds.Any())
+                {
+                    Console.WriteLine($"📍 [SignalR] Sending targeted alert to {nearbyConnectionIds.Count} nearby responders.");
+                    await _hubContext.Clients.Clients(nearbyConnectionIds).SendAsync("ReceiveAlert", payload);
+                }
+                else
+                {
+                    // FALLBACK: Broadcast to operational roles if no one is "near"
+                    Console.WriteLine("📍 [SignalR] No responders nearby. Broadcasting to all operational roles.");
+                    foreach (var role in operationalRoles)
+                        await _hubContext.Clients.Group(role).SendAsync("ReceiveAlert", payload);
+                }
             }
         }
 

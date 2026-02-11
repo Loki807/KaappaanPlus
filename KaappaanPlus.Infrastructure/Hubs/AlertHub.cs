@@ -16,7 +16,16 @@ namespace KaappaanPlus.WebApi.Hubs
 
         public async Task UpdateIdleLocation(double lat, double lng)
         {
-            _responderLocations[Context.ConnectionId] = (lat, lng);
+            // 🛡️ SECURITY: Only Responders can stream location. 
+            // Citizens calling this should be ignored to prevent "False Responder" proximity bugs.
+            if (Context.User != null && (
+                Context.User.IsInRole("Police") || 
+                Context.User.IsInRole("Fire") || 
+                Context.User.IsInRole("Ambulance") || 
+                Context.User.IsInRole("UniversityStaff")))
+            {
+                _responderLocations[Context.ConnectionId] = (lat, lng);
+            }
         }
 
         // Helper for backend to get connection IDs near a point
